@@ -22,6 +22,7 @@ release.properties
 .classpath
 .project
 .settings/
+.metadata
 
 .DS_Store
 admin-ui/node

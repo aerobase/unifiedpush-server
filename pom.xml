@@ -29,7 +29,7 @@
     <version>1.1.0-beta.4</version>
     <packaging>pom</packaging>
 
-    <name>AeroGear UnifiedPush Server</name>
+    <name>UnifiedPush Server</name>
     <url>http://aerogear.org/push</url>
 
     <scm>
@@ -83,9 +83,9 @@
                 Here we use
                 the jboss-javaee-6.0 stack (you can read this as the JBoss stack of the Java EE 6 APIs) -->
             <dependency>
-                <groupId>org.jboss.bom</groupId>
-                <artifactId>jboss-javaee-6.0-with-hibernate</artifactId>
-                <version>${jboss-javaee-6.0.version}</version>
+                <groupId>org.jboss.spec</groupId>
+                <artifactId>jboss-javaee-7.0</artifactId>
+                <version>${jboss-javaee-7.0.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -121,6 +121,55 @@
                 <scope>import</scope>
             </dependency>
 
+	        <dependency>
+	            <groupId>org.apache.httpcomponents</groupId>
+	            <artifactId>httpclient</artifactId>
+	            <version>4.3.6</version>
+	        </dependency>
+	
+	        <dependency>
+	            <groupId>org.apache.httpcomponents</groupId>
+	            <artifactId>httpcore</artifactId>
+	            <version>4.3.3</version>
+	        </dependency>
+
+	    <!-- Override resteasy version -->
+	    <dependency>
+              <groupId>org.jboss.resteasy</groupId>
+              <artifactId>resteasy-jaxrs</artifactId>
+              <version>${resteasy.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>async-http-servlet-3.0</artifactId>
+                <version>${resteasy.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>jaxrs-api</artifactId>
+                <version>${resteasy.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-jackson-provider</artifactId>
+                <version>${resteasy.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-jaxrs</artifactId>
+                <version>${resteasy.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-multipart-provider</artifactId>
+                <version>${resteasy.version}</version>
+            </dependency>
+	        
         </dependencies>
     </dependencyManagement>
 
@@ -154,16 +203,41 @@
                 </configuration>
             </plugin>
 
-
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<configuration>
+					<wtpapplicationxml>true</wtpapplicationxml>
+					<wtpversion>2.0</wtpversion>
+					<manifest>${basedir}/src/main/resources/META-INF/MANIFEST.MF</manifest>
+					<downloadSources>true</downloadSources>
+					<ajdtVersion>none</ajdtVersion>
+				</configuration>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
         </plugins>
     </build>
 
     <properties>
+    	<java.version>1.7</java.version>
+
+	<!-- Override Areogear BOM -->
+	<resteasy.version>3.0.10.Final</resteasy.version>
+    
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- Define the version of JBoss' Java EE 6 APIs we want to import. Any dependencies from org.jboss.spec will have their
             version defined by this BOM -->
-        <jboss-javaee-6.0.version>1.0.7.Final</jboss-javaee-6.0.version>
+        <jboss-javaee-7.0.version>1.0.2.Final</jboss-javaee-7.0.version>
 
         <!--
             Options to override the compiler arguments directly on the compiler arument line to separate between what
@@ -186,6 +260,7 @@
         <org.jacoco.jacoco-maven-plugin.version>0.6.3.201306030806</org.jacoco.jacoco-maven-plugin.version>
         <ant.contrib.version>20020829</ant.contrib.version>
         <aerogear.crypto.version>0.1.5</aerogear.crypto.version>
+        
     </properties>
 
     <profiles>

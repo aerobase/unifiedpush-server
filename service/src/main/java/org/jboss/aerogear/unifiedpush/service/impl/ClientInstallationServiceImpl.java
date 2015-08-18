@@ -31,7 +31,6 @@ import javax.ejb.Asynchronous;
 import javax.ejb.Stateless;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -90,6 +89,7 @@ public class ClientInstallationServiceImpl implements ClientInstallationService 
             return;
         }
 
+        // TODO - On a large scale database, we can't load entire device list.
         Set<String> existingTokens = installationDao.findAllDeviceTokenForVariantID(variant.getVariantID());
 
         // clear out:
