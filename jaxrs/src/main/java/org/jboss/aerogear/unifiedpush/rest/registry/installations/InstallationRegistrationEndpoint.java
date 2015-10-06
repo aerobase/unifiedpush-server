@@ -86,7 +86,7 @@ public class InstallationRegistrationEndpoint extends AbstractBaseEndpoint {
      * @responseheader Access-Control-Max-Age           604800
      *
      * @statuscode 200 Successful response for your request
-     */
+     *****/
     @OPTIONS
     @Path("{token: .*}")
     @ReturnType("java.lang.Void")
@@ -97,6 +97,7 @@ public class InstallationRegistrationEndpoint extends AbstractBaseEndpoint {
         return appendPreflightResponseHeaders(headers, Response.ok()).build();
     }
 
+    
     /**
      * Cross Origin for Installations
      *
