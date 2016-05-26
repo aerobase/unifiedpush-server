@@ -18,6 +18,10 @@ public class DocumentMetadata implements Serializable {
 		return value == null || value.equalsIgnoreCase(NULL_QUALIFIER) ? NULL_QUALIFIER : value.toUpperCase();
 	}
 
+	public static String getAlias(String value) {
+		return value == null || value.equalsIgnoreCase(NULL_ALIAS) ? NULL_ALIAS : value.toLowerCase();
+	}
+
 	public static final String NULL_QUALIFIER = "NULL";
 	public static final String NULL_ALIAS = "NULL";
 

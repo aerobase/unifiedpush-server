@@ -17,7 +17,7 @@ public abstract class RestEndpointTest {
     	iosInstallation.setDeviceToken(DEFAULT_DEVICE_TOKEN);
     	iosInstallation.setOperatingSystem("iOS");
     	iosInstallation.setOsVersion("9.0.2");
-    	iosInstallation.setAlias("17327572923");
+    	iosInstallation.setAlias("Support@tEst.com");
 
     	return iosInstallation;
 	}

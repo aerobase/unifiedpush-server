@@ -29,7 +29,7 @@ public class DocumentDaoImpl implements DocumentDao {
 	private static final Logger logger = Logger.getLogger(DocumentDao.class.getName());
 
 	private static final String DOCUMENT_TOKEN = "__";
-	
+
 	@Inject
 	private FileManager fileManager;
 
@@ -46,10 +46,10 @@ public class DocumentDaoImpl implements DocumentDao {
 	@Override
 	/**
 	 * Return list of documents older then a given date.
-	 * 
+	 *
 	 * @param pushApplication
 	 * @param date
-	 * 
+	 *
 	 * @return - List<String> of document content.
 	 */
 	public List<DocumentMessage> findDocuments(DocumentMetadata message) {
@@ -60,18 +60,18 @@ public class DocumentDaoImpl implements DocumentDao {
 	public DocumentMessage findLatestDocumentForAlias(DocumentMetadata metadata) {
 		return findLatestDocumentInDirectory(getDocumentPath(metadata), metadata);
 	}
-	
+
 	@Override
 	public List<DocumentMessage> findLatestDocumentsForApplication(DocumentMetadata message) {
 		try {
 			final Path fullDirectoryPath = getFullDirectoryPath(Paths.get(message.getPushApplication()
 					.getPushApplicationID(), DocumentType.INSTALLATION
 					.toString()));
-			
+
 			if (!fullDirectoryPath.toFile().exists()) {
 				return Collections.emptyList();
 			}
-			
+
 			List<File> aliasDirectories = fileManager.list(
 					fullDirectoryPath, new FileFilter() {
 						@Override
@@ -80,22 +80,22 @@ public class DocumentDaoImpl implements DocumentDao {
 						}
 					});
 			List<DocumentMessage> documents = new LinkedList<>();
-			
+
 			for (File aliasDirectory : aliasDirectories) {
 				final DocumentMessage latest = findLatestDocumentInDirectory(aliasDirectory.toPath(), message);
 				if (latest != null) {
 					documents.add(latest);
 				}
 			}
-			
+
 			return documents;
-			
+
 		} catch (FileNotFoundException e) {
 			throw new RuntimeException(e);
 		}
-		
+
 	}
-	
+
 	private DocumentMessage findLatestDocumentInDirectory(Path directoryPath, DocumentMetadata metadata) {
 		List<DocumentMessage> documents = getDocuments(directoryPath, metadata, new DocumentNameFilterImpl(metadata));
 
@@ -121,14 +121,14 @@ public class DocumentDaoImpl implements DocumentDao {
 		try {
 			files = fileManager.list(directory.toPath(), new FileFilter() {
 				@Override
-				public boolean accept(File pathname) {	
+				public boolean accept(File pathname) {
 					if (pathname.isDirectory()) {
 						return false;
 					}
 					String[] parts = pathname.getName().split(DOCUMENT_TOKEN);
 					String id = parts.length < 6 ? NULL_PART : parts[5];
 					if (filter != null
-							&& !filter.accept(parts[0], DocumentType.valueOf(parts[1]), parts[2], parts[3], 
+							&& !filter.accept(parts[0], DocumentType.valueOf(parts[1]), parts[2], parts[3],
 									parts[4], id)) {
 						return false;
 					}
@@ -161,7 +161,7 @@ public class DocumentDaoImpl implements DocumentDao {
 		if (message.getPublisher() == DocumentType.APPLICATION && message.getAlias().equalsIgnoreCase(DocumentMetadata.NULL_ALIAS))
 			return getFullDirectoryPath(Paths.get(message.getPushApplication().getPushApplicationID(),
 					message.getPublisher().name()));
-		
+
 		return getFullDirectoryPath(Paths.get(message.getPushApplication().getPushApplicationID(),
 				message.getPublisher().name(), message.getAlias()));
 	}
@@ -179,18 +179,18 @@ public class DocumentDaoImpl implements DocumentDao {
 				.append(DOCUMENT_TOKEN).append(overwrite ? NULL_PART : System.currentTimeMillis())
 				.append(DOCUMENT_TOKEN).append(getFileNamePart(metadata.getId())).toString();
 	}
-	
+
 	private String getFileNamePart(Object obj) {
 		return obj == null ? NULL_PART : obj.toString();
 	}
-	
+
 	private static interface DocumentNameFilter {
 		boolean accept(String pushApp, DocumentType type, String alias, String qualifier, String time, String id);
 	}
-	
+
 	private class DocumentNameFilterImpl implements DocumentNameFilter {
 		private final DocumentMetadata documentMetadata;
-		
+
 		public DocumentNameFilterImpl(DocumentMetadata documentMetadata) {
 			this.documentMetadata = documentMetadata;
 		}
@@ -199,10 +199,10 @@ public class DocumentDaoImpl implements DocumentDao {
 		public boolean accept(String pushApp, DocumentType type,
 				String alias, String qualifier, String time, String id) {
 			if (!documentMetadata.getAlias().equalsIgnoreCase(DocumentMetadata.NULL_ALIAS) &&
-					!documentMetadata.getAlias().equals(alias)) return false;
+					!documentMetadata.getAlias().equalsIgnoreCase(alias)) return false;
 			if (documentMetadata.getPushApplication() != null && !documentMetadata.getPushApplication().getPushApplicationID().equals(pushApp)) return false;
-			
-			return documentMetadata.getPublisher() == type 
+
+			return documentMetadata.getPublisher() == type
 					&& qualifier.equals(getFileNamePart(documentMetadata.getQualifier()))
 					&& (id.equalsIgnoreCase(NULL_PART) || id.equals(getFileNamePart(documentMetadata.getId())));
 		}

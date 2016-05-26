@@ -123,7 +123,7 @@ public class DocumentEndpoint extends AbstractEndpoint {
 
 		try {
 			PushApplication pushApp = pushApplicationService.findByVariantID(variant.getVariantID());
-			documentService.saveForPushApplication(pushApp, alias, entity,
+			documentService.saveForPushApplication(pushApp, DocumentMetadata.getAlias(alias), entity,
 					DocumentMetadata.getQualifier(qualifier), id, overwrite);
 			return Response.ok(EmptyJSON.STRING).build();
 		} catch (Exception e) {
@@ -151,8 +151,10 @@ public class DocumentEndpoint extends AbstractEndpoint {
 		}
 
 		try {
-			String document = documentService.getLatestDocumentForAlias(variant, DocumentMetadata.getPublisher(publisher), alias, DocumentMetadata.getQualifier(qualifier));
-			return Response.ok(StringUtils.isEmpty(document) ? EmptyJSON.STRING: document).build();
+			String document = documentService.getLatestDocumentForAlias(variant,
+					DocumentMetadata.getPublisher(publisher), DocumentMetadata.getAlias(alias),
+					DocumentMetadata.getQualifier(qualifier));
+			return Response.ok(StringUtils.isEmpty(document) ? EmptyJSON.STRING : document).build();
 		} catch (Exception e) {
 			logger.severe("Cannot retrieve files for alias", e);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
@@ -177,8 +179,10 @@ public class DocumentEndpoint extends AbstractEndpoint {
 		}
 
 		try {
-			String document = documentService.getLatestDocumentForAlias(variant, DocumentMetadata.getPublisher(publisher), alias, DocumentMetadata.getQualifier(qualifier));
-			return Response.ok(StringUtils.isEmpty(document) ? EmptyJSON.STRING: document).build();
+			String document = documentService.getLatestDocumentForAlias(variant,
+					DocumentMetadata.getPublisher(publisher), DocumentMetadata.getAlias(alias),
+					DocumentMetadata.getQualifier(qualifier));
+			return Response.ok(StringUtils.isEmpty(document) ? EmptyJSON.STRING : document).build();
 		} catch (Exception e) {
 			logger.severe("Cannot retrieve files for alias", e);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).build();

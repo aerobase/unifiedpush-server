@@ -75,7 +75,7 @@ public class DocumentEndpointTest extends RestEndpointTest {
 
 			// Store document @Path("/{publisher}/{alias}/{qualifier}{id}")
 			target = client.target(deploymentUrl.toString() + RESOURCE_PREFIX + "/document/INSTALLATION/"
-					+ newInstallation.getAlias() + "/STATUS");
+					+ newInstallation.getAlias().toUpperCase() + "/STATUS");
 
 			// Documents registration is async, lets wait a while
 			Thread.sleep(500);
@@ -93,7 +93,7 @@ public class DocumentEndpointTest extends RestEndpointTest {
 
 			// get document @Path("/{publisher}/{alias}/{qualifier}/latest")
 			target = client.target(deploymentUrl.toString() + RESOURCE_PREFIX + "/document/INSTALLATION/"
-					+ newInstallation.getAlias() + "/STATUS/json/latest");
+					+ newInstallation.getAlias().toLowerCase() + "/STATUS/json/latest");
 
 			response = target.request().header(ClientAuthHelper.DEVICE_TOKEN_HEADER,
 					HttpBasicHelper.encodeBase64(newInstallation.getDeviceToken())).get();
