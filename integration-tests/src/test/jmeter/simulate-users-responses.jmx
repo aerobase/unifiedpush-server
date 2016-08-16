@@ -9,22 +9,22 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="ANDROID_USERNAME" elementType="Argument">
             <stringProp name="Argument.name">ANDROID_USERNAME</stringProp>
-            <stringProp name="Argument.value">${__P(ANDROID_USERNAME,ccda7585-75b4-4dec-89aa-852329d51217)}</stringProp>
+            <stringProp name="Argument.value">${__P(ANDROID_USERNAME,b038a7f8-cd62-4d98-8392-f6f9aa0736d9)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="ANDROID_PASSWORD" elementType="Argument">
             <stringProp name="Argument.name">ANDROID_PASSWORD</stringProp>
-            <stringProp name="Argument.value">${__P(ANDROID_PASSWORD,4723be9e-2130-4f37-b6f6-4cebea3c84b3)}</stringProp>
+            <stringProp name="Argument.value">${__P(ANDROID_PASSWORD,c5fced40-2a20-462c-ba29-4133f6d7a0ac)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="IOS_USERNAME" elementType="Argument">
             <stringProp name="Argument.name">IOS_USERNAME</stringProp>
-            <stringProp name="Argument.value">${__P(IOS_USERNAME,73c9ea3b-bb8b-48ce-8e2a-45d93adfdcd8)}</stringProp>
+            <stringProp name="Argument.value">${__P(IOS_USERNAME,e7e1e0e7-6a4d-4646-83ed-3ab05f216ae6)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="IOS_PASSWORD" elementType="Argument">
             <stringProp name="Argument.name">IOS_PASSWORD</stringProp>
-            <stringProp name="Argument.value">${__P(IOS_PASSWORD,971107c9-c20d-47d4-b81a-5ab4654ceae0)}</stringProp>
+            <stringProp name="Argument.value">${__P(IOS_PASSWORD,d19fb2b7-9bbc-4f32-9063-b00a90142803)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="SERVER_PROTOCOL" elementType="Argument">
@@ -57,19 +57,9 @@
             <stringProp name="Argument.value">${__P(LOOP_COUNT,100)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="USERS_CSV" elementType="Argument">
-            <stringProp name="Argument.name">USERS_CSV</stringProp>
-            <stringProp name="Argument.value">${__P(USERS_CSV,users.csv)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
           <elementProp name="TASKS_RESPONSE_RATIO" elementType="Argument">
             <stringProp name="Argument.name">TASKS_RESPONSE_RATIO</stringProp>
             <stringProp name="Argument.value">${__P(TASKS_RESPONSE_RATIO,1)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="REASONS_MODULO" elementType="Argument">
-            <stringProp name="Argument.name">REASONS_MODULO</stringProp>
-            <stringProp name="Argument.value">${__P(REASONS_MODULO,5)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -123,8 +113,6 @@ String outDir = System.getProperty(&quot;java.io.tmpdir&quot;);
 for(int threadCounter = 0; threadCounter&lt;numOfThreads ; threadCounter++ ) {
  	FileServer.getFileServer().reserveFile(outDir + &quot;/&quot; + THREAD_FILE_PREFIX + threadCounter); 	
 }
-
-
 </stringProp>
             <stringProp name="BeanShellSampler.filename"></stringProp>
             <stringProp name="BeanShellSampler.parameters"></stringProp>
@@ -258,7 +246,8 @@ if  (line != null) {
               <stringProp name="parameters"></stringProp>
               <stringProp name="filename"></stringProp>
               <stringProp name="cacheKey">7f98f172-b1b8-4b67-8060-ee83f07dc743</stringProp>
-              <stringProp name="script">log.info(&quot;caching reasons&quot;);
+              <stringProp name="script">
+log.info(&quot;caching reasons&quot;);
 def slurper = new groovy.json.JsonSlurper();
 String reasonsJsonString = prev.getResponseDataAsString();
 
@@ -350,7 +339,7 @@ vars.put(&quot;TASKS_JSON_STRING&quot;,tasksJsonString);
 def obj = slurper.parseText(tasksJsonString);
 if(obj.tasks == null){
 	log.info(vars.get(&quot;ALIAS&quot;) + &quot; did not get any actions&quot;);
-	//ctx.setRestartNextLoop(true);
+	// TODO: need to make it go to next loop some how.. i coudn&apos;t find out how to do this yet so it currently throws exceptions when calling the next line
 	}
 def numOfTasks = obj.tasks.size();
 log.info(&quot;deploy id = &quot;+obj.deployId);
@@ -393,7 +382,7 @@ log.info(&quot;numberOfResponses.toString(): &quot;+numberOfResponses.toString()
             <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
           </HTTPSamplerProxy>
           <hashTree>
-            <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="JSR223 PreProcessor" enabled="true">
+            <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="JSR223 PreProcessor - prepare json reasons to send" enabled="true">
               <stringProp name="cacheKey"></stringProp>
               <stringProp name="filename"></stringProp>
               <stringProp name="parameters"></stringProp>
@@ -414,7 +403,7 @@ def doneReasonsJsonObj = slurper.parseText(doneReasonsJsonSring)
 def notDoneReasonsJsonObj = slurper.parseText(notDoneReasonsJsonSring)
 def tasksJsonObj = slurper.parseText(tasksJsonSring)
 
-def deployId = vars[&quot;DEPLOY_ID&quot;]
+long deployId = Long.valueOf(vars[&quot;DEPLOY_ID&quot;])
 def alias = vars[&quot;ALIAS&quot;]
 long currentDate = System.currentTimeMillis()
 String stateStatus
