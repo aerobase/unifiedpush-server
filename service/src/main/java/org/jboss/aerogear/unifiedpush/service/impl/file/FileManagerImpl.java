@@ -38,6 +38,17 @@ public class FileManagerImpl implements FileManager {
 		}
 	}
 
+	@Override
+	public void delete(Path path) {
+		File directory = path.getParent().toFile();
+		if (directory.exists()) {
+			boolean deleted = directory.delete();
+			if (!deleted) {
+				throw new RuntimeException("could not delete directory " + directory.getAbsolutePath());
+			}
+		}
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -51,7 +62,8 @@ public class FileManagerImpl implements FileManager {
 	}
 
 	/**
-	 * Throw Checked exception to prevent transaction rollback when used from service layer.
+	 * Throw Checked exception to prevent transaction rollback when used from
+	 * service layer.
 	 */
 	@Override
 	public List<File> list(Path path, FileFilter filter) throws FileNotFoundException {

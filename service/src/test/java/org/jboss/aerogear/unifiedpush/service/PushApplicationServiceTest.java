@@ -112,7 +112,7 @@ public class PushApplicationServiceTest extends AbstractBaseServiceTest {
         pa.setDeveloper("admin");
 
         pushApplicationService.addPushApplication(pa);
-        
+
         assertThat(searchApplicationService.findAllPushApplicationsForDeveloper(0, 10).getResultList()).isNotEmpty();
         assertThat(searchApplicationService.findAllPushApplicationsForDeveloper(0, 10).getResultList()).hasSize(2);
 
@@ -125,6 +125,24 @@ public class PushApplicationServiceTest extends AbstractBaseServiceTest {
     @Test
     @Transactional(TransactionMode.ROLLBACK)
     public void findByPushApplicationIDForDeveloper() {
+        PushApplication pa = new PushApplication();
+        pa.setName("EJB Container");
+        final String uuid = UUID.randomUUID().toString();
+        pa.setPushApplicationID(uuid);
+        pa.setDeveloper("admin");
+
+        pushApplicationService.addPushApplication(pa);
+
+        PushApplication queried =  searchApplicationService.findByPushApplicationIDForDeveloper(uuid);
+        assertThat(queried).isNotNull();
+        assertThat(uuid).isEqualTo(queried.getPushApplicationID());
+
+        assertThat(searchApplicationService.findByPushApplicationIDForDeveloper("123-3421")).isNull();
+    }
+
+    @Test
+    @Transactional(TransactionMode.ROLLBACK)
+    public void deleteApplication() {
         PushApplication pa = new PushApplication();
         pa.setName("EJB Container");
         final String uuid = UUID.randomUUID().toString();

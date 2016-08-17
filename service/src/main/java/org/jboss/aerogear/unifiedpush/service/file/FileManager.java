@@ -19,6 +19,11 @@ public interface FileManager {
 	void save(Path path, byte[] data);
 	
 	/**
+	 * @param path Path to delete
+	 */
+	public void delete(Path path);
+
+	/**
 	 * Returns a byte array of the contents in the file denoted in the path. 
 	 * @param path path of file
 	 * @return file bytes
@@ -30,6 +35,8 @@ public interface FileManager {
 	 * @param path directory path
 	 * @param filter predicate for files
 	 * @return list of files 
+	 *
+	 * @throws FileNotFoundException
 	 */
 	List<File> list(Path path, FileFilter filter) throws FileNotFoundException;
 }

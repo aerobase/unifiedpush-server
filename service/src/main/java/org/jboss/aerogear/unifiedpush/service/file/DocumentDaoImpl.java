@@ -23,6 +23,7 @@ import javax.inject.Inject;
 import org.jboss.aerogear.unifiedpush.api.DocumentMessage;
 import org.jboss.aerogear.unifiedpush.api.DocumentMetadata;
 import org.jboss.aerogear.unifiedpush.api.DocumentMetadata.DocumentType;
+import org.jboss.aerogear.unifiedpush.api.PushApplication;
 import org.jboss.aerogear.unifiedpush.dao.DocumentDao;
 import org.jboss.aerogear.unifiedpush.service.Configuration;
 
@@ -44,6 +45,12 @@ public class DocumentDaoImpl implements DocumentDao {
 		Path directoryPath = getDocumentPath(message.getMetadata());
 		fileManager.save(Paths.get(directoryPath.toString(), getDocumentFileName(message.getMetadata(), overwrite)),
 				message.getContent().getBytes(StandardCharsets.UTF_8));
+	}
+
+	@Override
+	public void delete(PushApplication app) {
+		Path applicationPath = getFullDirectoryPath(Paths.get(app.getPushApplicationID()));
+		fileManager.delete(applicationPath);
 	}
 
 	@Override
