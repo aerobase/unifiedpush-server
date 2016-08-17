@@ -9,22 +9,22 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="ANDROID_USERNAME" elementType="Argument">
             <stringProp name="Argument.name">ANDROID_USERNAME</stringProp>
-            <stringProp name="Argument.value">${__P(ANDROID_USERNAME,b038a7f8-cd62-4d98-8392-f6f9aa0736d9)}</stringProp>
+            <stringProp name="Argument.value">${__P(ANDROID_USERNAME,bf501d1e-79f3-4597-aaa9-385494b4388a)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="ANDROID_PASSWORD" elementType="Argument">
             <stringProp name="Argument.name">ANDROID_PASSWORD</stringProp>
-            <stringProp name="Argument.value">${__P(ANDROID_PASSWORD,c5fced40-2a20-462c-ba29-4133f6d7a0ac)}</stringProp>
+            <stringProp name="Argument.value">${__P(ANDROID_PASSWORD,6f07c127-1031-4d84-ae2e-0aac972b76aa)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="IOS_USERNAME" elementType="Argument">
             <stringProp name="Argument.name">IOS_USERNAME</stringProp>
-            <stringProp name="Argument.value">${__P(IOS_USERNAME,e7e1e0e7-6a4d-4646-83ed-3ab05f216ae6)}</stringProp>
+            <stringProp name="Argument.value">${__P(IOS_USERNAME,1dc89010-a674-46e6-bcd9-e080b678fb16)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="IOS_PASSWORD" elementType="Argument">
             <stringProp name="Argument.name">IOS_PASSWORD</stringProp>
-            <stringProp name="Argument.value">${__P(IOS_PASSWORD,d19fb2b7-9bbc-4f32-9063-b00a90142803)}</stringProp>
+            <stringProp name="Argument.value">${__P(IOS_PASSWORD,9024c0a0-c33c-45e4-a935-63ec7a04fb09)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="SERVER_PROTOCOL" elementType="Argument">
@@ -54,12 +54,17 @@
           </elementProp>
           <elementProp name="LOOP_COUNT" elementType="Argument">
             <stringProp name="Argument.name">LOOP_COUNT</stringProp>
-            <stringProp name="Argument.value">${__P(LOOP_COUNT,100)}</stringProp>
+            <stringProp name="Argument.value">${__P(LOOP_COUNT,5)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="TASKS_RESPONSE_RATIO" elementType="Argument">
             <stringProp name="Argument.name">TASKS_RESPONSE_RATIO</stringProp>
             <stringProp name="Argument.value">${__P(TASKS_RESPONSE_RATIO,1)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="OUTPUT_DIRECTORY" elementType="Argument">
+            <stringProp name="Argument.name">OUTPUT_DIRECTORY</stringProp>
+            <stringProp name="Argument.value">${__P(OUTPUT_DIRECTORY,mobile_jmeter)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -106,12 +111,17 @@ import java.util.*;
 final static String THREAD_FILE_PREFIX = &quot;THREAD_&quot;;
 String baseDir = FileServer.getFileServer().getBaseDir();
 int numOfThreads = Integer.parseInt(vars.get(&quot;NUMBER_OF_THREADS&quot;));
-String outDir = System.getProperty(&quot;java.io.tmpdir&quot;);
-	
+
+
+String tmpDir = System.getProperty(&quot;java.io.tmpdir&quot;);
+String outputDirectory = tmpDir  ;
+props.put(&quot;OUTPUT_DIR&quot;,outputDirectory);
+
 // Open file writers array according to number of threads
 // All files are stored under OS temp dir.
 for(int threadCounter = 0; threadCounter&lt;numOfThreads ; threadCounter++ ) {
- 	FileServer.getFileServer().reserveFile(outDir + &quot;/&quot; + THREAD_FILE_PREFIX + threadCounter); 	
+	log.info(&quot;-----open file &quot; +outputDirectory + &quot;/&quot; + THREAD_FILE_PREFIX + threadCounter + &quot;-----&quot;);
+ 	FileServer.getFileServer().reserveFile(outputDirectory + &quot;/&quot; + THREAD_FILE_PREFIX + threadCounter);	
 }
 </stringProp>
             <stringProp name="BeanShellSampler.filename"></stringProp>
@@ -122,7 +132,7 @@ for(int threadCounter = 0; threadCounter&lt;numOfThreads ; threadCounter++ ) {
         </hashTree>
       </hashTree>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group" enabled="true">
-        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <stringProp name="ThreadGroup.on_sample_error">startnextloop</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">${LOOP_COUNT}</stringProp>
@@ -168,7 +178,17 @@ if  (line != null) {
             <stringProp name="BeanShellSampler.parameters"></stringProp>
             <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
           </BeanShellSampler>
-          <hashTree/>
+          <hashTree>
+            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response code 200 Assertion" enabled="true">
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="49586">200</stringProp>
+              </collectionProp>
+              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+              <boolProp name="Assertion.assume_success">false</boolProp>
+              <intProp name="Assertion.test_type">16</intProp>
+            </ResponseAssertion>
+            <hashTree/>
+          </hashTree>
           <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="HTTP Request Defaults" enabled="true">
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
               <collectionProp name="Arguments.arguments"/>
@@ -268,6 +288,15 @@ vars.put(&quot;NOT_DONE_REASONS_JSON_STRING&quot;,jsonStr);
 log.info(&quot;done caching reasons&quot;);</stringProp>
             </JSR223PostProcessor>
             <hashTree/>
+            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response code 200 Assertion" enabled="true">
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="49586">200</stringProp>
+              </collectionProp>
+              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+              <boolProp name="Assertion.assume_success">false</boolProp>
+              <intProp name="Assertion.test_type">16</intProp>
+            </ResponseAssertion>
+            <hashTree/>
           </hashTree>
           <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request - Get actions-list" enabled="true">
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
@@ -353,6 +382,15 @@ log.info(&quot;tasks: &quot; + tasksJsonString);
 vars.put(&quot;NUM_OF_RESPONCES_TO_LOOP&quot;,numberOfResponses.toString());
 log.info(&quot;numberOfResponses.toString(): &quot;+numberOfResponses.toString());</stringProp>
             </JSR223PostProcessor>
+            <hashTree/>
+            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response code 200 Assertion" enabled="true">
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="49586">200</stringProp>
+              </collectionProp>
+              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+              <boolProp name="Assertion.assume_success">false</boolProp>
+              <intProp name="Assertion.test_type">16</intProp>
+            </ResponseAssertion>
             <hashTree/>
           </hashTree>
           <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request - responses of a user to the actions" enabled="true">
@@ -445,10 +483,12 @@ for( int i=0 ; i &lt; numOfTasksToReponse ; i++) {
     deployInfo.actions[taskId] = stateList
 
 }
-log.info(JsonOutput.toJson(deployInfo))
+String responsesJson = JsonOutput.toJson(deployInfo)
+log.info(responsesJson)
 log.info(&quot;-----------&quot;)
-vars.put(&apos;HTTP_REASONS_BODY&apos;, JsonOutput.toJson(deployInfo));
-//${__setProperty(HTTP_REASONS_BODY,JsonOutput.toJson(deployInfo))}</stringProp>
+vars.put(&apos;HTTP_REASONS_BODY&apos;, responsesJson)
+String jsonOutFile = props.get(&quot;OUTPUT_DIR&quot;) + &quot;/&quot; + deployId + &quot;_&quot; + alias + &quot;_&quot; + &quot;responses.json&quot;
+vars.put(&quot;jsonOutFile&quot;,jsonOutFile)</stringProp>
               <stringProp name="scriptLanguage">groovy</stringProp>
             </JSR223PreProcessor>
             <hashTree/>
@@ -488,6 +528,27 @@ vars.put(&apos;HTTP_REASONS_BODY&apos;, JsonOutput.toJson(deployInfo));
                 </elementProp>
               </collectionProp>
             </HeaderManager>
+            <hashTree/>
+            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response code 200 Assertion" enabled="true">
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="49586">200</stringProp>
+              </collectionProp>
+              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+              <boolProp name="Assertion.assume_success">false</boolProp>
+              <intProp name="Assertion.test_type">16</intProp>
+            </ResponseAssertion>
+            <hashTree/>
+            <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="BeanShell PostProcessor -- write responses json file" enabled="true">
+              <stringProp name="filename"></stringProp>
+              <stringProp name="parameters"></stringProp>
+              <boolProp name="resetInterpreter">false</boolProp>
+              <stringProp name="script">import org.apache.jmeter.services.FileServer;
+String outFile = vars.get(&quot;jsonOutFile&quot;);
+log.info(&quot;-----writing responses json file: &quot;+outFile+&quot;------&quot;);
+FileServer.getFileServer().reserveFile(outFile);	
+FileServer.getFileServer().write(outFile, vars.get(&quot;HTTP_REASONS_BODY&quot;));
+FileServer.getFileServer().closeFile(outFile);</stringProp>
+            </BeanShellPostProcessor>
             <hashTree/>
           </hashTree>
         </hashTree>
