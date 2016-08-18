@@ -11,6 +11,7 @@ import java.util.List;
 
 import javax.ejb.Stateless;
 
+import org.apache.commons.io.FileUtils;
 import org.jboss.aerogear.unifiedpush.service.file.FileManager;
 
 /**
@@ -18,7 +19,6 @@ import org.jboss.aerogear.unifiedpush.service.file.FileManager;
  */
 @Stateless
 public class FileManagerImpl implements FileManager {
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -40,11 +40,12 @@ public class FileManagerImpl implements FileManager {
 
 	@Override
 	public void delete(Path path) {
-		File directory = path.getParent().toFile();
+		File directory = path.toFile();
 		if (directory.exists()) {
-			boolean deleted = directory.delete();
-			if (!deleted) {
-				throw new RuntimeException("could not delete directory " + directory.getAbsolutePath());
+			try {
+				FileUtils.forceDelete(directory);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
 			}
 		}
 	}

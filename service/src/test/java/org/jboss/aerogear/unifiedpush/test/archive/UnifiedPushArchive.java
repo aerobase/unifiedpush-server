@@ -46,7 +46,9 @@ public abstract class UnifiedPushArchive <T extends Archive<T>> extends WebConta
     public abstract T withAssertj();
     
     public abstract T withLang();
-    
+
+    public abstract T withIo();
+
     public abstract T withHttpclient();
 
     public abstract T withServices();
