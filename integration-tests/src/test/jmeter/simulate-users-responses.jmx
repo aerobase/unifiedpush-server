@@ -62,9 +62,9 @@
             <stringProp name="Argument.value">${__P(TASKS_RESPONSE_RATIO,1)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="OUTPUT_DIRECTORY" elementType="Argument">
-            <stringProp name="Argument.name">OUTPUT_DIRECTORY</stringProp>
-            <stringProp name="Argument.value">${__P(OUTPUT_DIRECTORY,mobile_jmeter)}</stringProp>
+          <elementProp name="OUTPUT_SUB_FOLDER" elementType="Argument">
+            <stringProp name="Argument.name">OUTPUT_SUB_FOLDER</stringProp>
+            <stringProp name="Argument.value">${__P(OUTPUT_SUB_FOLDER,mobile_jmeter)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -114,14 +114,12 @@ int numOfThreads = Integer.parseInt(vars.get(&quot;NUMBER_OF_THREADS&quot;));
 
 
 String tmpDir = System.getProperty(&quot;java.io.tmpdir&quot;);
-String outputDirectory = tmpDir  ;
-props.put(&quot;OUTPUT_DIR&quot;,outputDirectory);
 
 // Open file writers array according to number of threads
 // All files are stored under OS temp dir.
 for(int threadCounter = 0; threadCounter&lt;numOfThreads ; threadCounter++ ) {
-	log.info(&quot;-----open file &quot; +outputDirectory + &quot;/&quot; + THREAD_FILE_PREFIX + threadCounter + &quot;-----&quot;);
- 	FileServer.getFileServer().reserveFile(outputDirectory + &quot;/&quot; + THREAD_FILE_PREFIX + threadCounter);	
+	log.info(&quot;-----open file &quot; + tmpDir + &quot;/&quot; + THREAD_FILE_PREFIX + threadCounter + &quot;-----&quot;);
+ 	FileServer.getFileServer().reserveFile(tmpDir + &quot;/&quot; + THREAD_FILE_PREFIX + threadCounter);	
 }
 </stringProp>
             <stringProp name="BeanShellSampler.filename"></stringProp>
@@ -487,7 +485,7 @@ String responsesJson = JsonOutput.toJson(deployInfo)
 log.info(responsesJson)
 log.info(&quot;-----------&quot;)
 vars.put(&apos;HTTP_REASONS_BODY&apos;, responsesJson)
-String jsonOutFile = props.get(&quot;OUTPUT_DIR&quot;) + &quot;/&quot; + deployId + &quot;_&quot; + alias + &quot;_&quot; + &quot;responses.json&quot;
+String jsonOutFile = props.get(&quot;OUTPUT_SUB_FOLDER&quot;) + &quot;/&quot; + deployId + &quot;_&quot; + alias + &quot;_&quot; + &quot;responses.json&quot;
 vars.put(&quot;jsonOutFile&quot;,jsonOutFile)</stringProp>
               <stringProp name="scriptLanguage">groovy</stringProp>
             </JSR223PreProcessor>
