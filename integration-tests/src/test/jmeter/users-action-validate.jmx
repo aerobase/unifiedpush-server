@@ -346,7 +346,7 @@ log.info(&quot;writing to file:&quot;+fileName);
 
 
 File file = new File(fileName);
-file.getParentFile().mkdirs()
+file.getParentFile().mkdirs();
 // the file should not exists, so create it
 log.info(&quot;writing to file:&quot;+file.getAbsoluteFile().toString());
 try {
