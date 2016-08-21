@@ -3,28 +3,28 @@
   <hashTree>
     <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="export-mobile-users-actions" enabled="true">
       <stringProp name="TestPlan.comments"></stringProp>
-      <boolProp name="TestPlan.functional_mode">true</boolProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
       <boolProp name="TestPlan.serialize_threadgroups">true</boolProp>
       <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
         <collectionProp name="Arguments.arguments">
           <elementProp name="ANDROID_USERNAME" elementType="Argument">
             <stringProp name="Argument.name">ANDROID_USERNAME</stringProp>
-            <stringProp name="Argument.value">${__P(ANDROID_USERNAME,908bfdf7-421c-4b28-8a43-4d397aa8d7b8)}</stringProp>
+            <stringProp name="Argument.value">${__P(ANDROID_USERNAME,0d42d689-d3ac-452b-a2b0-13fe6f49b983)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="ANDROID_PASSWORD" elementType="Argument">
             <stringProp name="Argument.name">ANDROID_PASSWORD</stringProp>
-            <stringProp name="Argument.value">${__P(ANDROID_PASSWORD,869fee45-1d4a-40d2-b4cc-8716a2aefbfd)}</stringProp>
+            <stringProp name="Argument.value">${__P(ANDROID_PASSWORD,3ee43a4f-8744-44be-b85d-7776c30cea16)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="IOS_USERNAME" elementType="Argument">
             <stringProp name="Argument.name">IOS_USERNAME</stringProp>
-            <stringProp name="Argument.value">${__P(IOS_USERNAME,3006802c-40e5-4d5f-9992-82a83b7caf29)}</stringProp>
+            <stringProp name="Argument.value">${__P(IOS_USERNAME,9f5d67aa-27bc-4bbf-b481-665ac9fc044d)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="IOS_PASSWORD" elementType="Argument">
             <stringProp name="Argument.name">IOS_PASSWORD</stringProp>
-            <stringProp name="Argument.value">${__P(IOS_PASSWORD,88fb72a8-d724-491a-88ff-0156ae817b25)}</stringProp>
+            <stringProp name="Argument.value">${__P(IOS_PASSWORD,527786ba-b1a9-47f8-89c0-12a430e45083)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="SERVER_PROTOCOL" elementType="Argument">
@@ -64,13 +64,12 @@
           </elementProp>
           <elementProp name="OUTPUT_FOLDER" elementType="Argument">
             <stringProp name="Argument.name">OUTPUT_FOLDER</stringProp>
-            <stringProp name="Argument.value">${__P(OUTPUT_FOLDER,/tmp/automation/cb4/Load_from_directory)}</stringProp>
+            <stringProp name="Argument.value">${__P(OUTPUT_FOLDER,/tmp/automation/cb4/Getting_all_actions/)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
       </elementProp>
       <stringProp name="TestPlan.user_define_classpath"></stringProp>
-      <boolProp name="TestPlan.tearDown_on_shutdown">true</boolProp>
     </TestPlan>
     <hashTree>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group" enabled="true">
@@ -167,13 +166,14 @@ if  (line != null) {
 	log.info(&quot;--------------Alias: &quot;+vars.get(&quot;ALIAS&quot;));
 	log.info(&quot;--------------IOS_TOKENID: &quot;+vars.get(&quot;IOS_TOKENID&quot;));
 	log.info(&quot;--------------AND_TOKENID: &quot;+vars.get(&quot;AND_TOKENID&quot;));
-	
+	log.info(&quot;AND_TOKENID:&quot;+vars.get(&quot;AND_TOKENID&quot;));	
 	byte[] androidTokenBase64 = Base64.encodeBase64(vars.get(&quot;AND_TOKENID&quot;).getBytes());
-	vars.put(&quot;androidTokenBase64&quot;, new String(androidTokenBase64));
-
+	log.info(&quot;androidTokenBase64:&quot;+androidTokenBase64);
+//	vars.put(&quot;androidTokenBase64&quot;, new String(androidTokenBase64));
+//		vars.put(&quot;androidTokenBase64&quot;, androidTokenBase64.toString());
+	log.info(&quot;androidTokenBase64 in vars:&quot;+vars.get(&quot;androidTokenBase64&quot;));
+	props.put(&quot;androidTokenBase64&quot;, new String(androidTokenBase64));
 	
-}else{
-	vars.put(&quot;ALIAS&quot;, &quot;----------&quot;);
 }
 
 log.info(&quot;--------------Alias: &quot;+vars.get(&quot;ALIAS&quot;));</stringProp>
@@ -264,8 +264,15 @@ vars.put(&quot;reasonsJsonString&quot;,reasonsJsonString);</stringProp>
             <hashTree/>
           </hashTree>
           <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request - Get actions-list" enabled="true">
-            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-              <collectionProp name="Arguments.arguments"/>
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                  <stringProp name="Argument.value"></stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
             </elementProp>
             <stringProp name="HTTPSampler.domain"></stringProp>
             <stringProp name="HTTPSampler.port"></stringProp>
@@ -344,7 +351,7 @@ String tasksJsonString = prev.getResponseDataAsString();
 log.info(&quot;GOT:&quot;+tasksJsonString);
 log.info(&quot;writing to file:&quot;+fileName);
 
-
+log.info(&quot;androidTokenBase64 in vars:&quot;+vars.get(&quot;androidTokenBase64&quot;));
 File file = new File(fileName);
 file.getParentFile().mkdirs();
 // the file should not exists, so create it
