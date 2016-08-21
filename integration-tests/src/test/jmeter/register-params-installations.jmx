@@ -9,22 +9,22 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="ANDROID_USERNAME" elementType="Argument">
             <stringProp name="Argument.name">ANDROID_USERNAME</stringProp>
-            <stringProp name="Argument.value">${__P(ANDROID_USERNAME,1ca74ed6-24bc-47c7-910f-d64fd1815df9)}</stringProp>
+            <stringProp name="Argument.value">${__P(ANDROID_USERNAME,a066762b-32f5)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="ANDROID_PASSWORD" elementType="Argument">
             <stringProp name="Argument.name">ANDROID_PASSWORD</stringProp>
-            <stringProp name="Argument.value">${__P(ANDROID_PASSWORD,471d3f5d-2370-4a79-8779-2eb58f053fc2)}</stringProp>
+            <stringProp name="Argument.value">${__P(ANDROID_PASSWORD,60b2be60)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="IOS_USERNAME" elementType="Argument">
             <stringProp name="Argument.name">IOS_USERNAME</stringProp>
-            <stringProp name="Argument.value">${__P(IOS_USERNAME,27c0402f-8db3-43b1-8218-c3ad2036a2dd)}</stringProp>
+            <stringProp name="Argument.value">${__P(IOS_USERNAME,39d0daf1)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="IOS_PASSWORD" elementType="Argument">
             <stringProp name="Argument.name">IOS_PASSWORD</stringProp>
-            <stringProp name="Argument.value">${__P(IOS_PASSWORD,d59e0e73-24bf-4bbf-af61-b349790d3b97)}</stringProp>
+            <stringProp name="Argument.value">${__P(IOS_PASSWORD,c5395a65)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="SERVER_PROTOCOL" elementType="Argument">
@@ -34,7 +34,7 @@
           </elementProp>
           <elementProp name="SERVER_HOST" elementType="Argument">
             <stringProp name="Argument.name">SERVER_HOST</stringProp>
-            <stringProp name="Argument.value">${__P(SERVER_HOST,demo2.c-b4.com)}</stringProp>
+            <stringProp name="Argument.value">${__P(SERVER_HOST,staging-mcs.c-b4.com)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="SERVER_PORT" elementType="Argument">
@@ -239,7 +239,7 @@ import java.util.*;
 String THREAD_FILE_PREFIX = &quot;THREAD_&quot;;
 String baseDir = FileServer.getFileServer().getBaseDir();
 int threamNum = ctx.getThreadNum();
-String fileName = System.getProperty(&quot;java.io.tmpdir&quot;) + &quot;/&quot; + THREAD_FILE_PREFIX + threamNum;
+String fileName = vars.get(&quot;OUTPUT_SUB_FOLDER&quot;) + &quot;/&quot; + THREAD_FILE_PREFIX + threamNum;
 
 int lineCounter = 0; 
 String line = FileServer.getFileServer().readLine(fileName, false, false);

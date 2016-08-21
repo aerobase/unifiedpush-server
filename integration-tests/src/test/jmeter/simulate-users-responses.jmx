@@ -112,14 +112,13 @@ final static String THREAD_FILE_PREFIX = &quot;THREAD_&quot;;
 String baseDir = FileServer.getFileServer().getBaseDir();
 int numOfThreads = Integer.parseInt(vars.get(&quot;NUMBER_OF_THREADS&quot;));
 
-
-String tmpDir = System.getProperty(&quot;java.io.tmpdir&quot;);
+String outputDir = vars.get(&quot;OUTPUT_SUB_FOLDER&quot;);
 
 // Open file writers array according to number of threads
 // All files are stored under OS temp dir.
 for(int threadCounter = 0; threadCounter&lt;numOfThreads ; threadCounter++ ) {
-	log.info(&quot;-----open file &quot; + tmpDir + &quot;/&quot; + THREAD_FILE_PREFIX + threadCounter + &quot;-----&quot;);
- 	FileServer.getFileServer().reserveFile(tmpDir + &quot;/&quot; + THREAD_FILE_PREFIX + threadCounter);	
+	log.info(&quot;-----open file &quot; + outputDir + &quot;/&quot; + THREAD_FILE_PREFIX + threadCounter + &quot;-----&quot;);
+ 	FileServer.getFileServer().reserveFile(outputDir + &quot;/&quot; + THREAD_FILE_PREFIX + threadCounter);	
 }
 </stringProp>
             <stringProp name="BeanShellSampler.filename"></stringProp>
@@ -155,7 +154,7 @@ import java.util.*;
 String THREAD_FILE_PREFIX = &quot;THREAD_&quot;;
 String baseDir = FileServer.getFileServer().getBaseDir();
 int threamNum = ctx.getThreadNum();
-String fileName = System.getProperty(&quot;java.io.tmpdir&quot;) + &quot;/&quot; + THREAD_FILE_PREFIX + threamNum;
+String fileName = vars.get(&quot;OUTPUT_SUB_FOLDER&quot;) + &quot;/&quot; + THREAD_FILE_PREFIX + threamNum;
 int lineCounter = 0; 
 String line = FileServer.getFileServer().readLine(fileName, false, false);
 log.info(&quot;--------------Reading CSV--------------&quot;);
@@ -611,7 +610,7 @@ import java.util.*;
 final static String THREAD_FILE_PREFIX = &quot;THREAD_&quot;;
 String baseDir = FileServer.getFileServer().getBaseDir();
 int numOfThreads = Integer.parseInt(vars.get(&quot;NUMBER_OF_THREADS&quot;));
-String outDir = System.getProperty(&quot;java.io.tmpdir&quot;);
+String outDir = vars.get(&quot;OUTPUT_SUB_FOLDER&quot;);
 	
 // Open file writers array according to number of threads
 // All files are stored under OS temp dir.
