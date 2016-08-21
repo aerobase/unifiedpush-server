@@ -336,19 +336,28 @@ String THREAD_FILE_PREFIX = &quot;THREAD_&quot;;
 String baseDir = FileServer.getFileServer().getBaseDir();
 int threamNum = ctx.getThreadNum();
 
+//String fileName = &quot;file://&quot;+vars.get(&quot;OUTPUT_FOLDER&quot;) + &quot;/&quot;+vars.get(&quot;ALIAS&quot;) + &quot;.json&quot;;
 String fileName = vars.get(&quot;OUTPUT_FOLDER&quot;) + &quot;/&quot;+vars.get(&quot;ALIAS&quot;) + &quot;.json&quot;;
-log.info(&quot;start to extract hson&quot;);
+
+log.info(&quot;start to extract json&quot;);
 String tasksJsonString = prev.getResponseDataAsString();
-//log.info(&quot;GOT:&quot;+tasksJsonString);
+log.info(&quot;GOT:&quot;+tasksJsonString);
 log.info(&quot;writing to file:&quot;+fileName);
 
+
 File file = new File(fileName);
-
+file.getParentFile().mkdirs()
 // the file should not exists, so create it
-file.createNewFile();
+log.info(&quot;writing to file:&quot;+file.getAbsoluteFile().toString());
+try {
+    if(!file.createNewFile()) {
+        log.info(&quot;File already exists&quot;);
+    } 
+} catch (IOException ex) {
+    log.info(ex);
+}
 
-
-FileWriter fstream = new FileWriter(fileName,false);
+FileWriter fstream = new FileWriter(file,false);
 BufferedWriter out = new BufferedWriter(fstream);
 out.write(tasksJsonString+&quot;\n&quot;);
 out.close();
@@ -381,7 +390,7 @@ log.info(&quot;Done writing to file:&quot;+fileName);
               <boolProp name="CounterConfig.per_user">true</boolProp>
             </CounterConfig>
             <hashTree/>
-            <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="JSR223 PreProcessor" enabled="true">
+            <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="JSR223 PreProcessor" enabled="false">
               <stringProp name="cacheKey"></stringProp>
               <stringProp name="filename"></stringProp>
               <stringProp name="parameters"></stringProp>
