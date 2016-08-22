@@ -67,6 +67,11 @@
             <stringProp name="Argument.value">${__P(OUTPUT_FOLDER,/tmp/automation/cb4/Getting_all_actions/)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+          <elementProp name="OUTPUT_SUB_FOLDER" elementType="Argument">
+            <stringProp name="Argument.name">OUTPUT_SUB_FOLDER</stringProp>
+            <stringProp name="Argument.value">${__P(OUTPUT_SUB_FOLDER,/tmp/automation/cb4/Getting_all_actions/actions)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
         </collectionProp>
       </elementProp>
       <stringProp name="TestPlan.user_define_classpath"></stringProp>
@@ -169,14 +174,12 @@ if  (line != null) {
 	log.info(&quot;AND_TOKENID:&quot;+vars.get(&quot;AND_TOKENID&quot;));	
 	byte[] androidTokenBase64 = Base64.encodeBase64(vars.get(&quot;AND_TOKENID&quot;).getBytes());
 	log.info(&quot;androidTokenBase64:&quot;+androidTokenBase64);
-//	vars.put(&quot;androidTokenBase64&quot;, new String(androidTokenBase64));
-//		vars.put(&quot;androidTokenBase64&quot;, androidTokenBase64.toString());
 	log.info(&quot;androidTokenBase64 in vars:&quot;+vars.get(&quot;androidTokenBase64&quot;));
 	props.put(&quot;androidTokenBase64&quot;, new String(androidTokenBase64));
 	
 }
 
-log.info(&quot;--------------Alias: &quot;+vars.get(&quot;ALIAS&quot;));</stringProp>
+</stringProp>
             <stringProp name="BeanShellSampler.filename"></stringProp>
             <stringProp name="BeanShellSampler.parameters"></stringProp>
             <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
@@ -343,8 +346,8 @@ String THREAD_FILE_PREFIX = &quot;THREAD_&quot;;
 String baseDir = FileServer.getFileServer().getBaseDir();
 int threamNum = ctx.getThreadNum();
 
-//String fileName = &quot;file://&quot;+vars.get(&quot;OUTPUT_FOLDER&quot;) + &quot;/&quot;+vars.get(&quot;ALIAS&quot;) + &quot;.json&quot;;
-String fileName = vars.get(&quot;OUTPUT_FOLDER&quot;) + &quot;/&quot;+vars.get(&quot;ALIAS&quot;) + &quot;.json&quot;;
+
+String fileName = vars.get(&quot;OUTPUT_SUB_FOLDER&quot;) + &quot;/&quot;+vars.get(&quot;ALIAS&quot;) + &quot;.json&quot;;
 
 log.info(&quot;start to extract json&quot;);
 String tasksJsonString = prev.getResponseDataAsString();
