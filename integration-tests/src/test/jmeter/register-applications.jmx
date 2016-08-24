@@ -251,7 +251,7 @@ vars.put(&quot;BASE_PATH&quot;,FileServer.getFileServer().getBaseDir().toString(
             <stringProp name="FileSaver.filename">${APPLICATION_RESONSE_FILE_PATH}</stringProp>
             <boolProp name="FileSaver.errorsonly">false</boolProp>
             <boolProp name="FileSaver.skipautonumber">true</boolProp>
-            <boolProp name="FileSaver.skipsuffix">false</boolProp>
+            <boolProp name="FileSaver.skipsuffix">true</boolProp>
             <boolProp name="FileSaver.successonly">true</boolProp>
           </ResultSaver>
           <hashTree/>
@@ -311,7 +311,7 @@ vars.put(&quot;BASE_PATH&quot;,FileServer.getFileServer().getBaseDir().toString(
             <stringProp name="FileSaver.filename">${ANDROID_VARIANT_RESONSE_FILE_PATH}</stringProp>
             <boolProp name="FileSaver.errorsonly">false</boolProp>
             <boolProp name="FileSaver.skipautonumber">true</boolProp>
-            <boolProp name="FileSaver.skipsuffix">false</boolProp>
+            <boolProp name="FileSaver.skipsuffix">true</boolProp>
             <boolProp name="FileSaver.successonly">true</boolProp>
           </ResultSaver>
           <hashTree/>
@@ -404,7 +404,7 @@ vars.put(&quot;BASE_PATH&quot;,FileServer.getFileServer().getBaseDir().toString(
             <stringProp name="FileSaver.filename">${IOS_VARIANT_RESONSE_FILE_PATH}</stringProp>
             <boolProp name="FileSaver.errorsonly">false</boolProp>
             <boolProp name="FileSaver.skipautonumber">true</boolProp>
-            <boolProp name="FileSaver.skipsuffix">false</boolProp>
+            <boolProp name="FileSaver.skipsuffix">true</boolProp>
             <boolProp name="FileSaver.successonly">true</boolProp>
           </ResultSaver>
           <hashTree/>
