@@ -107,20 +107,23 @@ import org.apache.jmeter.util.JMeterUtils;
 import java.io.FileReader;
 import java.util.*;
 
-
-final static String THREAD_FILE_PREFIX = &quot;THREAD_&quot;;
-String baseDir = FileServer.getFileServer().getBaseDir();
-int numOfThreads = Integer.parseInt(vars.get(&quot;NUMBER_OF_THREADS&quot;));
-
-String outputDir = vars.get(&quot;OUTPUT_SUB_FOLDER&quot;);
-
-// Open file writers array according to number of threads
-// All files are stored under OS temp dir.
-for(int threadCounter = 0; threadCounter&lt;numOfThreads ; threadCounter++ ) {
-	log.info(&quot;-----open file &quot; + outputDir + &quot;/&quot; + THREAD_FILE_PREFIX + threadCounter + &quot;-----&quot;);
- 	FileServer.getFileServer().reserveFile(outputDir + &quot;/&quot; + THREAD_FILE_PREFIX + threadCounter);	
-}
-</stringProp>
+try{
+	final static String THREAD_FILE_PREFIX = &quot;THREAD_&quot;;
+	String baseDir = FileServer.getFileServer().getBaseDir();
+	int numOfThreads = Integer.parseInt(vars.get(&quot;NUMBER_OF_THREADS&quot;));
+	
+	String outputDir = vars.get(&quot;OUTPUT_SUB_FOLDER&quot;);
+	
+	// Open file writers array according to number of threads
+	// All files are stored under OS temp dir.
+	for(int threadCounter = 0; threadCounter&lt;numOfThreads ; threadCounter++ ) {
+		log.info(&quot;-----open file &quot; + outputDir + &quot;/&quot; + THREAD_FILE_PREFIX + threadCounter + &quot;-----&quot;);
+	 	FileServer.getFileServer().reserveFile(outputDir + &quot;/&quot; + THREAD_FILE_PREFIX + threadCounter);	
+	}
+}catch(Exception ex){
+	log.error(&quot;JMETER ERROR MESSAGE: &quot; + ex.getMessage());
+	throw ex;
+}</stringProp>
             <stringProp name="BeanShellSampler.filename"></stringProp>
             <stringProp name="BeanShellSampler.parameters"></stringProp>
             <boolProp name="BeanShellSampler.resetInterpreter">true</boolProp>
@@ -129,7 +132,7 @@ for(int threadCounter = 0; threadCounter&lt;numOfThreads ; threadCounter++ ) {
         </hashTree>
       </hashTree>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group" enabled="true">
-        <stringProp name="ThreadGroup.on_sample_error">startnextloop</stringProp>
+        <stringProp name="ThreadGroup.on_sample_error">stoptest</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">${LOOP_COUNT}</stringProp>
@@ -150,42 +153,36 @@ for(int threadCounter = 0; threadCounter&lt;numOfThreads ; threadCounter++ ) {
 import org.apache.commons.codec.binary.Base64;
 import java.io.FileReader;
 import java.util.*;
-
-String THREAD_FILE_PREFIX = &quot;THREAD_&quot;;
-String baseDir = FileServer.getFileServer().getBaseDir();
-int threamNum = ctx.getThreadNum();
-String fileName = vars.get(&quot;OUTPUT_SUB_FOLDER&quot;) + &quot;/&quot; + THREAD_FILE_PREFIX + threamNum;
-int lineCounter = 0; 
-String line = FileServer.getFileServer().readLine(fileName, false, false);
-log.info(&quot;--------------Reading CSV--------------&quot;);
-if  (line != null) {
-	String[] words = line.split(&quot;,&quot;);
-	vars.put(&quot;IOS_TOKENID&quot;, words[1]);
-	vars.put(&quot;AND_TOKENID&quot;, words[2]);
-	vars.put(&quot;ALIAS&quot;, words[5]);
-	log.info(&quot;--------------Reading CSV line (&quot; + words[0] + &quot;) from &quot; + fileName);
-	log.info(&quot;--------------Alias: &quot;+vars.get(&quot;ALIAS&quot;));
-	log.info(&quot;--------------IOS_TOKENID: &quot;+vars.get(&quot;IOS_TOKENID&quot;));
-	log.info(&quot;--------------AND_TOKENID: &quot;+vars.get(&quot;AND_TOKENID&quot;));
-	
-	byte[] androidTokenBase64 = Base64.encodeBase64(vars.get(&quot;AND_TOKENID&quot;).getBytes());
-	props.put(&quot;androidTokenBase64&quot;, new String(androidTokenBase64));
+try{
+	String THREAD_FILE_PREFIX = &quot;THREAD_&quot;;
+	String baseDir = FileServer.getFileServer().getBaseDir();
+	int threamNum = ctx.getThreadNum();
+	String fileName = vars.get(&quot;OUTPUT_SUB_FOLDER&quot;) + &quot;/&quot; + THREAD_FILE_PREFIX + threamNum;
+	int lineCounter = 0; 
+	String line = FileServer.getFileServer().readLine(fileName, false, false);
+	log.info(&quot;--------------Reading CSV--------------&quot;);
+	if  (line != null) {
+		String[] words = line.split(&quot;,&quot;);
+		vars.put(&quot;IOS_TOKENID&quot;, words[1]);
+		vars.put(&quot;AND_TOKENID&quot;, words[2]);
+		vars.put(&quot;ALIAS&quot;, words[5]);
+		log.info(&quot;--------------Reading CSV line (&quot; + words[0] + &quot;) from &quot; + fileName);
+		log.info(&quot;--------------Alias: &quot;+vars.get(&quot;ALIAS&quot;));
+		log.info(&quot;--------------IOS_TOKENID: &quot;+vars.get(&quot;IOS_TOKENID&quot;));
+		log.info(&quot;--------------AND_TOKENID: &quot;+vars.get(&quot;AND_TOKENID&quot;));
+		
+		byte[] androidTokenBase64 = Base64.encodeBase64(vars.get(&quot;AND_TOKENID&quot;).getBytes());
+		props.put(&quot;androidTokenBase64&quot;, new String(androidTokenBase64));
+	}
+}catch(Exception ex){
+	log.error(&quot;JMETER ERROR MESSAGE: &quot; + ex.getMessage());
+	throw ex;
 }</stringProp>
             <stringProp name="BeanShellSampler.filename"></stringProp>
             <stringProp name="BeanShellSampler.parameters"></stringProp>
             <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
           </BeanShellSampler>
-          <hashTree>
-            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response code 200 Assertion" enabled="true">
-              <collectionProp name="Asserion.test_strings">
-                <stringProp name="49586">200</stringProp>
-              </collectionProp>
-              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
-              <boolProp name="Assertion.assume_success">false</boolProp>
-              <intProp name="Assertion.test_type">16</intProp>
-            </ResponseAssertion>
-            <hashTree/>
-          </hashTree>
+          <hashTree/>
           <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="HTTP Request Defaults" enabled="true">
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
               <collectionProp name="Arguments.arguments"/>
@@ -263,36 +260,31 @@ if  (line != null) {
               <stringProp name="parameters"></stringProp>
               <stringProp name="filename"></stringProp>
               <stringProp name="cacheKey">7f98f172-b1b8-4b67-8060-ee83f07dc743</stringProp>
-              <stringProp name="script">
-log.info(&quot;caching reasons&quot;);
-def slurper = new groovy.json.JsonSlurper();
-String reasonsJsonString = prev.getResponseDataAsString();
-
-def obj = slurper.parseText(reasonsJsonString);
-vars.put(&quot;REASONS_JSON_STRING&quot;,reasonsJsonString);
-
-def reasonsJsonObj = slurper.parseText(reasonsJsonString);
-def doneReasons = reasonsJsonObj.reasons.doneReasons;
-def notDoneReasons = reasonsJsonObj.reasons.undoneReasons;
-
-def builder = new groovy.json.JsonBuilder(doneReasons);
-def jsonStr = builder.toString();
-vars.put(&quot;DONE_REASONS_JSON_STRING&quot;,jsonStr);
-
-builder = new groovy.json.JsonBuilder(notDoneReasons);
-jsonStr = builder.toString();
-vars.put(&quot;NOT_DONE_REASONS_JSON_STRING&quot;,jsonStr);
-log.info(&quot;done caching reasons&quot;);</stringProp>
+              <stringProp name="script">try{
+	log.info(&quot;caching reasons&quot;);
+	def slurper = new groovy.json.JsonSlurper();
+	String reasonsJsonString = prev.getResponseDataAsString();
+	
+	def obj = slurper.parseText(reasonsJsonString);
+	vars.put(&quot;REASONS_JSON_STRING&quot;,reasonsJsonString);
+	
+	def reasonsJsonObj = slurper.parseText(reasonsJsonString);
+	def doneReasons = reasonsJsonObj.reasons.doneReasons;
+	def notDoneReasons = reasonsJsonObj.reasons.undoneReasons;
+	
+	def builder = new groovy.json.JsonBuilder(doneReasons);
+	def jsonStr = builder.toString();
+	vars.put(&quot;DONE_REASONS_JSON_STRING&quot;,jsonStr);
+	
+	builder = new groovy.json.JsonBuilder(notDoneReasons);
+	jsonStr = builder.toString();
+	vars.put(&quot;NOT_DONE_REASONS_JSON_STRING&quot;,jsonStr);
+	log.info(&quot;done caching reasons&quot;);
+}catch(Exception ex){
+	log.error(&quot;JMETER ERROR MESSAGE: &quot; + ex.getMessage());
+	throw ex;
+}</stringProp>
             </JSR223PostProcessor>
-            <hashTree/>
-            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response code 200 Assertion" enabled="true">
-              <collectionProp name="Asserion.test_strings">
-                <stringProp name="49586">200</stringProp>
-              </collectionProp>
-              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
-              <boolProp name="Assertion.assume_success">false</boolProp>
-              <intProp name="Assertion.test_type">16</intProp>
-            </ResponseAssertion>
             <hashTree/>
           </hashTree>
           <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request - Get actions-list" enabled="true">
@@ -358,36 +350,31 @@ log.info(&quot;done caching reasons&quot;);</stringProp>
               <stringProp name="filename"></stringProp>
               <stringProp name="cacheKey">7f98f172-b1b8-4b67-8060-ee83f07dc743</stringProp>
               <stringProp name="script">def slurper = new groovy.json.JsonSlurper();
-
-String tasksJsonString = prev.getResponseDataAsString();
-vars.put(&quot;TASKS_JSON_STRING&quot;,tasksJsonString);
-
-def obj = slurper.parseText(tasksJsonString);
-if(obj.tasks == null){
-	log.info(vars.get(&quot;ALIAS&quot;) + &quot; did not get any actions&quot;);
-	// TODO: need to make it go to next loop some how.. i coudn&apos;t find out how to do this yet so it currently throws exceptions when calling the next line
-	}
-def numOfTasks = obj.tasks.size();
-log.info(&quot;deploy id = &quot;+obj.deployId);
-vars.put(&quot;DEPLOY_ID&quot;,obj.deployId.toString());
-vars.put(&quot;NUM_OF_TASKS&quot;,numOfTasks.toString());
-log.info(&quot;Total number of tasks for current user: &quot; + numOfTasks.toString());
-
-def numberOfResponses = (int)(Float.valueOf(vars.get(&quot;TASKS_RESPONSE_RATIO&quot;)) * numOfTasks);
-log.info(&quot;Total number of reasons for current user &quot; + numberOfResponses.toString());
-log.info(&quot;tasks: &quot; + tasksJsonString);
-vars.put(&quot;NUM_OF_RESPONCES_TO_LOOP&quot;,numberOfResponses.toString());
-log.info(&quot;numberOfResponses.toString(): &quot;+numberOfResponses.toString());</stringProp>
+try{
+	String tasksJsonString = prev.getResponseDataAsString();
+	vars.put(&quot;TASKS_JSON_STRING&quot;,tasksJsonString);
+	
+	def obj = slurper.parseText(tasksJsonString);
+	if(obj.tasks == null){
+		log.info(vars.get(&quot;ALIAS&quot;) + &quot; did not get any actions&quot;);
+		// TODO: need to make it go to next loop some how.. i coudn&apos;t find out how to do this yet so it currently throws exceptions when calling the next line
+		}
+	def numOfTasks = obj.tasks.size();
+	log.info(&quot;deploy id = &quot;+obj.deployId);
+	vars.put(&quot;DEPLOY_ID&quot;,obj.deployId.toString());
+	vars.put(&quot;NUM_OF_TASKS&quot;,numOfTasks.toString());
+	log.info(&quot;Total number of tasks for current user: &quot; + numOfTasks.toString());
+	
+	def numberOfResponses = (int)(Float.valueOf(vars.get(&quot;TASKS_RESPONSE_RATIO&quot;)) * numOfTasks);
+	log.info(&quot;Total number of reasons for current user &quot; + numberOfResponses.toString());
+	log.info(&quot;tasks: &quot; + tasksJsonString);
+	vars.put(&quot;NUM_OF_RESPONCES_TO_LOOP&quot;,numberOfResponses.toString());
+	log.info(&quot;numberOfResponses.toString(): &quot;+numberOfResponses.toString());
+}catch(Exception ex){
+	log.error(&quot;JMETER ERROR MESSAGE: &quot; + ex.getMessage());
+	throw ex;
+}</stringProp>
             </JSR223PostProcessor>
-            <hashTree/>
-            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response code 200 Assertion" enabled="true">
-              <collectionProp name="Asserion.test_strings">
-                <stringProp name="49586">200</stringProp>
-              </collectionProp>
-              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
-              <boolProp name="Assertion.assume_success">false</boolProp>
-              <intProp name="Assertion.test_type">16</intProp>
-            </ResponseAssertion>
             <hashTree/>
           </hashTree>
           <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request - responses of a user to the actions" enabled="true">
@@ -526,28 +513,33 @@ vars.put(&quot;jsonOutFile&quot;,jsonOutFile)</stringProp>
               </collectionProp>
             </HeaderManager>
             <hashTree/>
-            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response code 200 Assertion" enabled="true">
-              <collectionProp name="Asserion.test_strings">
-                <stringProp name="49586">200</stringProp>
-              </collectionProp>
-              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
-              <boolProp name="Assertion.assume_success">false</boolProp>
-              <intProp name="Assertion.test_type">16</intProp>
-            </ResponseAssertion>
-            <hashTree/>
             <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="BeanShell PostProcessor -- write responses json file" enabled="true">
               <stringProp name="filename"></stringProp>
               <stringProp name="parameters"></stringProp>
               <boolProp name="resetInterpreter">false</boolProp>
               <stringProp name="script">import org.apache.jmeter.services.FileServer;
-String outFile = vars.get(&quot;jsonOutFile&quot;);
-log.info(&quot;-----writing responses json file: &quot;+outFile+&quot;------&quot;);
-FileServer.getFileServer().reserveFile(outFile);	
-FileServer.getFileServer().write(outFile, vars.get(&quot;HTTP_REASONS_BODY&quot;));
-FileServer.getFileServer().closeFile(outFile);</stringProp>
+try{
+	String outFile = vars.get(&quot;jsonOutFile&quot;);
+	log.info(&quot;-----writing responses json file: &quot;+outFile+&quot;------&quot;);
+	FileServer.getFileServer().reserveFile(outFile);	
+	FileServer.getFileServer().write(outFile, vars.get(&quot;HTTP_REASONS_BODY&quot;));
+	FileServer.getFileServer().closeFile(outFile);
+}catch(Exception ex){
+	log.error(&quot;JMETER ERROR MESSAGE: &quot; + ex.getMessage());
+	throw ex;
+}</stringProp>
             </BeanShellPostProcessor>
             <hashTree/>
           </hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response code 200 Assertion" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="49586">200</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">16</intProp>
+          </ResponseAssertion>
+          <hashTree/>
         </hashTree>
       </hashTree>
       <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
