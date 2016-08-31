@@ -64,7 +64,7 @@
           </elementProp>
           <elementProp name="OUTPUT_FOLDER" elementType="Argument">
             <stringProp name="Argument.name">OUTPUT_FOLDER</stringProp>
-            <stringProp name="Argument.value">${__P(OUTPUT_SUB_FOLDER,/tmp)}</stringProp>
+            <stringProp name="Argument.value">${__P(OUTPUT_FOLDER,/tmp)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -131,7 +131,7 @@ final static String THREAD_FILE_PREFIX = &quot;THREAD_&quot;;
 String baseDir = FileServer.getFileServer().getBaseDir();
 int numOfThreads = Integer.parseInt(vars.get(&quot;NUMBER_OF_THREADS&quot;));
 //String outDir = System.getProperty(&quot;java.io.tmpdir&quot;);
-String outDir = vars.get(&quot;OUTPUT_SUB_FOLDER&quot;);
+String outDir = vars.get(&quot;OUTPUT_FOLDER&quot;);
 String usersCsv = this.getCsvPath();
 
 // Open CSV file for read
@@ -200,7 +200,7 @@ String baseDir = FileServer.getFileServer().getBaseDir();
 int numOfThreads = Integer.parseInt(vars.get(&quot;NUMBER_OF_THREADS&quot;));
 //String outDir = System.getProperty(&quot;java.io.tmpdir&quot;);
 
-String outDir = vars.get(&quot;OUTPUT_SUB_FOLDER&quot;);
+String outDir = vars.get(&quot;OUTPUT_FOLDER&quot;);
 
 // Open file writers array according to number of threads
 // All files are stored under OS temp dir.
@@ -239,7 +239,7 @@ import java.util.*;
 String THREAD_FILE_PREFIX = &quot;THREAD_&quot;;
 String baseDir = FileServer.getFileServer().getBaseDir();
 int threamNum = ctx.getThreadNum();
-String fileName = vars.get(&quot;OUTPUT_SUB_FOLDER&quot;) + &quot;/&quot; + THREAD_FILE_PREFIX + threamNum;
+String fileName = vars.get(&quot;OUTPUT_FOLDER&quot;) + &quot;/&quot; + THREAD_FILE_PREFIX + threamNum;
 
 int lineCounter = 0; 
 String line = FileServer.getFileServer().readLine(fileName, false, false);
@@ -355,7 +355,7 @@ final static String THREAD_FILE_PREFIX = &quot;THREAD_&quot;;
 String baseDir = FileServer.getFileServer().getBaseDir();
 int numOfThreads = Integer.parseInt(vars.get(&quot;NUMBER_OF_THREADS&quot;));
 //String outDir = System.getProperty(&quot;java.io.tmpdir&quot;);
-String outDir = vars.get(&quot;OUTPUT_SUB_FOLDER&quot;);
+String outDir = vars.get(&quot;OUTPUT_FOLDER&quot;);
 
 // Open file writers array according to number of threads
 // All files are stored under OS temp dir.

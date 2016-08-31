@@ -64,7 +64,7 @@
           </elementProp>
           <elementProp name="OUTPUT_FOLDER" elementType="Argument">
             <stringProp name="Argument.name">OUTPUT_FOLDER</stringProp>
-            <stringProp name="Argument.value">${__P(OUTPUT_SUB_FOLDER,mobile_jmeter)}</stringProp>
+            <stringProp name="Argument.value">${__P(OUTPUT_FOLDER,mobile_jmeter)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -112,7 +112,7 @@ try{
 	String baseDir = FileServer.getFileServer().getBaseDir();
 	int numOfThreads = Integer.parseInt(vars.get(&quot;NUMBER_OF_THREADS&quot;));
 	
-	String outputDir = vars.get(&quot;OUTPUT_SUB_FOLDER&quot;);
+	String outputDir = vars.get(&quot;OUTPUT_FOLDER&quot;);
 	
 	// Open file writers array according to number of threads
 	// All files are stored under OS temp dir.
@@ -157,7 +157,7 @@ try{
 	String THREAD_FILE_PREFIX = &quot;THREAD_&quot;;
 	String baseDir = FileServer.getFileServer().getBaseDir();
 	int threamNum = ctx.getThreadNum();
-	String fileName = vars.get(&quot;OUTPUT_SUB_FOLDER&quot;) + &quot;/&quot; + THREAD_FILE_PREFIX + threamNum;
+	String fileName = vars.get(&quot;OUTPUT_FOLDER&quot;) + &quot;/&quot; + THREAD_FILE_PREFIX + threamNum;
 	int lineCounter = 0; 
 	String line = FileServer.getFileServer().readLine(fileName, false, false);
 	log.info(&quot;--------------Reading CSV--------------&quot;);
@@ -471,7 +471,7 @@ String responsesJson = JsonOutput.toJson(deployInfo)
 log.info(responsesJson)
 log.info(&quot;-----------&quot;)
 vars.put(&apos;HTTP_REASONS_BODY&apos;, responsesJson)
-String jsonOutFile = props.get(&quot;OUTPUT_SUB_FOLDER&quot;) + &quot;/&quot; + deployId + &quot;_&quot; + alias + &quot;_&quot; + &quot;responses.json&quot;
+String jsonOutFile = props.get(&quot;OUTPUT_FOLDER&quot;) + &quot;/&quot; + deployId + &quot;_&quot; + alias + &quot;_&quot; + &quot;responses.json&quot;
 vars.put(&quot;jsonOutFile&quot;,jsonOutFile)</stringProp>
               <stringProp name="scriptLanguage">groovy</stringProp>
             </JSR223PreProcessor>
@@ -602,7 +602,7 @@ import java.util.*;
 final static String THREAD_FILE_PREFIX = &quot;THREAD_&quot;;
 String baseDir = FileServer.getFileServer().getBaseDir();
 int numOfThreads = Integer.parseInt(vars.get(&quot;NUMBER_OF_THREADS&quot;));
-String outDir = vars.get(&quot;OUTPUT_SUB_FOLDER&quot;);
+String outDir = vars.get(&quot;OUTPUT_FOLDER&quot;);
 	
 // Open file writers array according to number of threads
 // All files are stored under OS temp dir.
