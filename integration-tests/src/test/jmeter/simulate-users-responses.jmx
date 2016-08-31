@@ -62,8 +62,8 @@
             <stringProp name="Argument.value">${__P(TASKS_RESPONSE_RATIO,1)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="OUTPUT_SUB_FOLDER" elementType="Argument">
-            <stringProp name="Argument.name">OUTPUT_SUB_FOLDER</stringProp>
+          <elementProp name="OUTPUT_FOLDER" elementType="Argument">
+            <stringProp name="Argument.name">OUTPUT_FOLDER</stringProp>
             <stringProp name="Argument.value">${__P(OUTPUT_SUB_FOLDER,mobile_jmeter)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
