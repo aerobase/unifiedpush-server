@@ -116,7 +116,7 @@ import java.util.*;
 final static String THREAD_FILE_PREFIX = &quot;THREAD_&quot;;
 String baseDir = FileServer.getFileServer().getBaseDir();
 int numOfThreads = Integer.parseInt(vars.get(&quot;NUMBER_OF_THREADS&quot;));
-String outDir = System.getProperty(&quot;java.io.tmpdir&quot;);
+String outDir = vars.get(&quot;OUTPUT_FOLDER&quot;);
 	
 // Open file writers array according to number of threads
 // All files are stored under OS temp dir.
