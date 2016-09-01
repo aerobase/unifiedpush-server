@@ -114,15 +114,14 @@ import java.util.*;
 
 
 final static String THREAD_FILE_PREFIX = &quot;THREAD_&quot;;
-
+String baseDir = FileServer.getFileServer().getBaseDir();
 int numOfThreads = Integer.parseInt(vars.get(&quot;NUMBER_OF_THREADS&quot;));
-
+String outDir = System.getProperty(&quot;java.io.tmpdir&quot;);
 	
-String outputDir = vars.get(&quot;OUTPUT_SUB_FOLDER&quot;);
 // Open file writers array according to number of threads
 // All files are stored under OS temp dir.
 for(int threadCounter = 0; threadCounter&lt;numOfThreads ; threadCounter++ ) {
- 	FileServer.getFileServer().reserveFile(outputDir + &quot;/&quot; + THREAD_FILE_PREFIX + threadCounter); 	
+ 	FileServer.getFileServer().reserveFile(outDir + &quot;/&quot; + THREAD_FILE_PREFIX + threadCounter); 	
 }</stringProp>
             <stringProp name="BeanShellSampler.filename"></stringProp>
             <stringProp name="BeanShellSampler.parameters"></stringProp>
@@ -153,31 +152,34 @@ for(int threadCounter = 0; threadCounter&lt;numOfThreads ; threadCounter++ ) {
 import org.apache.commons.codec.binary.Base64;
 import java.io.FileReader;
 import java.util.*;
-try{
-	String THREAD_FILE_PREFIX = &quot;THREAD_&quot;;
-	String baseDir = FileServer.getFileServer().getBaseDir();
-	int threamNum = ctx.getThreadNum();
-	String fileName = vars.get(&quot;OUTPUT_FOLDER&quot;) + &quot;/&quot; + THREAD_FILE_PREFIX + threamNum;
-	int lineCounter = 0; 
-	String line = FileServer.getFileServer().readLine(fileName, false, false);
-	log.info(&quot;--------------Reading CSV--------------&quot;);
-	if  (line != null) {
-		String[] words = line.split(&quot;,&quot;);
-		vars.put(&quot;IOS_TOKENID&quot;, words[1]);
-		vars.put(&quot;AND_TOKENID&quot;, words[2]);
-		vars.put(&quot;ALIAS&quot;, words[5]);
-		log.info(&quot;--------------Reading CSV line (&quot; + words[0] + &quot;) from &quot; + fileName);
-		log.info(&quot;--------------Alias: &quot;+vars.get(&quot;ALIAS&quot;));
-		log.info(&quot;--------------IOS_TOKENID: &quot;+vars.get(&quot;IOS_TOKENID&quot;));
-		log.info(&quot;--------------AND_TOKENID: &quot;+vars.get(&quot;AND_TOKENID&quot;));
-		
-		byte[] androidTokenBase64 = Base64.encodeBase64(vars.get(&quot;AND_TOKENID&quot;).getBytes());
-		props.put(&quot;androidTokenBase64&quot;, new String(androidTokenBase64));
-	}
-}catch(Exception ex){
-	log.error(&quot;JMETER ERROR MESSAGE: &quot; + ex.getMessage());
-	throw ex;
-}</stringProp>
+
+String THREAD_FILE_PREFIX = &quot;THREAD_&quot;;
+String baseDir = FileServer.getFileServer().getBaseDir();
+int threamNum = ctx.getThreadNum();
+String fileName = System.getProperty(&quot;java.io.tmpdir&quot;) + &quot;/&quot; + THREAD_FILE_PREFIX + threamNum;
+int lineCounter = 0; 
+log.info(threamNum+&quot;--------------Reading CSV--------------&quot;);
+String line = FileServer.getFileServer().readLine(fileName, false, false);
+
+log.info(&quot;fileName:&quot;+fileName);
+if  (line != null) {
+	String[] words = line.split(&quot;,&quot;);
+	vars.put(&quot;IOS_TOKENID&quot;, words[1]);
+	vars.put(&quot;AND_TOKENID&quot;, words[2]);
+	vars.put(&quot;ALIAS&quot;, words[5]);
+	log.info(&quot;--------------Reading CSV line (&quot; + words[0] + &quot;) from &quot; + fileName);
+	log.info(&quot;--------------Alias: &quot;+vars.get(&quot;ALIAS&quot;));
+	log.info(&quot;--------------IOS_TOKENID: &quot;+vars.get(&quot;IOS_TOKENID&quot;));
+	log.info(&quot;--------------AND_TOKENID: &quot;+vars.get(&quot;AND_TOKENID&quot;));
+	log.info(&quot;AND_TOKENID:&quot;+vars.get(&quot;AND_TOKENID&quot;));	
+	byte[] androidTokenBase64 = Base64.encodeBase64(vars.get(&quot;AND_TOKENID&quot;).getBytes());
+	log.info(&quot;androidTokenBase64:&quot;+androidTokenBase64);
+	log.info(&quot;androidTokenBase64 in vars:&quot;+vars.get(&quot;androidTokenBase64&quot;));
+	props.put(&quot;androidTokenBase64&quot;, new String(androidTokenBase64));
+	
+}
+
+</stringProp>
             <stringProp name="BeanShellSampler.filename"></stringProp>
             <stringProp name="BeanShellSampler.parameters"></stringProp>
             <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
@@ -339,6 +341,10 @@ import org.apache.commons.codec.binary.Base64;
 import java.io.FileReader;
 import java.util.*;
 import java.io.FileOutputStream;
+
+String THREAD_FILE_PREFIX = &quot;THREAD_&quot;;
+String baseDir = FileServer.getFileServer().getBaseDir();
+int threamNum = ctx.getThreadNum();
 
 
 String fileName = vars.get(&quot;OUTPUT_SUB_FOLDER&quot;) + &quot;/&quot;+vars.get(&quot;ALIAS&quot;) + &quot;.json&quot;;
