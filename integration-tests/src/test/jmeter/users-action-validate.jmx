@@ -156,7 +156,7 @@ import java.util.*;
 String THREAD_FILE_PREFIX = &quot;THREAD_&quot;;
 String baseDir = FileServer.getFileServer().getBaseDir();
 int threamNum = ctx.getThreadNum();
-String fileName = System.getProperty(&quot;java.io.tmpdir&quot;) + &quot;/&quot; + THREAD_FILE_PREFIX + threamNum;
+String fileName = vars.get(&quot;OUTPUT_FOLDER&quot;) + &quot;/&quot; + THREAD_FILE_PREFIX + threamNum;
 int lineCounter = 0; 
 log.info(threamNum+&quot;--------------Reading CSV--------------&quot;);
 String line = FileServer.getFileServer().readLine(fileName, false, false);
@@ -588,7 +588,7 @@ import java.util.*;
 final static String THREAD_FILE_PREFIX = &quot;THREAD_&quot;;
 String baseDir = FileServer.getFileServer().getBaseDir();
 int numOfThreads = Integer.parseInt(vars.get(&quot;NUMBER_OF_THREADS&quot;));
-String outDir = System.getProperty(&quot;java.io.tmpdir&quot;);
+String outDir = vars.get(&quot;OUTPUT_FOLDER&quot;);
 	
 // Open file writers array according to number of threads
 // All files are stored under OS temp dir.
