@@ -1,0 +1,440 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="2.9" jmeter="3.0 r1743807">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="register-installations-from-csv" enabled="true">
+      <stringProp name="TestPlan.comments"></stringProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">true</boolProp>
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="ANDROID_USERNAME" elementType="Argument">
+            <stringProp name="Argument.name">ANDROID_USERNAME</stringProp>
+            <stringProp name="Argument.value">${__P(ANDROID_USERNAME,a066762b-32f5)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="ANDROID_PASSWORD" elementType="Argument">
+            <stringProp name="Argument.name">ANDROID_PASSWORD</stringProp>
+            <stringProp name="Argument.value">${__P(ANDROID_PASSWORD,60b2be60)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="IOS_USERNAME" elementType="Argument">
+            <stringProp name="Argument.name">IOS_USERNAME</stringProp>
+            <stringProp name="Argument.value">${__P(IOS_USERNAME,39d0daf1)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="IOS_PASSWORD" elementType="Argument">
+            <stringProp name="Argument.name">IOS_PASSWORD</stringProp>
+            <stringProp name="Argument.value">${__P(IOS_PASSWORD,c5395a65)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="SERVER_PROTOCOL" elementType="Argument">
+            <stringProp name="Argument.name">SERVER_PROTOCOL</stringProp>
+            <stringProp name="Argument.value">${__P(SERVER_PROTOCOL,https)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="SERVER_HOST" elementType="Argument">
+            <stringProp name="Argument.name">SERVER_HOST</stringProp>
+            <stringProp name="Argument.value">${__P(SERVER_HOST,staging-mcs.c-b4.com)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="SERVER_PORT" elementType="Argument">
+            <stringProp name="Argument.name">SERVER_PORT</stringProp>
+            <stringProp name="Argument.value">${__P(SERVER_PORT,443)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="CONTEXT_ROOT" elementType="Argument">
+            <stringProp name="Argument.name">CONTEXT_ROOT</stringProp>
+            <stringProp name="Argument.value">${__P(CONTEXT_ROOT,unifiedpush-server)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="NUMBER_OF_THREADS" elementType="Argument">
+            <stringProp name="Argument.name">NUMBER_OF_THREADS</stringProp>
+            <stringProp name="Argument.value">${__P(NUMBER_OF_THREADS,1)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="LOOP_COUNT" elementType="Argument">
+            <stringProp name="Argument.name">LOOP_COUNT</stringProp>
+            <stringProp name="Argument.value">${__P(LOOP_COUNT,5)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="USERS_CSV" elementType="Argument">
+            <stringProp name="Argument.name">USERS_CSV</stringProp>
+            <stringProp name="Argument.value">${__P(USERS_CSV,Users.csv)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="OUTPUT_FOLDER" elementType="Argument">
+            <stringProp name="Argument.name">OUTPUT_FOLDER</stringProp>
+            <stringProp name="Argument.value">${__P(OUTPUT_FOLDER,/tmp)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
+      </elementProp>
+      <stringProp name="TestPlan.user_define_classpath"></stringProp>
+    </TestPlan>
+    <hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group - Prepare CVSs According to ${NUMBER_OF_THREADS}" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <longProp name="ThreadGroup.start_time">1466491978000</longProp>
+        <longProp name="ThreadGroup.end_time">1466491978000</longProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <OnceOnlyController guiclass="OnceOnlyControllerGui" testclass="OnceOnlyController" testname="Once Only Controller" enabled="true"/>
+        <hashTree>
+          <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BS PreProcessor - Prepare Basic Authentication" enabled="true">
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="script">import org.apache.commons.codec.binary.Base64;
+byte[] iosUsernamePassword = Base64.encodeBase64(&quot;${IOS_USERNAME}:${IOS_PASSWORD}&quot;.getBytes());
+props.put(&quot;base64IosHeaderValue&quot;, new String(iosUsernamePassword));
+
+byte[] androidUsernamePassword = Base64.encodeBase64(&quot;${ANDROID_USERNAME}:${ANDROID_PASSWORD}&quot;.getBytes());
+props.put(&quot;base64AndroidHeaderValue&quot;, new String(androidUsernamePassword));</stringProp>
+          </BeanShellPreProcessor>
+          <hashTree/>
+          <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="BeanShell Sampler" enabled="true">
+            <stringProp name="BeanShellSampler.query">import org.apache.jmeter.services.FileServer;
+import org.apache.jmeter.util.JMeterUtils; 
+import java.io.FileReader;
+import java.util.*;
+
+// Generate random string for iOS/Android tokens
+public static String generateString(Random rng, int length, String characters) {
+    char[] text = new char[length];
+    for (int i = 0; i &lt; length; i++)
+    {
+        text[i] = characters.charAt(rng.nextInt(characters.length()));
+    }
+    return new String(text);
+}
+
+// Decide rather file path is absolute or relative. (file:// is absolute)
+public static String getCsvPath(){
+	if (vars.get(&quot;USERS_CSV&quot;).startsWith(&quot;file://&quot;)){
+		return vars.get(&quot;USERS_CSV&quot;).replaceAll(&quot;file://&quot;, &quot;&quot;); 
+	}else{
+		return baseDir + &quot;/&quot; + vars.get(&quot;USERS_CSV&quot;);
+	}
+	log.info(&quot;Reading CSV file from &quot; + usersCsv);
+}
+
+final static String THREAD_FILE_PREFIX = &quot;THREAD_&quot;;
+String baseDir = FileServer.getFileServer().getBaseDir();
+int numOfThreads = Integer.parseInt(vars.get(&quot;NUMBER_OF_THREADS&quot;));
+//String outDir = System.getProperty(&quot;java.io.tmpdir&quot;);
+String outDir = vars.get(&quot;OUTPUT_FOLDER&quot;);
+String usersCsv = this.getCsvPath();
+
+// Open CSV file for read
+FileServer.getFileServer().reserveFile(usersCsv);
+	
+// Open file writers array according to number of threads
+// All files are stored under OS temp dir.
+for(int threadCounter = 0; threadCounter&lt;numOfThreads ; threadCounter++ ) {
+ 	FileServer.getFileServer().reserveFile(outDir + &quot;/&quot; + THREAD_FILE_PREFIX + threadCounter); 	
+}
+
+// Loop over all csv lines. Lines are diverged according to number of threads.
+int lineCounter = 1;  
+String androidToken, iosToken;
+
+FileServer.getFileServer().readLine(usersCsv, false, true);
+for(String line; (line = FileServer.getFileServer().readLine(usersCsv, false, true)) != null; lineCounter++) {
+	iosToken = this.generateString(new Random(), 64,&quot;abcdef0123456789-&quot;);
+	androidToken = this.generateString(new Random(), 101,&quot;abcdefghigklmnopqrstuvwxyz-_&quot;);
+    	String threadFile = outDir + &quot;/&quot; + THREAD_FILE_PREFIX + (lineCounter % numOfThreads);
+
+	// Create iOs/Android Token
+    	FileServer.getFileServer().write(threadFile, lineCounter + &quot;,&quot; + iosToken + &quot;,&quot; + androidToken + &quot;,&quot; + line + &quot;\n&quot;);
+}
+
+// Close all files
+for(int threadCounter = 0; threadCounter&lt;numOfThreads ; threadCounter++ ) {
+	FileServer.getFileServer().closeFile(outDir + &quot;/&quot; + THREAD_FILE_PREFIX + threadCounter); 	
+}
+FileServer.getFileServer().closeFile(usersCsv);
+ 
+</stringProp>
+            <stringProp name="BeanShellSampler.filename"></stringProp>
+            <stringProp name="BeanShellSampler.parameters"></stringProp>
+            <boolProp name="BeanShellSampler.resetInterpreter">true</boolProp>
+          </BeanShellSampler>
+          <hashTree/>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response 200 Assertion" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="49586">200</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">16</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <BeanShellAssertion guiclass="BeanShellAssertionGui" testclass="BeanShellAssertion" testname="BeanShell Assertion - exit code 1 on error" enabled="true">
+            <stringProp name="BeanShellAssertion.query">for (a: SampleResult.getAssertionResults()) {
+	if (a.isError() || a.isFailure()) {
+		log.error(Thread.currentThread().getName()+&quot;: &quot;+SampleLabel+&quot;: Assertion failed for response code &quot;+ResponseCode+&quot; : &quot; + new String((byte[]) ResponseData));
+		System.exit(1);	
+	}
+}
+</stringProp>
+            <stringProp name="BeanShellAssertion.filename"></stringProp>
+            <stringProp name="BeanShellAssertion.parameters"></stringProp>
+            <boolProp name="BeanShellAssertion.resetInterpreter">false</boolProp>
+          </BeanShellAssertion>
+          <hashTree/>
+        </hashTree>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <longProp name="ThreadGroup.start_time">1467017036000</longProp>
+        <longProp name="ThreadGroup.end_time">1467017036000</longProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <OnceOnlyController guiclass="OnceOnlyControllerGui" testclass="OnceOnlyController" testname="Once Only Controller" enabled="true"/>
+        <hashTree>
+          <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="BS Sampler - Open files" enabled="true">
+            <stringProp name="BeanShellSampler.query">import org.apache.jmeter.services.FileServer;
+import org.apache.jmeter.util.JMeterUtils; 
+import java.io.FileReader;
+import java.util.*;
+
+
+final static String THREAD_FILE_PREFIX = &quot;THREAD_&quot;;
+String baseDir = FileServer.getFileServer().getBaseDir();
+int numOfThreads = Integer.parseInt(vars.get(&quot;NUMBER_OF_THREADS&quot;));
+//String outDir = System.getProperty(&quot;java.io.tmpdir&quot;);
+
+String outDir = vars.get(&quot;OUTPUT_FOLDER&quot;);
+
+// Open file writers array according to number of threads
+// All files are stored under OS temp dir.
+for(int threadCounter = 0; threadCounter&lt;numOfThreads ; threadCounter++ ) {
+ 	FileServer.getFileServer().reserveFile(outDir + &quot;/&quot; + THREAD_FILE_PREFIX + threadCounter); 	
+}</stringProp>
+            <stringProp name="BeanShellSampler.filename"></stringProp>
+            <stringProp name="BeanShellSampler.parameters"></stringProp>
+            <boolProp name="BeanShellSampler.resetInterpreter">true</boolProp>
+          </BeanShellSampler>
+          <hashTree/>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response 200 Assertion" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="49586">200</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">16</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <BeanShellAssertion guiclass="BeanShellAssertionGui" testclass="BeanShellAssertion" testname="BeanShell Assertion - exit code 1 on error" enabled="true">
+            <stringProp name="BeanShellAssertion.query">for (a: SampleResult.getAssertionResults()) {
+	if (a.isError() || a.isFailure()) {
+		log.error(Thread.currentThread().getName()+&quot;: &quot;+SampleLabel+&quot;: Assertion failed for response code &quot;+ResponseCode+&quot; : &quot; + new String((byte[]) ResponseData));
+		System.exit(1);	
+	}
+}
+</stringProp>
+            <stringProp name="BeanShellAssertion.filename"></stringProp>
+            <stringProp name="BeanShellAssertion.parameters"></stringProp>
+            <boolProp name="BeanShellAssertion.resetInterpreter">false</boolProp>
+          </BeanShellAssertion>
+          <hashTree/>
+        </hashTree>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">${LOOP_COUNT}</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">${NUMBER_OF_THREADS}</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">0</stringProp>
+        <longProp name="ThreadGroup.start_time">1458630165000</longProp>
+        <longProp name="ThreadGroup.end_time">1458630165000</longProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="Simple Controller" enabled="true"/>
+        <hashTree>
+          <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="BS Sampler - Read next line" enabled="true">
+            <stringProp name="BeanShellSampler.query">import org.apache.jmeter.services.FileServer;
+import java.io.FileReader;
+import java.util.*;
+
+String THREAD_FILE_PREFIX = &quot;THREAD_&quot;;
+String baseDir = FileServer.getFileServer().getBaseDir();
+int threamNum = ctx.getThreadNum();
+String fileName = vars.get(&quot;OUTPUT_FOLDER&quot;) + &quot;/&quot; + THREAD_FILE_PREFIX + threamNum;
+
+int lineCounter = 0; 
+String line = FileServer.getFileServer().readLine(fileName, false, false);
+if  (line != null) {
+	String[] words = line.split(&quot;,&quot;);
+
+	vars.put(&quot;IOS_TOKENID&quot;, words[1]);
+	vars.put(&quot;AND_TOKENID&quot;, words[2]);
+	vars.put(&quot;ALIAS&quot;, words[5]);
+	log.info(&quot;Reading CSV line (&quot; + words[0] + &quot;) from &quot; + fileName);
+}</stringProp>
+            <stringProp name="BeanShellSampler.filename"></stringProp>
+            <stringProp name="BeanShellSampler.parameters"></stringProp>
+            <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
+          </BeanShellSampler>
+          <hashTree/>
+          <IncludeController guiclass="IncludeControllerGui" testclass="IncludeController" testname="IC - Register installation" enabled="true">
+            <stringProp name="IncludeController.includepath">register-params-installations-fregment.jmx</stringProp>
+          </IncludeController>
+          <hashTree/>
+        </hashTree>
+        <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>false</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <threadCounts>true</threadCounts>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>false</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <threadCounts>true</threadCounts>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
+        <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response 200 Assertion" enabled="true">
+          <collectionProp name="Asserion.test_strings">
+            <stringProp name="49586">200</stringProp>
+          </collectionProp>
+          <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+          <boolProp name="Assertion.assume_success">false</boolProp>
+          <intProp name="Assertion.test_type">16</intProp>
+        </ResponseAssertion>
+        <hashTree/>
+        <BeanShellAssertion guiclass="BeanShellAssertionGui" testclass="BeanShellAssertion" testname="BeanShell Assertion - exit code 1 on error" enabled="true">
+          <stringProp name="BeanShellAssertion.query">for (a: SampleResult.getAssertionResults()) {
+	if (a.isError() || a.isFailure()) {
+		log.error(Thread.currentThread().getName()+&quot;: &quot;+SampleLabel+&quot;: Assertion failed for response code &quot;+ResponseCode+&quot; : &quot; + new String((byte[]) ResponseData));
+		System.exit(1);	
+	}
+}
+</stringProp>
+          <stringProp name="BeanShellAssertion.filename"></stringProp>
+          <stringProp name="BeanShellAssertion.parameters"></stringProp>
+          <boolProp name="BeanShellAssertion.resetInterpreter">false</boolProp>
+        </BeanShellAssertion>
+        <hashTree/>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <longProp name="ThreadGroup.start_time">1467017036000</longProp>
+        <longProp name="ThreadGroup.end_time">1467017036000</longProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <OnceOnlyController guiclass="OnceOnlyControllerGui" testclass="OnceOnlyController" testname="Once Only Controller" enabled="true"/>
+        <hashTree>
+          <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="BS Sampler - Close files" enabled="true">
+            <stringProp name="BeanShellSampler.query">import org.apache.jmeter.services.FileServer;
+import org.apache.jmeter.util.JMeterUtils; 
+import java.io.FileReader;
+import java.util.*;
+
+final static String THREAD_FILE_PREFIX = &quot;THREAD_&quot;;
+String baseDir = FileServer.getFileServer().getBaseDir();
+int numOfThreads = Integer.parseInt(vars.get(&quot;NUMBER_OF_THREADS&quot;));
+//String outDir = System.getProperty(&quot;java.io.tmpdir&quot;);
+String outDir = vars.get(&quot;OUTPUT_FOLDER&quot;);
+
+// Open file writers array according to number of threads
+// All files are stored under OS temp dir.
+for(int threadCounter = 0; threadCounter&lt;numOfThreads ; threadCounter++ ) {
+ 	FileServer.getFileServer().closeFile(outDir + &quot;/&quot; + THREAD_FILE_PREFIX + threadCounter); 	
+}</stringProp>
+            <stringProp name="BeanShellSampler.filename"></stringProp>
+            <stringProp name="BeanShellSampler.parameters"></stringProp>
+            <boolProp name="BeanShellSampler.resetInterpreter">true</boolProp>
+          </BeanShellSampler>
+          <hashTree/>
+        </hashTree>
+      </hashTree>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>
