@@ -72,6 +72,11 @@
             <stringProp name="Argument.value">${__P(OUTPUT_SUB_FOLDER,/tmp/automation/cb4/Getting_all_actions/actions)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+          <elementProp name="EXIT_CODE_1_ON_ERROR" elementType="Argument">
+            <stringProp name="Argument.name">EXIT_CODE_1_ON_ERROR</stringProp>
+            <stringProp name="Argument.value">${__P(EXIT_CODE_1_ON_ERROR,true)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
         </collectionProp>
       </elementProp>
       <stringProp name="TestPlan.user_define_classpath"></stringProp>
@@ -527,14 +532,16 @@ vars.put(&quot;TASK_ID&quot;,obj.tasks[${counter}].id.toString());
           </ResponseAssertion>
           <hashTree/>
           <BeanShellAssertion guiclass="BeanShellAssertionGui" testclass="BeanShellAssertion" testname="BeanShell Assertion - fail with code 1 on errors" enabled="true">
-            <stringProp name="BeanShellAssertion.query">for (a: SampleResult.getAssertionResults()) {
-	if (a.isError() || a.isFailure()) {
-		log.error(Thread.currentThread().getName()+&quot;: &quot;+SampleLabel+&quot;: Assertion failed for response code &quot;+ResponseCode+&quot; : &quot; + new String((byte[]) ResponseData));
-		Thread.sleep(5);
-		System.exit(1);	
+            <stringProp name="BeanShellAssertion.query">boolean shouldExitOnError = Boolean.parseBoolean(vars.get(&quot;EXIT_CODE_1_ON_ERROR&quot;));
+if(shouldExitOnError){
+	for (a: SampleResult.getAssertionResults()) {
+		if (a.isError() || a.isFailure()) {
+			log.error(Thread.currentThread().getName()+&quot;: &quot;+SampleLabel+&quot;: Assertion failed for response code &quot;+ResponseCode+&quot; : &quot; + new String((byte[]) ResponseData));
+			Thread.sleep(5);
+			System.exit(1);	
+		}
 	}
-}
-</stringProp>
+}</stringProp>
             <stringProp name="BeanShellAssertion.filename"></stringProp>
             <stringProp name="BeanShellAssertion.parameters"></stringProp>
             <boolProp name="BeanShellAssertion.resetInterpreter">false</boolProp>

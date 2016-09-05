@@ -67,6 +67,11 @@
             <stringProp name="Argument.value">${__P(OUTPUT_FOLDER,mobile_jmeter)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+          <elementProp name="EXIT_CODE_1_ON_ERROR" elementType="Argument">
+            <stringProp name="Argument.name">EXIT_CODE_1_ON_ERROR</stringProp>
+            <stringProp name="Argument.value">${__P(EXIT_CODE_1_ON_ERROR,true)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
         </collectionProp>
       </elementProp>
       <stringProp name="TestPlan.user_define_classpath"></stringProp>
@@ -543,15 +548,18 @@ try{
             </collectionProp>
             <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
             <boolProp name="Assertion.assume_success">false</boolProp>
-            <intProp name="Assertion.test_type">16</intProp>
+            <intProp name="Assertion.test_type">2</intProp>
           </ResponseAssertion>
           <hashTree/>
           <BeanShellAssertion guiclass="BeanShellAssertionGui" testclass="BeanShellAssertion" testname="BeanShell Assertion - exit code 1 on error" enabled="true">
-            <stringProp name="BeanShellAssertion.query">for (a: SampleResult.getAssertionResults()) {
-	if (a.isError() || a.isFailure()) {
-		log.error(Thread.currentThread().getName()+&quot;: &quot;+SampleLabel+&quot;: Assertion failed for response code &quot;+ResponseCode+&quot; : &quot; + new String((byte[]) ResponseData));
-		Thread.sleep(5);
-		System.exit(1);	
+            <stringProp name="BeanShellAssertion.query">boolean shouldExitOnError = Boolean.parseBoolean(vars.get(&quot;EXIT_CODE_1_ON_ERROR&quot;));
+if(shouldExitOnError){
+	for (a: SampleResult.getAssertionResults()) {
+		if (a.isError() || a.isFailure()) {
+			log.error(Thread.currentThread().getName()+&quot;: &quot;+SampleLabel+&quot;: Assertion failed for response code &quot;+ResponseCode+&quot; : &quot; + new String((byte[]) ResponseData));
+			Thread.sleep(5);
+			System.exit(1);	
+		}
 	}
 }</stringProp>
             <stringProp name="BeanShellAssertion.filename"></stringProp>
