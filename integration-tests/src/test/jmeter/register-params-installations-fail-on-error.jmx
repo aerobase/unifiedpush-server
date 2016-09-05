@@ -384,6 +384,7 @@ if  (line != null) {
           <stringProp name="BeanShellAssertion.query">for (a: SampleResult.getAssertionResults()) {
 	if (a.isError() || a.isFailure()) {
 		log.error(Thread.currentThread().getName()+&quot;: &quot;+SampleLabel+&quot;: Assertion failed for response code &quot;+ResponseCode+&quot; : &quot; + new String((byte[]) ResponseData));
+		Thread.sleep(5);
 		System.exit(1);	
 	}
 }
