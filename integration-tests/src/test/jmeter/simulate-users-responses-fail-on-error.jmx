@@ -9,22 +9,22 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="ANDROID_USERNAME" elementType="Argument">
             <stringProp name="Argument.name">ANDROID_USERNAME</stringProp>
-            <stringProp name="Argument.value">${__P(ANDROID_USERNAME,bf501d1e-79f3-4597-aaa9-385494b4388a)}</stringProp>
+            <stringProp name="Argument.value">${__P(ANDROID_USERNAME,96d8baa3-53d1-4f53-98f5-9a1c7252d417)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="ANDROID_PASSWORD" elementType="Argument">
             <stringProp name="Argument.name">ANDROID_PASSWORD</stringProp>
-            <stringProp name="Argument.value">${__P(ANDROID_PASSWORD,6f07c127-1031-4d84-ae2e-0aac972b76aa)}</stringProp>
+            <stringProp name="Argument.value">${__P(ANDROID_PASSWORD,f9db6124-e461-4326-9d85-757cac6affbd)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="IOS_USERNAME" elementType="Argument">
             <stringProp name="Argument.name">IOS_USERNAME</stringProp>
-            <stringProp name="Argument.value">${__P(IOS_USERNAME,1dc89010-a674-46e6-bcd9-e080b678fb16)}</stringProp>
+            <stringProp name="Argument.value">${__P(IOS_USERNAME,1bb5938b0-4b6c-4cec-a657-54edf83eab8d)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="IOS_PASSWORD" elementType="Argument">
             <stringProp name="Argument.name">IOS_PASSWORD</stringProp>
-            <stringProp name="Argument.value">${__P(IOS_PASSWORD,9024c0a0-c33c-45e4-a935-63ec7a04fb09)}</stringProp>
+            <stringProp name="Argument.value">${__P(IOS_PASSWORD,0dda1d44-1d20-4ef8-b7e3-8ab2aa0787fd)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="SERVER_PROTOCOL" elementType="Argument">
@@ -64,7 +64,7 @@
           </elementProp>
           <elementProp name="OUTPUT_FOLDER" elementType="Argument">
             <stringProp name="Argument.name">OUTPUT_FOLDER</stringProp>
-            <stringProp name="Argument.value">${__P(OUTPUT_FOLDER,mobile_jmeter)}</stringProp>
+            <stringProp name="Argument.value">${__P(OUTPUT_FOLDER,/tmp/automation/cb4/simulate_mobile_responses_and_validate_against_the_application)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="EXIT_CODE_1_ON_ERROR" elementType="Argument">
@@ -269,7 +269,7 @@ try{
 	log.info(&quot;caching reasons&quot;);
 	def slurper = new groovy.json.JsonSlurper();
 	String reasonsJsonString = prev.getResponseDataAsString();
-	
+	log.info(&quot;caching reasons&quot; + reasonsJsonString);
 	def obj = slurper.parseText(reasonsJsonString);
 	vars.put(&quot;REASONS_JSON_STRING&quot;,reasonsJsonString);
 	
@@ -354,11 +354,12 @@ try{
               <stringProp name="parameters"></stringProp>
               <stringProp name="filename"></stringProp>
               <stringProp name="cacheKey">7f98f172-b1b8-4b67-8060-ee83f07dc743</stringProp>
-              <stringProp name="script">def slurper = new groovy.json.JsonSlurper();
-try{
-	String tasksJsonString = prev.getResponseDataAsString();
+              <stringProp name="script">try{
+	log.info(&quot;caching tasks&quot;);
+	def slurper = new groovy.json.JsonSlurper();
+	String tasksJsonString = prev.getResponseDataAsString().toString();
+	log.info(&quot;caching tasks&quot; + tasksJsonString);
 	vars.put(&quot;TASKS_JSON_STRING&quot;,tasksJsonString);
-	
 	def obj = slurper.parseText(tasksJsonString);
 	if(obj.tasks == null){
 		log.info(vars.get(&quot;ALIAS&quot;) + &quot; did not get any actions&quot;);
@@ -383,7 +384,7 @@ try{
             <hashTree/>
           </hashTree>
           <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If Controller" enabled="true">
-            <stringProp name="IfController.condition">${TASKS_JSON_STRING} != null || ${TASKS_JSON_STRING} != &quot;&quot;</stringProp>
+            <stringProp name="IfController.condition">(${TASKS_JSON_STRING} != null || ${TASKS_JSON_STRING} != &quot;&quot;)</stringProp>
             <boolProp name="IfController.evaluateAll">false</boolProp>
           </IfController>
           <hashTree>
@@ -481,7 +482,7 @@ String responsesJson = JsonOutput.toJson(deployInfo)
 log.info(responsesJson)
 log.info(&quot;-----------&quot;)
 vars.put(&apos;HTTP_REASONS_BODY&apos;, responsesJson)
-String jsonOutFile = props.get(&quot;OUTPUT_FOLDER&quot;) + &quot;/&quot; + deployId + &quot;_&quot; + alias + &quot;_&quot; + &quot;responses.json&quot;
+String jsonOutFile = vars.get(&quot;OUTPUT_FOLDER&quot;) + &quot;/&quot; + deployId + &quot;_&quot; + alias + &quot;_&quot; + &quot;responses.json&quot;
 vars.put(&quot;jsonOutFile&quot;,jsonOutFile)</stringProp>
                 <stringProp name="scriptLanguage">groovy</stringProp>
               </JSR223PreProcessor>
@@ -533,6 +534,7 @@ try{
 	log.info(&quot;-----writing responses json file: &quot;+outFile+&quot;------&quot;);
 	FileServer.getFileServer().reserveFile(outFile);	
 	FileServer.getFileServer().write(outFile, vars.get(&quot;HTTP_REASONS_BODY&quot;));
+	
 	FileServer.getFileServer().closeFile(outFile);
 }catch(Exception ex){
 	log.error(&quot;JMETER ERROR MESSAGE: &quot; + ex.getMessage());
