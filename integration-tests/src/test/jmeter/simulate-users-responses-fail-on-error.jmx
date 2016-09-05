@@ -69,7 +69,7 @@
           </elementProp>
           <elementProp name="EXIT_CODE_1_ON_ERROR" elementType="Argument">
             <stringProp name="Argument.name">EXIT_CODE_1_ON_ERROR</stringProp>
-            <stringProp name="Argument.value">${__P(EXIT_CODE_1_ON_ERROR,false)}</stringProp>
+            <stringProp name="Argument.value">${__P(EXIT_CODE_1_ON_ERROR,true)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
