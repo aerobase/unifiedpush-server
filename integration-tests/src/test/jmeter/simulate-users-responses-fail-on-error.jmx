@@ -373,7 +373,7 @@ try{
 	def obj = slurper.parseText(tasksJsonString);
 	if(obj.tasks == null){
 		log.info(vars.get(&quot;ALIAS&quot;) + &quot; did not get any actions&quot;);
-		vars.put(&quot;TASKS_JSON_STRING&quot;, &quot;{}&quot;);
+		vars.put(&quot;TASKS_JSON_STRING_DEFINED&quot;, &quot;false&quot;);
 		// TODO: need to make it go to next loop some how.. i coudn&apos;t find out how to do this yet so it currently throws exceptions when calling the next line
 		} else{
 			def numOfTasks = obj.tasks.size();
@@ -396,7 +396,7 @@ try{
             <hashTree/>
           </hashTree>
           <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If Controller" enabled="true">
-            <stringProp name="IfController.condition">&apos;${TASKS_JSON_STRING}&apos; != &apos;null&apos; &amp;&amp; &quot;${TASKS_JSON_STRING}&quot; != &quot;&quot; &amp;&amp; &quot;${TASKS_JSON_STRING}&quot; != &quot;{}&quot;</stringProp>
+            <stringProp name="IfController.condition">&apos;${TASKS_JSON_STRING_DEFINED}&apos; != &apos;false&apos;</stringProp>
             <boolProp name="IfController.evaluateAll">false</boolProp>
           </IfController>
           <hashTree>
