@@ -206,8 +206,7 @@ public class AliasEndpoint extends AbstractBaseEndpoint {
 			aliasService.updateAliasesAndInstallations(pushApplication, aliasData, oauth2);
 			return Response.ok(EmptyJSON.STRING).build();
 		} catch (Exception e) {
-			Throwable t = e.getCause();
-			logger.error("Cannot update aliases, {}", t);
+			logger.error("Cannot update aliases, {}", e.getCause());
 			int exceptionIndex = ExceptionUtils.indexOfType(e, ServiceConstraintViolationException.class);
 			if (exceptionIndex > 0) {
 				List<Throwable> throwableList = ExceptionUtils.getThrowableList(e);
