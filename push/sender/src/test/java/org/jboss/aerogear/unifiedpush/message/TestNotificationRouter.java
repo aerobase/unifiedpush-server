@@ -105,7 +105,7 @@ public class TestNotificationRouter extends AbstractNoCassandraServiceTest {
 		app.getVariants().add(new iOSVariant());
 		app.getVariants().add(new SimplePushVariant());
 		router.submit(app, message);
-		countDownLatch.await(3, TimeUnit.SECONDS);
+		countDownLatch.await(6, TimeUnit.SECONDS);
 		assertEquals(variants(VariantType.ANDROID, VariantType.IOS, VariantType.SIMPLE_PUSH),
 				variantTypeHolder.getVariantTypes());
 	}
@@ -150,7 +150,7 @@ public class TestNotificationRouter extends AbstractNoCassandraServiceTest {
 		message.getCriteria().setVariants(Arrays.asList(iOSVariant.getVariantID(), androidVariant.getVariantID()));
 
 		router.submit(app, message);
-		countDownLatch.await(3, TimeUnit.SECONDS);
+		countDownLatch.await(6, TimeUnit.SECONDS);
 		assertEquals(variants(VariantType.ANDROID, VariantType.IOS), variantTypeHolder.getVariantTypes());
 	}
 
