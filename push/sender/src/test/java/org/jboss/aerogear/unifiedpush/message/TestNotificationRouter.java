@@ -44,12 +44,17 @@ import org.jboss.aerogear.unifiedpush.service.GenericVariantService;
 import org.jboss.aerogear.unifiedpush.service.annotations.LoggedInUser;
 import org.junit.Test;
 import org.springframework.context.annotation.Bean;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import reactor.core.publisher.TopicProcessor;
 
 @ContextConfiguration(classes = { SenderConfig.class, VariantTypesHolderConfig.class })
+@DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
+// When running with maven we can't ensure no other test was already
+// Registered as downstream, so lets reload spring context
 public class TestNotificationRouter extends AbstractNoCassandraServiceTest {
 
 	@Inject
@@ -73,7 +78,7 @@ public class TestNotificationRouter extends AbstractNoCassandraServiceTest {
 		message = new InternalUnifiedPushMessage();
 		variantTypeHolder.clear();
 
-		if (nextBatchEvent.downstreamCount()==1)
+		if (nextBatchEvent.downstreamCount() == 1)
 			nextBatchEvent.take(Runtime.getRuntime().availableProcessors()).repeat()
 					.subscribe(s -> variantTypeHolder.addVariantType(s.getVariantType()));
 	}
@@ -105,7 +110,7 @@ public class TestNotificationRouter extends AbstractNoCassandraServiceTest {
 		app.getVariants().add(new iOSVariant());
 		app.getVariants().add(new SimplePushVariant());
 		router.submit(app, message);
-		countDownLatch.await(6, TimeUnit.SECONDS);
+		countDownLatch.await(5, TimeUnit.SECONDS);
 		assertEquals(variants(VariantType.ANDROID, VariantType.IOS, VariantType.SIMPLE_PUSH),
 				variantTypeHolder.getVariantTypes());
 	}
@@ -150,7 +155,7 @@ public class TestNotificationRouter extends AbstractNoCassandraServiceTest {
 		message.getCriteria().setVariants(Arrays.asList(iOSVariant.getVariantID(), androidVariant.getVariantID()));
 
 		router.submit(app, message);
-		countDownLatch.await(6, TimeUnit.SECONDS);
+		countDownLatch.await(5, TimeUnit.SECONDS);
 		assertEquals(variants(VariantType.ANDROID, VariantType.IOS), variantTypeHolder.getVariantTypes());
 	}
 
