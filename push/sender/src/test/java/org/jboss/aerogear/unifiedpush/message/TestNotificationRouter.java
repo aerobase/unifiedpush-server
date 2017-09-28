@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.jboss.aerogear.unifiedpush.api.AndroidVariant;
@@ -73,14 +74,16 @@ public class TestNotificationRouter extends AbstractNoCassandraServiceTest {
 	private PushApplication app;
 	private InternalUnifiedPushMessage message;
 
+	@PostConstruct
+	public void init() {
+		if (nextBatchEvent.downstreamCount() == 1)
+			nextBatchEvent.take(10).repeat().subscribe(s -> variantTypeHolder.addVariantType(s.getVariantType()));
+	}
+
 	public void specificSetup() {
 		app = new PushApplication();
 		message = new InternalUnifiedPushMessage();
 		variantTypeHolder.clear();
-
-		if (nextBatchEvent.downstreamCount() == 1)
-			nextBatchEvent.take(Runtime.getRuntime().availableProcessors()).repeat()
-					.subscribe(s -> variantTypeHolder.addVariantType(s.getVariantType()));
 	}
 
 	@Test
@@ -98,7 +101,7 @@ public class TestNotificationRouter extends AbstractNoCassandraServiceTest {
 		app.getVariants().add(new SimplePushVariant());
 		app.getVariants().add(new SimplePushVariant());
 		router.submit(app, message);
-		countDownLatch.await(3, TimeUnit.SECONDS);
+		countDownLatch.await(5, TimeUnit.SECONDS);
 		assertEquals(variants(VariantType.SIMPLE_PUSH), variantTypeHolder.getVariantTypes());
 	}
 
@@ -167,7 +170,7 @@ public class TestNotificationRouter extends AbstractNoCassandraServiceTest {
 	}
 
 	public static class VariantTypesHolder {
-		private Set<VariantType> variantTypes = new HashSet<>();
+		private volatile Set<VariantType> variantTypes = new HashSet<>();
 
 		public void addVariantType(VariantType variantType) {
 			this.variantTypes.add(variantType);
