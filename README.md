@@ -105,7 +105,7 @@ For instructions how to develop `admin-ui`, refer to [`admin-ui/README.md`](http
 
 These instructions contains also specific instructions how to upgrade NPM package dependencies.
 
-Note that the {{frontend-maven-plugin}} may fail if you killed the build during its work - it may leave the downloaded modules in inconsistent state, see [`admin-ui/README.md`](https://github.com/aerobase/unifiedpush-admin-ui/README.md#build-errors).
+Note that the {{frontend-maven-plugin}} may fail if you killed the build during its work - it may leave the downloaded modules in inconsistent state, see [`admin-ui/README.md`](https://github.com/aerobase/unifiedpush-admin-ui/blob/master/README.md#build-errors).
 
 #### Cleaning the Admin UI build
 
