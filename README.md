@@ -13,7 +13,7 @@ Aerobase is a mobile/web platform that helps you quickly develop high-quality mo
 * SSL Support and easy configuration.
 * Cloud Messaging - Push Notifications (Payload & Silent).
 * Centralized configuration/management using Chef Omnibus.
-* By default, every Aerobase package comes with an embedded NGINX, Wildfly 10.1 & KeyCloak 2.4, Cassandra 3.9.
+* By default, every Aerobase package comes with an embedded NGINX, Wildfly 11.0, KeyCloak 4.2, Cassandra 3.11.1.
 * [Full-stack](https://bintray.com/aerobase) rpm/deb installers across a variety of platforms (RHEL, Debian, Fedora, Ubuntu).
 
 #### Push Notification cloud providers
@@ -68,7 +68,7 @@ Up to date generated REST endpoint documentation can be found in `http://docs.ae
 
 ## Who is using it?
 
-We have a list of users in our [wiki](https://github.com/aerobase/unifiedpush-server/wiki/Users-of-the-UnifiedPush-Server). If you are using the UnifiedPush Server, please add yourself to the list!
+We have a list of users in our [wiki](https://github.com/aerobase/unifiedpush-server/wiki/Users-of-the-Aerobase-Server). If you are using the UnifiedPush Server, please add yourself to the list!
 
 ## Development
 
@@ -77,16 +77,16 @@ The above `Getting started` section covers the latest release of the UnifiedPush
 
 ### Deployment & Development
 
-For deployment of the `master branch` to a specific server (Wildfly-10 or EAP7), you need to build the WAR files and deploy them to a running and configured server.
+For deployment of the `master branch` to a specific server (Wildfly-11 or EAP7), you need to build the WAR files and deploy them to a running and configured server.
 
 First build the entire project:
 ```
 mvn clean install
 ```
 
-Note, this will build the also the WAR files for both, WildFly-10 and EAP7.
+Note, this will build the also the WAR files for both, WildFly-11 and EAP7.
 
-#### Deployment to WildFly-10/EAP7
+#### Deployment to WildFly-11/EAP7
 
 For WildFly, invoke the following commands afer the build has been completed. This will deploy both WAR files to a running and configured Wildfly server.
 
@@ -101,11 +101,11 @@ The sources for administration console UI are placed under `admin-ui`.
 
 For a build of the `admin-ui` during release, you can just run a Maven build, the `admin-ui` will be compiled by `frontend-maven-plugin` during `admin-ui` module build.
 
-For instructions how to develop `admin-ui`, refer to [`admin-ui/README.md`](https://github.com/aerobase/unifiedpush-server/blob/master/admin-ui/README.md).
+For instructions how to develop `admin-ui`, refer to [`admin-ui/README.md`](https://github.com/aerobase/unifiedpush-admin-ui).
 
 These instructions contains also specific instructions how to upgrade NPM package dependencies.
 
-Note that the {{frontend-maven-plugin}} may fail if you killed the build during its work - it may leave the downloaded modules in inconsistent state, see [`admin-ui/README.md`](https://github.com/aerobase/unifiedpush-server/blob/master/admin-ui/README.md#build-errors).
+Note that the {{frontend-maven-plugin}} may fail if you killed the build during its work - it may leave the downloaded modules in inconsistent state, see [`admin-ui/README.md`](https://github.com/aerobase/unifiedpush-admin-ui/README.md#build-errors).
 
 #### Cleaning the Admin UI build
 
