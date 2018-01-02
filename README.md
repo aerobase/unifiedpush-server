@@ -1,11 +1,11 @@
-# AeroBase UnifiedPush Server
+# Aerobase UnifiedPush Server
 
 [![Build Status](https://travis-ci.org/aerobase/unifiedpush-server.svg?branch=master)](https://travis-ci.org/aerobase/unifiedpush-server)
 [![License](https://img.shields.io/:license-Apache2-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
-AeroBase is a mobile/web platform that helps you quickly develop high-quality modern web and mobile applications.
+Aerobase is a mobile/web platform that helps you quickly develop high-quality modern web and mobile applications.
 
-#### _AeroBase UnifiedPush Server_ releases additional functionality while maintaining _AeroGear_ API compatibility:
+#### _Aerobase UnifiedPush Server_ releases additional functionality while maintaining _AeroGear_ API compatibility:
 * Realtime DB - NoSQL Document Database, store & access your documents from both the server and the client.
 * Scalable & Fault Tolerant, Based on apache cassandra database.
 * Authentication - Add authentication to applications and secure services with minimum fuss.
@@ -13,8 +13,8 @@ AeroBase is a mobile/web platform that helps you quickly develop high-quality mo
 * SSL Support and easy configuration.
 * Cloud Messaging - Push Notifications (Payload & Silent).
 * Centralized configuration/management using Chef Omnibus.
-* By default, every AeroBase package comes with an embedded NGINX, Wildfly 10.1 & KeyCloak 2.4, Cassandra 3.9.
-* [Full-stack](http://ups.c-b4.com/ups/packages/) rpm/deb installers across a variety of platforms (RHEL, Debian, Fedora, Ubuntu).
+* By default, every Aerobase package comes with an embedded NGINX, Wildfly 10.1 & KeyCloak 2.4, Cassandra 3.9.
+* [Full-stack](https://bintray.com/aerobase) rpm/deb installers across a variety of platforms (RHEL, Debian, Fedora, Ubuntu).
 
 #### Push Notification cloud providers
 
@@ -34,25 +34,25 @@ AeroBase is a mobile/web platform that helps you quickly develop high-quality mo
 | --------------- | ------------- |
 | License:        | Apache License, Version 2.0  |
 | Build:          | Maven  |
-| Documentation:  | [AeroBase Server Documentation](https://github.com/aerobase/omnibus-unifiedpush-server/tree/master/doc) |
-|                 | [AeroBase API Documentaion](http://ups.c-b4.com/aerobase-docs/) |
+| Documentation:  | [Aerobase Server Documentation](https://github.com/aerobase/omnibus-unifiedpush-server/tree/master/doc) |
+|                 | [Aerobase API Documentaion](http://docs.arobase.org0/rest/) |
 | Issue tracker:  | [JIRA](https://aerobase.atlassian.net/projects/ARB/issues/) |
 
 ## Getting started
 
 Or for the on-premise version, execute the following steps to get going!
 
-* Download and install the [latest package (rpm/deb) files](http://ups.c-b4.com/ups/packages/)
-* Follow the steps on the [Installation guide](https://github.com/aerobase/unifiedpush-server/wiki/AeroBase-Installation)
+* Download and install the [latest package (rpm/deb) files](https://bintray.com/aerobase/)
+* Follow the steps on the [Installation guide](https://github.com/aerobase/unifiedpush-server/wiki/Aerobase-Installation)
 * Run ``sudo unifiedpush-ctl reconfigure``
 * Start the server ``sudo unifiedpush-ctl start``
 
-Now go to ``http://localhost/unifiedpush-server`` and enjoy the AeroBase Server.
+Now go to ``http://localhost/unifiedpush-server`` and enjoy the Aerobase Server.
 __NOTE:__ the default user/password is ```admin```:```123```
 
 #### Getting Started with Clustered Servers
 
-In order to test on a cluster of AeroBase servers, the default configuration serves pretty well, you just need to set 'contactpoints' to /etc/unifiedpush/unifiedpush.rb.
+In order to test on a cluster of Aerobase servers, the default configuration serves pretty well, you just need to set 'contactpoints' to /etc/unifiedpush/unifiedpush.rb.
 
 ## Docker-Compose
 
@@ -64,7 +64,7 @@ For more details about the current release, please consult [our documentation](h
 
 #### Generate REST Documentation
 
-Up to date generated REST endpoint documentation can be found in `http://ups.c-b4.com/aerobase-docs/`. It is generated with every `jaxrs` module build.
+Up to date generated REST endpoint documentation can be found in `http://docs.aerobase.org/rest/`. It is generated with every `jaxrs` module build.
 
 ## Who is using it?
 
@@ -115,7 +115,7 @@ In order to clean the state of Admin UI build caches, run maven build with the f
 
 Try this if the build fails e.g. after `bower.json` or `package.json` modifications to make sure no cache is playing with you.
 
-## Releasing the AeroBase UnifiedPush Server
+## Releasing the Aerobase UnifiedPush Server
 
 The content of the [Release Process](https://github.com/aerogear/collateral/wiki/Release-Process-(Java)) is valid for this project as well. However, to build the `distribution` bundle, you need to include these profiles:
 
