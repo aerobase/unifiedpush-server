@@ -32,7 +32,9 @@ public class KeycloakConfigurationEndpoint {
 		AdapterConfig adapterConfig = new AdapterConfig();
 		adapterConfig.setRealm(configurationService.getUpsRealm());
 		adapterConfig.setAuthServerUrl(configurationService.getOAuth2Url());
-		adapterConfig.setSslRequired("external");
+
+		// When Running using http, allow none https requests
+		adapterConfig.setSslRequired(configurationService.getOAuth2Url().startsWith("https")? "external": "none");
 		adapterConfig.setPublicClient(true);
 		adapterConfig.setResource("unified-push-server-js");
 
