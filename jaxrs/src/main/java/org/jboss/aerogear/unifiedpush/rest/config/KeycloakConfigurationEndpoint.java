@@ -36,7 +36,7 @@ public class KeycloakConfigurationEndpoint {
 		// When Running using http, allow none https requests
 		adapterConfig.setSslRequired(configurationService.getOAuth2Url().startsWith("https")? "external": "none");
 		adapterConfig.setPublicClient(true);
-		adapterConfig.setResource("unified-push-server-js");
+		adapterConfig.setResource("aerobase-app");
 
 		try {
 			return Response.ok(mapper.writeValueAsString(adapterConfig)).build();

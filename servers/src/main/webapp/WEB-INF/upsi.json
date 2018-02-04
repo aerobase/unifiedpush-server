@@ -1,5 +1,5 @@
 {
-  "realm": "unifiedpush-installations",
+  "realm": "aerobase-installations",
   "auth-server-url" : "/auth",
   "ssl-required" : "external",
   "resource" : "admin-cli",

@@ -1,8 +1,8 @@
 {
-  "realm" : "unifiedpush",
+  "realm" : "aerobase",
   "auth-server-url" : "/auth",
   "ssl-required" : "external",
-  "resource" : "unified-push-server",
+  "resource" : "aerobase",
   "bearer-only" : true,
   "disable-trust-manager" : true
 }

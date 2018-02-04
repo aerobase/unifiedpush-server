@@ -29,8 +29,14 @@ public class OAuth2Configuration implements IOAuth2Configuration {
 
 	private static final String DEFAULT_OAUTH2_SERVER_URL = "/auth";
 
-	public static final String DEFAULT_OAUTH2_UPS_REALM = "unifiedpush";
-	public static final String DEFAULT_OAUTH2_UPSI_REALM = "unifiedpush-installations";
+	public static final String DEFAULT_OAUTH2_UPS_REALM = "aerobase";
+
+	/*
+	 * aerobase-installations is a predefined REALM used by aerobase
+	 * applications (Demos, Examples, Etc).
+	 */
+	public static final String DEFAULT_OAUTH2_UPSI_REALM = "aerobase-installations";
+
 	public static final String DEFAULT_SUBDOMAIN_SEPERATOR = "-";
 
 	private static ConfigurationEnvironment configuration;
@@ -149,7 +155,8 @@ public class OAuth2Configuration implements IOAuth2Configuration {
 		NONE("*", "(.*)") {
 			@Override
 			public String rootUrl(String protocol, String domain, String application) {
-				return protocol + "://" + application;			}
+				return protocol + "://" + application;
+			}
 		};
 
 		private final Pattern pattern;
