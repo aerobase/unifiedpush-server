@@ -79,6 +79,7 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
 
 		// Public Access
 		web.ignoring().antMatchers("/rest/keycloak/config");
+		web.ignoring().antMatchers("/rest/keycloak/config/*");
 		web.ignoring().antMatchers("/rest/heartbeat*");
 
 		// Application Level Basic Authentication

@@ -11,13 +11,22 @@ public class AbstractEndpoint {
         // add response headers for the preflight request
         // required
         response.header("Access-Control-Allow-Origin", headers.getRequestHeader("Origin").get(0)) // return submitted origin
+        .header("Access-Control-Allow-Credentials", "true")
                 .header("Access-Control-Allow-Methods", "POST, DELETE, PUT, GET, OPTIONS")
                 .header("Access-Control-Allow-Headers", "accept, origin, content-type, authorization, device-token") // explicit Headers!
-                .header("Access-Control-Allow-Credentials", "true")
                 // indicates how long the results of a preflight request can be cached (in seconds)
                 .header("Access-Control-Max-Age", "604800"); // for now, we keep it for seven days
 
         return response;
+    }
+
+	protected ResponseBuilder appendAllowOriginHeader(HttpHeaders headers, ResponseBuilder response) {
+		if (headers.getRequestHeader("Origin").size() > 0){
+			return response.header("Access-Control-Allow-Origin", headers.getRequestHeader("Origin").get(0)) // return submitted origin
+				.header("Access-Control-Allow-Credentials", "true");
+		}
+
+		return response;
     }
 
 	protected Response appendAllowOriginHeader(ResponseBuilder rb, HttpServletRequest request) {
