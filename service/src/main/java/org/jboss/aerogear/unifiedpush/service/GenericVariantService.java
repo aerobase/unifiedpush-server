@@ -21,48 +21,58 @@ import org.jboss.aerogear.unifiedpush.service.annotations.LoggedInUser;
 import org.springframework.cache.annotation.Cacheable;
 
 /**
- * Service class that offers functionality to deal with the different variants (e.g. Android, iOS or SimplePush variants).
+ * Service class that offers functionality to deal with the different variants
+ * (e.g. Android, iOS or SimplePush variants).
  */
 public interface GenericVariantService {
 	public static final String CACHE_NAME = "variant-by-id";
-    /**
-     * Store a new Variant object on the database.
-     *
-     * @param variant the variant
-     * @param user logged-in user
-     */
-    void addVariant(Variant variant, LoggedInUser user);
 
-    /**
-     * Performs an update/merge on the given entity.
-     *
-     * @param variant the variant
-     */
-    void updateVariant(Variant variant);
+	/**
+	 * Store a new Variant object on the database.
+	 *
+	 * @param variant
+	 *            the variant
+	 * @param user
+	 *            logged-in user
+	 */
+	void addVariant(Variant variant, LoggedInUser user);
 
-    /**
-     * Returns the Variant entity, matching the given variantID.
-     *
-     * @param variantID the id
-     *
-     * @return the variant
-     */
-    @Cacheable(value = GenericVariantService.CACHE_NAME, unless = "#result == null")
-    Variant findByVariantID(String variantID);
+	/**
+	 * Performs an update/merge on the given entity.
+	 *
+	 * @param variant
+	 *            the variant
+	 */
+	void updateVariant(Variant variant);
 
-    /**
-     * Returns the Variant from the matching client in keycloak
-     *
-     * @param clientId keycloak client id
-     * @return the variant
-     */
-    Variant findVariantByKeycloakClientID(String clientId);
+	/**
+	 * Returns the Variant entity, matching the given variantID.
+	 *
+	 * @param variantID
+	 *            the id
+	 *
+	 * @return the variant
+	 */
+	@Cacheable(value = GenericVariantService.CACHE_NAME, unless = "#result == null")
+	Variant findByVariantID(String variantID);
 
-    /**
-     * Removes the given variant entity.
-     *
-     * @param variant the variant
-     */
-    void removeVariant(Variant variant);
+	/**
+	 * Returns the Variant from the matching client in keycloak
+	 *
+	 * @param loggedInUser
+	 *            logged-in account
+	 * @param clientId
+	 *            keycloak client id
+	 * @return the variant
+	 */
+	Variant findVariantByKeycloakClientID(LoggedInUser loggedInUser, String clientId);
+
+	/**
+	 * Removes the given variant entity.
+	 *
+	 * @param variant
+	 *            the variant
+	 */
+	void removeVariant(Variant variant);
 
 }

@@ -37,6 +37,7 @@ import com.datastax.driver.core.utils.UUIDs;
 
 @Transactional
 public class PushApplicationServiceTest extends AbstractCassandraServiceTest {
+	private static final LoggedInUser account = new LoggedInUser(DEFAULT_USER);
 
 	@Inject
 	private DocumentService documentService;
@@ -126,7 +127,7 @@ public class PushApplicationServiceTest extends AbstractCassandraServiceTest {
 		assertThat(searchApplicationService.findAllPushApplicationsForDeveloper(0, 10).getResultList()).isNotEmpty();
 		assertThat(searchApplicationService.findAllPushApplicationsForDeveloper(0, 10).getResultList()).hasSize(2);
 
-		pushApplicationService.removePushApplication(pa);
+		pushApplicationService.removePushApplication(account, pa);
 
 		assertThat(searchApplicationService.findAllPushApplicationsForDeveloper(0, 10).getResultList()).hasSize(1);
 		assertThat(pushApplicationService.findByPushApplicationID(uuid)).isNull();
@@ -150,26 +151,25 @@ public class PushApplicationServiceTest extends AbstractCassandraServiceTest {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-    public void shouldThrowErrorWhenCreatingAppWithExistingID() {
-        // Given
-        final String uuid = UUID.randomUUID().toString();
+	public void shouldThrowErrorWhenCreatingAppWithExistingID() {
+		// Given
+		final String uuid = UUID.randomUUID().toString();
 
-        final PushApplication pa = new PushApplication();
-        pa.setName("EJB Container");
-        pa.setPushApplicationID(uuid);
+		final PushApplication pa = new PushApplication();
+		pa.setName("EJB Container");
+		pa.setPushApplicationID(uuid);
 
-        final PushApplication pa2 = new PushApplication();
-        pa2.setName("EJB Container 2");
-        pa2.setPushApplicationID(uuid);
+		final PushApplication pa2 = new PushApplication();
+		pa2.setName("EJB Container 2");
+		pa2.setPushApplicationID(uuid);
 
-        // When
-        pushApplicationService.addPushApplication(pa, new LoggedInUser(DEFAULT_USER));
-        assertThat(pushApplicationService.findByPushApplicationID(pa.getPushApplicationID()))
-                .isNotNull();
+		// When
+		pushApplicationService.addPushApplication(pa, new LoggedInUser(DEFAULT_USER));
+		assertThat(pushApplicationService.findByPushApplicationID(pa.getPushApplicationID())).isNotNull();
 
-        // Then
-        pushApplicationService.addPushApplication(pa2, new LoggedInUser(DEFAULT_USER));
-    }
+		// Then
+		pushApplicationService.addPushApplication(pa2, new LoggedInUser(DEFAULT_USER));
+	}
 
 	@Test
 	public void removeApplicationAndDocuments() {
@@ -183,7 +183,7 @@ public class PushApplicationServiceTest extends AbstractCassandraServiceTest {
 
 		// Create Alias
 		Alias alias = new Alias(UUID.fromString(pa.getPushApplicationID()), UUIDs.timeBased(), "TEST@X.com");
-		aliasService.create(alias);
+		aliasService.create(account, alias);
 
 		// Create document for alias
 		documentService.save(new DocumentMetadata(pa.getPushApplicationID(), "TASKS", alias), "{SIMPLE}", "1");
@@ -195,10 +195,11 @@ public class PushApplicationServiceTest extends AbstractCassandraServiceTest {
 		assertTrue(documents.size() == 1);
 
 		// Recreate alias
-		aliasService.create(new Alias(UUID.fromString(pa.getPushApplicationID()), UUIDs.timeBased(), "TEST@X.com"));
+		aliasService.create(account,
+				new Alias(UUID.fromString(pa.getPushApplicationID()), UUIDs.timeBased(), "TEST@X.com"));
 		assertTrue(aliasService.find(pa.getPushApplicationID(), alias.getEmail()) != null);
 
-		pushApplicationService.removePushApplication(pa);
+		pushApplicationService.removePushApplication(account, pa);
 		documents = documentService.findLatest(pa, "TASKS", "1", Arrays.asList(alias));
 
 		sleepSilently(100);
@@ -211,4 +212,3 @@ public class PushApplicationServiceTest extends AbstractCassandraServiceTest {
 	protected void specificSetup() {
 	}
 }
-

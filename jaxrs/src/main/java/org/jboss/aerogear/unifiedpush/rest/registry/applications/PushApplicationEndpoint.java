@@ -294,7 +294,7 @@ public class PushApplicationEndpoint extends AbstractManagementEndpoint {
         PushApplication pushApp = getSearch().findByPushApplicationIDForDeveloper(pushApplicationID);
 
         if (pushApp != null) {
-            pushAppService.removePushApplication(pushApp);
+            pushAppService.removePushApplication(extractUsername(), pushApp);
             return Response.noContent().build();
         }
         return Response.status(Status.NOT_FOUND).entity("Could not find requested PushApplicationEntity").build();

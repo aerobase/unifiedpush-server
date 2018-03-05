@@ -6,6 +6,9 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
+import org.jboss.aerogear.unifiedpush.rest.authentication.AuthenticationHelper;
+import org.jboss.aerogear.unifiedpush.service.annotations.LoggedInUser;
+
 public class AbstractEndpoint {
 	protected static ResponseBuilder appendPreflightResponseHeaders(HttpHeaders headers, ResponseBuilder response) {
         // add response headers for the preflight request
@@ -47,5 +50,14 @@ public class AbstractEndpoint {
     // http://stackoverflow.com/questions/7705081/jax-rs-resteasy-service-return-json-string-without-double-quote
     protected static String quote(String value) {
     	return new StringBuilder(value.length() + 2).append('"' + value + '"').toString();
+    }
+
+	/**
+	 * Extract the username to be used in multiple queries
+	 *
+	 * @return current logged in user
+	 */
+    public static LoggedInUser extractUsername() {
+       return AuthenticationHelper.extractUsername();
     }
 }

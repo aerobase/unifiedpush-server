@@ -818,7 +818,7 @@ public class DatabaseEndpoint extends AbstractEndpoint {
 			aliasObj = new Alias(pushApplicationId, null, null, deviceToken);
 
 			// Create anonymous alias
-			aliasService.create(aliasObj);
+			aliasService.create(extractUsername(), aliasObj);
 		}
 
 		return aliasObj;

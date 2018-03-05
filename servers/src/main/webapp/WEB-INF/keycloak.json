@@ -1,5 +1,5 @@
 {
-  "realm" : "aerobase",
+  "realm" : "SHOULD-BE-REPLACED-IN-JAVA",
   "auth-server-url" : "/auth",
   "ssl-required" : "external",
   "resource" : "aerobase",

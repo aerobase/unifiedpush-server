@@ -32,6 +32,7 @@ import org.jboss.aerogear.unifiedpush.service.AliasService;
 import org.jboss.aerogear.unifiedpush.service.DocumentService;
 import org.jboss.aerogear.unifiedpush.service.PostDelete;
 import org.jboss.aerogear.unifiedpush.service.PushApplicationService;
+import org.jboss.aerogear.unifiedpush.service.annotations.LoggedInUser;
 import org.jboss.aerogear.unifiedpush.service.impl.spring.IKeycloakService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,16 +54,18 @@ public class AliasServiceImpl implements AliasService {
 	@Inject
 	private DocumentService documentService;
 
-	public List<Alias> addAll(PushApplication pushApplication, List<Alias> aliases, boolean oauth2) {
+	@Override
+	public List<Alias> addAll(LoggedInUser account, PushApplication pushApplication, List<Alias> aliases,
+			boolean oauth2) {
 		logger.debug("OAuth2 flag is: " + oauth2);
 		List<Alias> aliasList = new ArrayList<>();
 
 		// Create keycloak client if missing.
 		if (oauth2)
-			keycloakService.createClientIfAbsent(pushApplication);
+			keycloakService.createClientIfAbsent(account, pushApplication);
 
 		aliases.forEach(alias -> {
-			create(alias);
+			create(account, alias);
 			aliasList.add(alias);
 		});
 
@@ -70,35 +73,35 @@ public class AliasServiceImpl implements AliasService {
 	}
 
 	@Override
-	public void updateAliasePassword(String aliasId, String currentPassword, String newPassword) {
-		keycloakService.updateUserPassword(aliasId, currentPassword, newPassword);
+	public void updateAliasePassword(LoggedInUser account, String aliasId, String currentPassword, String newPassword) {
+		keycloakService.updateUserPassword(account, aliasId, currentPassword, newPassword);
 	}
 
 	@Override
-	public void remove(UUID pushApplicationId, String alias) {
+	public void remove(LoggedInUser account, UUID pushApplicationId, String alias) {
 		// Remove any aliases related to this alias name
-		remove(pushApplicationId, alias, false);
+		remove(account, pushApplicationId, alias, false);
 	}
 
 	@Override
-	public void remove(UUID pushApplicationId, UUID userId) {
-		remove(pushApplicationId, userId, false);
+	public void remove(LoggedInUser account, UUID pushApplicationId, UUID userId) {
+		remove(account, pushApplicationId, userId, false);
 	}
 
 	@Override
-	public void remove(UUID pushApplicationId, UUID userId, boolean destructive) {
+	public void remove(LoggedInUser account, UUID pushApplicationId, UUID userId, boolean destructive) {
 		Alias alias = aliasDao.findOne(pushApplicationId, userId);
-		this.remove(pushApplicationId, StringUtils.isNotEmpty(alias.getEmail()) ? alias.getEmail() : alias.getOther(),
-				destructive);
+		this.remove(account, pushApplicationId,
+				StringUtils.isNotEmpty(alias.getEmail()) ? alias.getEmail() : alias.getOther(), destructive);
 	}
 
-	private void remove(UUID pushApplicationId, String alias, boolean destructive) {
+	private void remove(LoggedInUser account, UUID pushApplicationId, String alias, boolean destructive) {
 		// Remove any aliases belong to user_id
 		aliasDao.remove(pushApplicationId, alias);
 
 		if (destructive) {
 			// Remove user from keyCloak
-			keycloakService.delete(alias);
+			keycloakService.delete(account, alias);
 
 			documentService.delete(pushApplicationId, find(pushApplicationId.toString(), alias));
 		}
@@ -125,8 +128,8 @@ public class AliasServiceImpl implements AliasService {
 	 *            alias name
 	 */
 	@Override
-	public boolean registered(String alias) {
-		return keycloakService.exists(alias);
+	public boolean registered(LoggedInUser account, String alias) {
+		return keycloakService.exists(account, alias);
 	}
 
 	/**
@@ -184,7 +187,8 @@ public class AliasServiceImpl implements AliasService {
 	 */
 	@Override
 	@Async
-	public void removeAll(PushApplication pushApplication, boolean destructive, PostDelete action) {
+	public void removeAll(LoggedInUser account, PushApplication pushApplication, boolean destructive,
+			PostDelete action) {
 		UUID pushApplicationId = UUID.fromString(pushApplication.getPushApplicationID());
 
 		aliasDao.findUserIds(pushApplicationId).map(row -> aliasDao.findOne(pushApplicationId, row.getUUID(0)))
@@ -194,7 +198,7 @@ public class AliasServiceImpl implements AliasService {
 					if (destructive) {
 						// KC users are registered by email
 						if (StringUtils.isNotEmpty(alias.getEmail()))
-							keycloakService.delete(alias.getEmail());
+							keycloakService.delete(account, alias.getEmail());
 
 						documentService.delete(pushApplicationId, alias);
 					}
@@ -203,7 +207,7 @@ public class AliasServiceImpl implements AliasService {
 				});
 
 		if (destructive) {
-			keycloakService.removeClient(pushApplication);
+			keycloakService.removeClient(account, pushApplication);
 		}
 
 		action.after();
@@ -213,7 +217,7 @@ public class AliasServiceImpl implements AliasService {
 	 * Create alias while preserving user uuid.
 	 */
 	@Override
-	public void create(Alias alias) {
+	public void create(LoggedInUser account, Alias alias) {
 		// Initialize a new time-based UUID on case one is missing.
 		if (alias.getId() == null) {
 			// Search if alias is already register for application.
@@ -222,7 +226,7 @@ public class AliasServiceImpl implements AliasService {
 
 			if (existingAlias != null) {
 				// Remove all references to previous alias
-				remove(alias.getPushApplicationId(), existingAlias.getId());
+				remove(account, alias.getPushApplicationId(), existingAlias.getId());
 				// TODO - if user exists with KC, and primary email changed?
 				// Change user alias and enforce registration process
 
@@ -237,8 +241,8 @@ public class AliasServiceImpl implements AliasService {
 
 	@Override
 	@Async
-	public void createAsynchronous(Alias alias) {
-		create(alias);
+	public void createAsynchronous(LoggedInUser loggedInUser, Alias alias) {
+		create(loggedInUser, alias);
 	}
 
 }

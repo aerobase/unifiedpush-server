@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.aerogear.unifiedpush.api.Variant;
 import org.jboss.aerogear.unifiedpush.service.GenericVariantService;
+import org.jboss.aerogear.unifiedpush.service.annotations.LoggedInUser;
 import org.jboss.aerogear.unifiedpush.service.impl.spring.KeycloakServiceImpl;
 import org.keycloak.adapters.spi.HttpFacade.Request;
 import org.keycloak.jose.jws.JWSInput;
@@ -43,11 +44,11 @@ public final class BearerHelper {
 	private BearerHelper() {
 	}
 
-	public static Variant extractVariantFromBearerHeader(GenericVariantService genericVariantService,
+	public static Variant extractVariantFromBearerHeader(LoggedInUser account, GenericVariantService genericVariantService,
 			HttpServletRequest request) {
 		String clientId = extractClientId(request);
 		if (StringUtils.isNotBlank(clientId)) {
-			return genericVariantService.findVariantByKeycloakClientID(clientId);
+			return genericVariantService.findVariantByKeycloakClientID(account, clientId);
 		}
 
 		return null;

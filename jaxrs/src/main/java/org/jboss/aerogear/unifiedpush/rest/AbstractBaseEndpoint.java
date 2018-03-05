@@ -31,14 +31,9 @@ import javax.validation.Validator;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
-import org.jboss.aerogear.unifiedpush.service.annotations.LoggedInUser;
-import org.keycloak.KeycloakPrincipal;
-import org.keycloak.KeycloakSecurityContext;
-import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * Base class for all RESTful endpoints. Offers hooks for common features like validation
@@ -120,25 +115,5 @@ public abstract class AbstractBaseEndpoint extends AbstractEndpoint {
 		responseObj.put(code, message);
 		return Response.status(Response.Status.CONFLICT).entity(responseObj);
 	}
-
-	/**
-	 * Extract the username to be used in multiple queries
-	 *
-	 * @return current logged in user
-	 */
-    public static LoggedInUser extractUsername() {
-        KeycloakAuthenticationToken token = ((KeycloakAuthenticationToken) SecurityContextHolder.getContext().getAuthentication());
-
-		// Null check for automation scenarios.
-		if (token != null && token.getPrincipal() != null) {
-			KeycloakPrincipal<?> p = (KeycloakPrincipal<?>) token.getPrincipal();
-
-			KeycloakSecurityContext kcSecurityContext = p.getKeycloakSecurityContext();
-			return new LoggedInUser(kcSecurityContext.getToken().getPreferredUsername());
-		}
-
-
-		return new LoggedInUser("NULL");
-    }
 
 }

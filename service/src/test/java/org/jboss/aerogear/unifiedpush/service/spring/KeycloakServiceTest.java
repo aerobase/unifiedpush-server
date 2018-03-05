@@ -12,7 +12,10 @@ import static org.mockito.Mockito.when;
 import java.util.Arrays;
 import java.util.List;
 
+import org.jboss.aerogear.unifiedpush.service.AbstractBaseServiceTest;
+import org.jboss.aerogear.unifiedpush.service.annotations.LoggedInUser;
 import org.jboss.aerogear.unifiedpush.service.impl.spring.IKeycloakService;
+import org.jboss.aerogear.unifiedpush.service.impl.spring.KeycloakServiceImpl;
 import org.jboss.aerogear.unifiedpush.service.impl.spring.OAuth2Configuration.DomainMatcher;
 import org.jboss.aerogear.unifiedpush.service.spring.KeycloakServiceTest.KeycloakServiceTestConfig;
 import org.jboss.aerogear.unifiedpush.spring.ServiceCacheConfig;
@@ -33,6 +36,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 @ContextConfiguration(classes = { KeycloakServiceTestConfig.class, ServiceCacheConfig.class })
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class })
 public class KeycloakServiceTest {
+	private static final LoggedInUser account = new LoggedInUser(AbstractBaseServiceTest.DEFAULT_USER);
 
 	@Autowired
 	private IKeycloakService kcServiceMock;
@@ -43,25 +47,25 @@ public class KeycloakServiceTest {
 	public void before() {
 		MockitoAnnotations.initMocks(this);
 
-		when(mockProvider.get().getVariantIdsFromClient(eq("test-client-1")))
+		when(mockProvider.get().getVariantIdsFromClient(eq(account), eq("test-client-1")))
 				.thenReturn(Arrays.asList("variant-1", "variant-2"));
-		when(mockProvider.get().getVariantIdsFromClient(eq("test-client-2")))
+		when(mockProvider.get().getVariantIdsFromClient(eq(account), eq("test-client-2")))
 				.thenReturn(Arrays.asList("variant-3", "variant-4"));
 	}
 
 	@Test
 	public void cacheTest() {
-		List<String> firstInvocation = kcServiceMock.getVariantIdsFromClient("test-client-1");
+		List<String> firstInvocation = kcServiceMock.getVariantIdsFromClient(account, "test-client-1");
 		assertThat(firstInvocation.get(0), is("variant-1"));
 
-		List<String> secondInvocation = kcServiceMock.getVariantIdsFromClient("test-client-1");
+		List<String> secondInvocation = kcServiceMock.getVariantIdsFromClient(account, "test-client-1");
 		assertThat(secondInvocation.get(0), is("variant-1"));
 
-		verify(mockProvider.get(), times(1)).getVariantIdsFromClient("test-client-1");
+		verify(mockProvider.get(), times(1)).getVariantIdsFromClient(account, "test-client-1");
 	}
 
 	@Test
-	public void test() {
+	public void testDomains() {
 		assertThat(DomainMatcher.DOT.matches("test.aerobase"), is("test"));
 		assertThat(DomainMatcher.DOT.matches("a-bc.test.aerobase.eu.uk"), is("a-bc"));
 		assertThat(DomainMatcher.DASH.matches("test-aerobase"), is("test"));
@@ -69,6 +73,14 @@ public class KeycloakServiceTest {
 		assertThat(DomainMatcher.DASH.matches("a-bc-test-aerobase.eu.uk"), is("a-bc-test"));
 		assertThat(DomainMatcher.NONE.matches("test.aerobase.eu.uk"), is("test.aerobase.eu.uk"));
 		assertThat(DomainMatcher.NONE.matches("test-aerobase.eu.uk"), is("test-aerobase.eu.uk"));
+	}
+
+	@Test
+	public void testSccounts() {
+		assertThat(KeycloakServiceImpl.toRealm("admin", new LoggedInUser("admin")), is("master"));
+		assertThat(KeycloakServiceImpl.toRealm("admin", new LoggedInUser("test@aerobase.org")), is("test-aerobase-org"));
+		assertThat(KeycloakServiceImpl.toRealm("admin", new LoggedInUser("test_123_123@aerobase.org")), is("test-123-123-aerobase-org"));
+		assertThat(KeycloakServiceImpl.toRealm("admin", new LoggedInUser("test__--123@aerobase.org")), is("test----123-aerobase-org"));
 	}
 
 	@After
@@ -103,4 +115,5 @@ public class KeycloakServiceTest {
 		}
 
 	}
+
 }

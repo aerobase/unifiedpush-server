@@ -48,6 +48,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.datastax.driver.core.utils.UUIDs;
 
 public class ClientInstallationServiceTest extends AbstractCassandraServiceTest  {
+	private static final LoggedInUser account = new LoggedInUser(DEFAULT_USER);
 
 	@Inject
 	private ClientInstallationService clientInstallationService;
@@ -596,7 +597,7 @@ public class ClientInstallationServiceTest extends AbstractCassandraServiceTest 
 		device.setAlias(installationAlias);
 
 		clientInstallationService.addInstallation(androidVariant, device);
-		aliasService.addAll(application, aliases, false);
+		aliasService.addAll(account, application, aliases, false);
 
 		Variant var = clientInstallationService.associateInstallation(device, variant);
 		assertTrue("Unable to assosiate variant!", var != null);
@@ -630,21 +631,21 @@ public class ClientInstallationServiceTest extends AbstractCassandraServiceTest 
 		device.setAlias(installationAlias);
 
 		clientInstallationService.addInstallation(variant, device);
-		aliasService.addAll(application, aliases, false);
+		aliasService.addAll(account, application, aliases, false);
 
 		Installation installation = clientInstallationService
 				.findInstallationForVariantByDeviceToken(variant.getVariantID(), deviceToken);
 		assertNotNull(installation);
 
 		// Recreate without 'p1' alias from aliases list.
-		aliasService.addAll(application, aliases.subList(0, 1), false);
+		aliasService.addAll(account, application, aliases.subList(0, 1), false);
 		installation = clientInstallationService.findInstallationForVariantByDeviceToken(variant.getVariantID(),
 				deviceToken);
 
 		assertTrue(installation.isEnabled() == true);
 
 		// Recreate with 'p1' alias from aliases list.
-		aliasService.addAll(application, aliases, false);
+		aliasService.addAll(account, application, aliases, false);
 		installation = clientInstallationService.findInstallationForVariantByDeviceToken(variant.getVariantID(),
 				deviceToken);
 

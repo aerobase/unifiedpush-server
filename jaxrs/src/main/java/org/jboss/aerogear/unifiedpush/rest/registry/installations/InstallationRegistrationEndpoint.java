@@ -524,7 +524,7 @@ public class InstallationRegistrationEndpoint extends AbstractBaseEndpoint {
 					.entity(quote("installation not found for: " + verificationAttempt.getDeviceToken())), request);
 		}
 
-		VerificationResult result = verificationService.verifyDevice(installation, variant, verificationAttempt);
+		VerificationResult result = verificationService.verifyDevice(extractUsername(), installation, variant, verificationAttempt);
 
 		return appendAllowOriginHeader(Response.ok(result), request);
 	}

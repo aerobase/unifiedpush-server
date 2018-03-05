@@ -120,7 +120,7 @@ public class AliasEndpoint extends AbstractBaseEndpoint {
 	@Produces(MediaType.APPLICATION_JSON)
 	@ReturnType("java.lang.Boolean")
 	public Response registered(@PathParam("alias") String alias, @Context HttpServletRequest request) {
-		if (aliasService.registered(alias))
+		if (aliasService.registered(extractUsername(), alias))
 			return appendAllowOriginHeader(Response.ok().entity(Boolean.TRUE), request);
 
 		return appendAllowOriginHeader(Response.ok().entity(Boolean.FALSE), request);
@@ -201,7 +201,7 @@ public class AliasEndpoint extends AbstractBaseEndpoint {
 			if (accessToken != null && accessToken.getPreferredUsername().equals(alias)) {
 				ResponseBuilder response = Response.notModified();
 				if (passwordContainer.isDataValid()) {
-					aliasService.updateAliasePassword(alias, passwordContainer.getCurrentPassword(),
+					aliasService.updateAliasePassword(extractUsername(), alias, passwordContainer.getCurrentPassword(),
 							passwordContainer.getNewPassword());
 
 					response = Response.ok(EmptyJSON.STRING);
@@ -283,9 +283,9 @@ public class AliasEndpoint extends AbstractBaseEndpoint {
 
 			// Support synchronously mode by default
 			if (synchronously)
-				aliasService.create(alias);
+				aliasService.create(extractUsername(), alias);
 			else
-				aliasService.createAsynchronous(alias);
+				aliasService.createAsynchronous(extractUsername(), alias);
 
 			return appendAllowOriginHeader(Response.ok(alias), request);
 		} catch (AliasAlreadyExists e) {
@@ -359,7 +359,7 @@ public class AliasEndpoint extends AbstractBaseEndpoint {
 		}
 
 		try {
-			List<Alias> aliaesList = aliasService.addAll(pushApplication, aliases, oauth2);
+			List<Alias> aliaesList = aliasService.addAll(extractUsername(), pushApplication, aliases, oauth2);
 			return Response.ok(aliaesList).build();
 		} catch (ServiceConstraintViolationException e) {
 			logger.warn("ConstraintViolationException, alias {} already exists in db.", e.getEntityId());
@@ -490,7 +490,7 @@ public class AliasEndpoint extends AbstractBaseEndpoint {
 						.entity("Unauthorized Request").build();
 			}
 
-			aliasService.remove(UUID.fromString(pushApplication.getPushApplicationID()), //
+			aliasService.remove(extractUsername(), UUID.fromString(pushApplication.getPushApplicationID()), //
 					UUID.fromString(id));
 
 			return Response.ok().build();
@@ -534,7 +534,7 @@ public class AliasEndpoint extends AbstractBaseEndpoint {
 						.entity("Unauthorized Request").build();
 			}
 
-			aliasService.remove(UUID.fromString(pushApplication.getPushApplicationID()), //
+			aliasService.remove(extractUsername(), UUID.fromString(pushApplication.getPushApplicationID()), //
 					alias);
 
 			return Response.ok().build();
@@ -578,7 +578,7 @@ public class AliasEndpoint extends AbstractBaseEndpoint {
 						.entity("Unauthorized Request").build();
 			}
 
-			aliasService.remove(UUID.fromString(pushApplication.getPushApplicationID()), UUID.fromString(id), true);
+			aliasService.remove(extractUsername(), UUID.fromString(pushApplication.getPushApplicationID()), UUID.fromString(id), true);
 
 			return Response.ok().build();
 		} catch (Exception e) {

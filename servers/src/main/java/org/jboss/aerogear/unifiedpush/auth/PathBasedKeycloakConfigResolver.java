@@ -24,6 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.aerogear.unifiedpush.rest.util.BearerHelper;
+import org.jboss.aerogear.unifiedpush.service.impl.spring.OAuth2Configuration;
 import org.keycloak.adapters.KeycloakConfigResolver;
 import org.keycloak.adapters.KeycloakDeployment;
 import org.keycloak.adapters.spi.HttpFacade.Request;
@@ -37,7 +38,7 @@ import org.springframework.context.ApplicationContext;
 public class PathBasedKeycloakConfigResolver implements KeycloakConfigResolver {
 	private static final Logger logger = LoggerFactory.getLogger(PathBasedKeycloakConfigResolver.class);
 
-	// TODO - Convert to
+	// TODO - Convert to infinispan cache
 	private static final Map<String, CustomKeycloakDeployment> cache = new ConcurrentHashMap<String, CustomKeycloakDeployment>();
 
 	@Autowired
@@ -45,41 +46,46 @@ public class PathBasedKeycloakConfigResolver implements KeycloakConfigResolver {
 
 	@Override
 	public KeycloakDeployment resolve(Request request) {
-		String realm = "keycloak";
+		String realmConfig = "keycloak";
 
 		String referer = BearerHelper.getRefererHeader(request);
+		boolean isProxy = isProxyRequest(referer, request);
+
+		String realmName = getRealmName(isProxy, referer);
 
 		// TODO - Use proxy subdomain as realm name.
-		if (isProxyRequest(referer, request)) {
+		if (isProxy) {
 			if (logger.isTraceEnabled())
-				logger.trace("Identified proxy request, using upsi realm! URI: {}, referer: {}", request.getURI(), referer);
-			realm = "upsi";
+				logger.trace("Identified proxy request, using keycloak-proxy realm config! URI: {}, referer: {}",
+						request.getURI(), referer);
+			realmConfig = "keycloak-proxy";
 		} else {
 			if (logger.isTraceEnabled())
-				logger.trace("Identified non-proxy request, using keycloak realm! URI: {}, referer: {}", request.getURI(), referer);
+				logger.trace("Identified non-proxy request, using keycloak realm config! URI: {}, referer: {}",
+						request.getURI(), referer);
 		}
 
-		CustomKeycloakDeployment deployment = cache.get(realm);
+		CustomKeycloakDeployment deployment = cache.get(realmName);
 		if (null == deployment) {
 			InputStream is = null;
 
 			try {
-				is = applicationContext.getResource("/WEB-INF/" + realm + ".json").getInputStream();
+				is = applicationContext.getResource("/WEB-INF/" + realmConfig + ".json").getInputStream();
 			} catch (IOException e) {
-				throw new IllegalStateException("Not able to find the file /" + realm + ".json");
+				throw new IllegalStateException("Not able to find the file /" + realmConfig + ".json");
 			}
 
 			if (is == null) {
-				throw new IllegalStateException("Not able to find the file /" + realm + ".json");
+				throw new IllegalStateException("Not able to find the file /" + realmConfig + ".json");
 			}
 
-			deployment = CustomKeycloakDeploymentBuilder.build(is);
+			deployment = CustomKeycloakDeploymentBuilder.build(is, isProxy, realmName);
 
 			String baseUrl = getBaseBuilder(deployment, request, deployment.getAuthServerBaseUrl()).build().toString();
 			KeycloakUriBuilder serverBuilder = KeycloakUriBuilder.fromUri(baseUrl);
 			resolveUrls(deployment, serverBuilder);
 
-			cache.put(realm, deployment);
+			cache.put(realmName, deployment);
 		}
 
 		return deployment;
@@ -136,5 +142,23 @@ public class PathBasedKeycloakConfigResolver implements KeycloakConfigResolver {
 
 	private Boolean isProxyRequest(String referer, Request request) {
 		return StringUtils.isNoneEmpty(referer) && !request.getURI().startsWith(referer);
+	}
+
+	private String getRealmName(boolean isProxy, String referer) {
+
+		String defaultRealm = OAuth2Configuration.getStaticUpsRealm();
+		if (!isProxy) {
+			return defaultRealm;
+		}
+
+		// Extract subdomain primary account name.
+		int pos = StringUtils.indexOf(referer, ".");
+
+		if (pos < 0) {
+			logger.warn("Unable to extract subdomain from proxy request, using defautl realm: " + defaultRealm);
+			return defaultRealm;
+		}
+
+		return StringUtils.left(referer, StringUtils.indexOf(referer, "."));
 	}
 }

@@ -34,7 +34,7 @@ public interface PushApplicationService {
      * @param user logged-in user
      */
     void addPushApplication(PushApplication pushApp, LoggedInUser user) throws IllegalArgumentException;
-    
+
 
     /**
      * Performs an update/merge on the given entity.
@@ -58,7 +58,7 @@ public interface PushApplicationService {
      *
      * @param pushApp the push application object
      */
-    void removePushApplication(PushApplication pushApp);
+    void removePushApplication(LoggedInUser account, PushApplication pushApp);
 
     /**
      * Registers the given Variant object with the given PushApplication.

@@ -3,6 +3,7 @@ package org.jboss.aerogear.unifiedpush.service;
 import org.jboss.aerogear.unifiedpush.api.Installation;
 import org.jboss.aerogear.unifiedpush.api.InstallationVerificationAttempt;
 import org.jboss.aerogear.unifiedpush.api.Variant;
+import org.jboss.aerogear.unifiedpush.service.annotations.LoggedInUser;
 
 /**
  * Service used to manage installation verification cycle.
@@ -32,6 +33,8 @@ public interface VerificationService {
 	 * Attempts to verify the device (after a verification request has been
 	 * issued prior to this point).
 	 *
+	 * @param loggedInUser
+	 *            logged-in account
 	 * @param installation
 	 *            The device installation.
 	 * @param variant
@@ -41,7 +44,7 @@ public interface VerificationService {
 	 * @return a {@link VerificationResult} signaling the outcome of the
 	 *         verification attempt.
 	 */
-	VerificationResult verifyDevice(Installation installation, Variant variant,
+	VerificationResult verifyDevice(LoggedInUser loggedInUser, Installation installation, Variant variant,
 			InstallationVerificationAttempt verificationAttempt);
 
 	/**

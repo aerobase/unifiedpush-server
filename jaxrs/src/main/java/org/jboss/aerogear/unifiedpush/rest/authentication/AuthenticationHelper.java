@@ -17,8 +17,13 @@ import org.jboss.aerogear.unifiedpush.service.AliasService;
 import org.jboss.aerogear.unifiedpush.service.ClientInstallationService;
 import org.jboss.aerogear.unifiedpush.service.GenericVariantService;
 import org.jboss.aerogear.unifiedpush.service.PushApplicationService;
+import org.jboss.aerogear.unifiedpush.service.annotations.LoggedInUser;
+import org.keycloak.KeycloakPrincipal;
+import org.keycloak.KeycloakSecurityContext;
+import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 
 @Controller
@@ -181,6 +186,26 @@ public class AuthenticationHelper {
 	private static Variant loadVariantFromBearerWhenAuthorized(GenericVariantService genericVariantService,
 			HttpServletRequest request) {
 		// extract the Variant from the Authorization header:
-		return BearerHelper.extractVariantFromBearerHeader(genericVariantService, request);
+		return BearerHelper.extractVariantFromBearerHeader(extractUsername(), genericVariantService, request);
 	}
+
+	/**
+	 * Extract the username to be used in multiple queries
+	 *
+	 * @return current logged in user
+	 */
+    public static LoggedInUser extractUsername() {
+        KeycloakAuthenticationToken token = ((KeycloakAuthenticationToken) SecurityContextHolder.getContext().getAuthentication());
+
+		// Null check for automation scenarios.
+		if (token != null && token.getPrincipal() != null) {
+			KeycloakPrincipal<?> p = (KeycloakPrincipal<?>) token.getPrincipal();
+
+			KeycloakSecurityContext kcSecurityContext = p.getKeycloakSecurityContext();
+			return new LoggedInUser(kcSecurityContext.getToken().getPreferredUsername());
+		}
+
+
+		return new LoggedInUser("NULL");
+    }
 }

@@ -36,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.datastax.driver.core.utils.UUIDs;
 
 public class AliasServiceTest extends AbstractCassandraServiceTest {
+	private static final LoggedInUser account = new LoggedInUser(DEFAULT_USER);
 
 	@Inject
 	private AliasService aliasService;
@@ -53,7 +54,7 @@ public class AliasServiceTest extends AbstractCassandraServiceTest {
 		aliasesList.add(new Alias(pushAppId, UUIDs.timeBased(), "gfgfd337765567"));
 
 		// Sync 4 aliases
-		List<Alias> aliases = aliasService.addAll(pushApplication, aliasesList, false);
+		List<Alias> aliases = aliasService.addAll(account, pushApplication, aliasesList, false);
 
 		// Validate 4 aliases
 		aliases.forEach(alias -> {
@@ -61,7 +62,7 @@ public class AliasServiceTest extends AbstractCassandraServiceTest {
 		});
 
 		// Sync 2 aliases
-		aliasService.addAll(pushApplication, aliasesList.subList(0, 1), false);
+		aliasService.addAll(account, pushApplication, aliasesList.subList(0, 1), false);
 
 		// Validate 4 aliases
 		aliases.forEach(alias -> {
@@ -81,7 +82,7 @@ public class AliasServiceTest extends AbstractCassandraServiceTest {
 		List<Alias> aliasList = Arrays.asList(legacyAliases);
 
 		// Sync 3 aliases
-		List<Alias> aliases = aliasService.addAll(pushApplication, aliasList, false);
+		List<Alias> aliases = aliasService.addAll(account, pushApplication, aliasList, false);
 
 		// Validate 3 aliases
 		aliases.forEach(alias -> {
@@ -89,7 +90,7 @@ public class AliasServiceTest extends AbstractCassandraServiceTest {
 		});
 
 		// Sync 2 aliases
-		aliasService.addAll(pushApplication, Arrays.asList(legacyAliases[0], legacyAliases[1]), false);
+		aliasService.addAll(account, pushApplication, Arrays.asList(legacyAliases[0], legacyAliases[1]), false);
 
 		// Validate 3 aliases
 		aliases.forEach(alias -> {
@@ -109,7 +110,7 @@ public class AliasServiceTest extends AbstractCassandraServiceTest {
 		List<Alias> aliasList = Arrays.asList(legacyAliases);
 
 		// Sync 3 aliases
-		List<Alias> aliases = aliasService.addAll(pushApplication, aliasList, false);
+		List<Alias> aliases = aliasService.addAll(account, pushApplication, aliasList, false);
 
 		// Validate 3 aliases
 		aliases.forEach(alias -> {
@@ -117,7 +118,7 @@ public class AliasServiceTest extends AbstractCassandraServiceTest {
 		});
 
 		// Delete alias
-		aliasService.remove(pushAppId, legacyAliases[0].getEmail());
+		aliasService.remove(account, pushAppId, legacyAliases[0].getEmail());
 
 		// Validate Alias is missing
 		assertThat(aliasService.find(legacyAliases[0].getPushApplicationId(), legacyAliases[0].getId())).isNull();
@@ -137,7 +138,7 @@ public class AliasServiceTest extends AbstractCassandraServiceTest {
 		UUID pushAppId = UUID.randomUUID();
 		pushApplication.setPushApplicationID(pushAppId.toString());
 
-		pushApplicationService.addPushApplication(pushApplication, new LoggedInUser(DEFAULT_USER));
+		pushApplicationService.addPushApplication(pushApplication, account);
 
 		Alias[] aliases = new Alias[] { new Alias(pushAppId, UUIDs.timeBased(), "Supprot@AeroBase.org"),
 				new Alias(pushAppId, UUIDs.timeBased(), "Test@AeroBase.org"),
@@ -145,7 +146,7 @@ public class AliasServiceTest extends AbstractCassandraServiceTest {
 		List<Alias> aliasList = Arrays.asList(aliases);
 
 		// Sync 3 aliases
-		aliasService.addAll(pushApplication, aliasList, false);
+		aliasService.addAll(account, pushApplication, aliasList, false);
 		boolean result = aliasService.associated(aliases[0].getEmail(), appName + "-" + domain);
 		assertThat(result).isTrue();
 

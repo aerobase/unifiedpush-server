@@ -2,7 +2,6 @@ package org.jboss.aerogear.unifiedpush.auth;
 
 import java.io.InputStream;
 
-import org.apache.commons.lang3.StringUtils;
 import org.jboss.aerogear.unifiedpush.service.impl.spring.OAuth2Configuration;
 import org.keycloak.adapters.KeycloakDeploymentBuilder;
 import org.keycloak.representations.adapters.config.AdapterConfig;
@@ -13,22 +12,35 @@ public class CustomKeycloakDeploymentBuilder extends KeycloakDeploymentBuilder {
 		deployment = new CustomKeycloakDeployment();
 	}
 
-	public static CustomKeycloakDeployment build(InputStream is) {
-		AdapterConfig adapterConfig = loadAdapterConfig(is);
+	/**
+	 * @param isProxy
+	 *            Update realm name according to proxy subdmain or default
+	 *            system realm.</br>
+	 *
+	 *            <li>false, use system default realm. e.g:
+	 *            OAuth2Configuration.getStaticUpsRealm()
+	 *
+	 *            <li>true, use subdomain name as realm name e.g:
+	 *            <b>portal</b>.aerobase.io ,<b>test-mail-org</b>.aerobase.io
+	 *
+	 * @param inputStream
+	 *            Realm input stream
+	 * @param proxyRealmName
+	 *            proxy subdomain
+	 */
+	public static CustomKeycloakDeployment build(InputStream inputStream, boolean isProxy, String proxyRealmName) {
+		AdapterConfig adapterConfig = loadAdapterConfig(inputStream);
 
 		// Override realm attributes from system properties if exists.
 		String upsRealmName = OAuth2Configuration.getStaticUpsRealm();
-		String upsiRealmName = OAuth2Configuration.getStaticUpsiRealm();
 		String upsAuthServer = OAuth2Configuration.getStaticOAuth2Url();
 
-		// This can be useful when we need to override properties from static WEB-INF json files.
-		if (OAuth2Configuration.DEFAULT_OAUTH2_UPS_REALM.equals(adapterConfig.getRealm())) {
+		// This override properties from static WEB-INF json files.
+		if (!isProxy) {
 			adapterConfig.setRealm(upsRealmName);
-		}
+		} else {
 
-		if (OAuth2Configuration.DEFAULT_OAUTH2_UPSI_REALM.equals(adapterConfig.getRealm())
-				&& StringUtils.isNotEmpty(upsiRealmName)) {
-			adapterConfig.setRealm(upsiRealmName);
+			adapterConfig.setRealm(proxyRealmName);
 		}
 
 		adapterConfig.setAuthServerUrl(upsAuthServer);

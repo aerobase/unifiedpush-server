@@ -25,6 +25,7 @@ import org.jboss.aerogear.unifiedpush.cassandra.dao.model.OtpCodeKey;
 import org.jboss.aerogear.unifiedpush.dao.InstallationDao;
 import org.jboss.aerogear.unifiedpush.service.AliasService;
 import org.jboss.aerogear.unifiedpush.service.VerificationService;
+import org.jboss.aerogear.unifiedpush.service.annotations.LoggedInUser;
 import org.jboss.aerogear.unifiedpush.service.impl.spring.IConfigurationService;
 import org.jboss.aerogear.unifiedpush.service.impl.spring.IKeycloakService;
 import org.jboss.aerogear.unifiedpush.service.impl.spring.IVerificationGatewayService;
@@ -140,7 +141,7 @@ public class VerificationServiceImpl implements VerificationService {
 	}
 
 	@Override
-	public VerificationResult verifyDevice(Installation installation, Variant variant,
+	public VerificationResult verifyDevice(LoggedInUser account, Installation installation, Variant variant,
 			InstallationVerificationAttempt verificationAttempt) {
 		OtpCodeKey okey = new OtpCodeKey(UUID.fromString(variant.getVariantID()), installation.getDeviceToken(),
 				verificationAttempt.getCode());
@@ -177,7 +178,7 @@ public class VerificationServiceImpl implements VerificationService {
 
 			// Enable OAuth2 User
 			if (keycloakService.isInitialized() && verificationAttempt.isOauth2()) {
-				keycloakService.createVerifiedUserIfAbsent(installation.getAlias(), verificationAttempt.getCode());
+				keycloakService.createVerifiedUserIfAbsent(account, installation.getAlias(), verificationAttempt.getCode());
 			}
 
 			return VerificationResult.SUCCESS;

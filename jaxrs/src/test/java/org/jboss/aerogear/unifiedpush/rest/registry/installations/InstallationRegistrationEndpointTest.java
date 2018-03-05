@@ -20,12 +20,14 @@ import org.jboss.aerogear.unifiedpush.api.Variant;
 import org.jboss.aerogear.unifiedpush.rest.RestEndpointTest;
 import org.jboss.aerogear.unifiedpush.rest.WebConfigTest;
 import org.jboss.aerogear.unifiedpush.rest.util.Authenticator;
+import org.jboss.aerogear.unifiedpush.service.AbstractBaseServiceTest;
 import org.jboss.aerogear.unifiedpush.service.AliasService;
 import org.jboss.aerogear.unifiedpush.service.ClientInstallationService;
 import org.jboss.aerogear.unifiedpush.service.GenericVariantService;
 import org.jboss.aerogear.unifiedpush.service.PushApplicationService;
 import org.jboss.aerogear.unifiedpush.service.VerificationService;
 import org.jboss.aerogear.unifiedpush.service.VerificationService.VerificationResult;
+import org.jboss.aerogear.unifiedpush.service.annotations.LoggedInUser;
 import org.jboss.aerogear.unifiedpush.system.ConfigurationEnvironment;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
@@ -40,6 +42,8 @@ import com.datastax.driver.core.utils.UUIDs;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = { WebConfigTest.class })
 public class InstallationRegistrationEndpointTest extends RestEndpointTest {
+	private static final LoggedInUser account = new LoggedInUser(AbstractBaseServiceTest.DEFAULT_USER);
+
 	@Inject
 	private GenericVariantService genericVariantService;
 	@Inject
@@ -108,11 +112,11 @@ public class InstallationRegistrationEndpointTest extends RestEndpointTest {
 
 			List<Alias> aliases = new ArrayList<>();
 			aliases.add(new Alias(UUID.fromString(DEFAULT_APP_ID), UUIDs.timeBased(), "Support@Test.com"));
-			aliasService.addAll(app, aliases, false);
+			aliasService.addAll(account, app, aliases, false);
 
 			// ReEnable device
 			String code = verificationService.initiateDeviceVerification(inst, variant);
-			VerificationResult results = verificationService.verifyDevice(inst, variant,
+			VerificationResult results = verificationService.verifyDevice(account, inst, variant,
 					new InstallationVerificationAttempt(code, inst.getDeviceToken()));
 			assertTrue("Result is null", results != null);
 			assertEquals(results, VerificationResult.SUCCESS);

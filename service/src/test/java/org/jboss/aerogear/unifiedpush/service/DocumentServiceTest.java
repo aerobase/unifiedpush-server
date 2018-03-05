@@ -23,6 +23,7 @@ import org.jboss.aerogear.unifiedpush.cassandra.dao.model.DocumentContent;
 import org.jboss.aerogear.unifiedpush.message.Criteria;
 import org.jboss.aerogear.unifiedpush.message.UnifiedPushMessage;
 import org.jboss.aerogear.unifiedpush.service.VerificationService.VerificationResult;
+import org.jboss.aerogear.unifiedpush.service.annotations.LoggedInUser;
 import org.jboss.aerogear.unifiedpush.service.impl.spring.IConfigurationService;
 import org.jboss.aerogear.unifiedpush.system.ConfigurationEnvironment;
 import org.junit.Assert;
@@ -33,6 +34,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.datastax.driver.core.utils.UUIDs;
 
 public class DocumentServiceTest extends AbstractCassandraServiceTest {
+	private static final LoggedInUser account = new LoggedInUser(DEFAULT_USER);
+
 	private static final String DEFAULT_DEVICE_TOKEN = "c5106a4e97ecc8b8ab8448c2ebccbfa25938c0f9a631f96eb2dd5f16f0bedc40";
 	private static final String DEFAULT_DEVICE_ALIAS = "17327572923";
 	private static final String DEFAULT_DEVICE_DATABASE = "TEST";
@@ -96,7 +99,7 @@ public class DocumentServiceTest extends AbstractCassandraServiceTest {
 
 			// Enable device
 			String code = verificationService.initiateDeviceVerification(inst, variant);
-			VerificationResult results = verificationService.verifyDevice(inst, variant,
+			VerificationResult results = verificationService.verifyDevice(account, inst, variant,
 					new InstallationVerificationAttempt(code, inst.getDeviceToken()));
 			Assert.assertTrue(results != null && results.equals(VerificationResult.SUCCESS));
 
@@ -174,7 +177,7 @@ public class DocumentServiceTest extends AbstractCassandraServiceTest {
 		PushApplication pushApplication = applicationService.findByVariantID(variant.getVariantID());
 		Alias alias1 = new Alias(UUID.fromString(pushApplication.getPushApplicationID()), UUIDs.timeBased(),
 				DEFAULT_DEVICE_ALIAS);
-		aliasService.create(alias1);
+		aliasService.create(account, alias1);
 
 		DocumentMetadata metadata = new DocumentMetadata(pushApplication.getPushApplicationID(),
 				DEFAULT_DEVICE_DATABASE, alias1);
@@ -233,8 +236,8 @@ public class DocumentServiceTest extends AbstractCassandraServiceTest {
 		Alias alias1 = new Alias(UUID.fromString(pushApp.getPushApplicationID()), UUIDs.timeBased(), "alias1");
 		Alias alias2 = new Alias(UUID.fromString(pushApp.getPushApplicationID()), UUIDs.timeBased(), "alias2");
 
-		aliasService.create(alias1);
-		aliasService.create(alias2);
+		aliasService.create(account, alias1);
+		aliasService.create(account, alias2);
 
 		documentService.save(new DocumentMetadata(pushApp.getPushApplicationID(), DEFAULT_DEVICE_DATABASE, alias1),
 				"doc1", "test_id");
@@ -302,7 +305,7 @@ public class DocumentServiceTest extends AbstractCassandraServiceTest {
 		aliases.add(new Alias(pushAppId, UUIDs.timeBased(), salias1));
 		aliases.add(new Alias(pushAppId, UUIDs.timeBased(), salias2));
 
-		aliasService.addAll(pushApp, aliases, false);
+		aliasService.addAll(account, pushApp, aliases, false);
 
 		// Reload aliases
 		Alias alias1 = aliasService.find(pushApp.getPushApplicationID(), salias1);
@@ -333,15 +336,15 @@ public class DocumentServiceTest extends AbstractCassandraServiceTest {
 		aliases.add(new Alias(pushAppId, UUIDs.timeBased(), aliasstr2));
 
 		// Create aliases using legacy code
-		List<Alias> list = aliasService.addAll(pushApp, aliases, false);
+		List<Alias> list = aliasService.addAll(account, pushApp, aliases, false);
 		Assert.assertTrue(list.size() == 2);
 
 		// Re-save aliases using the same numbers
 		Alias alias1 = new Alias(UUID.fromString(pushApp.getPushApplicationID()), UUIDs.timeBased(), null, aliasstr1);
 		Alias alias2 = new Alias(UUID.fromString(pushApp.getPushApplicationID()), UUIDs.timeBased(), null, aliasstr2);
 
-		aliasService.create(alias1);
-		aliasService.create(alias2);
+		aliasService.create(account, alias1);
+		aliasService.create(account, alias2);
 
 		documentService.save(new DocumentMetadata(pushApp.getPushApplicationID(), DEFAULT_DEVICE_DATABASE, alias1),
 				"{CONTENT1}", "ID1");
@@ -370,7 +373,7 @@ public class DocumentServiceTest extends AbstractCassandraServiceTest {
 			// Create alias specific documents
 			Alias alias1 = new Alias(pushApplicationId, UUIDs.timeBased(), "supprot@aerobase.org");
 
-			aliasService.create(alias1);
+			aliasService.create(account, alias1);
 
 			DocumentKey key1 = new DocumentKey(new DocumentMetadata(pushApplicationId.toString(), "STATUS", alias1));
 			DocumentKey key2 = new DocumentKey(new DocumentMetadata(pushApplicationId.toString(), "STATUS", alias1));

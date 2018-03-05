@@ -16,8 +16,11 @@ public class OAuth2Configuration implements IOAuth2Configuration {
 	private static final String KEY_OAUTH2_ENABLE = "aerogear.config.oauth2.enable";
 
 	private static final String KEY_OAUTH2_SERVER_URL = "aerogear.config.oauth2.keycloak.url";
+
+	// Default unifiedpush realm to host aerobase users.
+	// When running in portal (hosting) mode, 'master' realm is configured, else
+	// 'aerobase' realm is used.
 	private static final String KEY_OAUTH2_UPS_REALM = "aerogear.config.oauth2.ups.realm.name";
-	private static final String KEY_OAUTH2_UPSI_REALM = "aerogear.config.oauth2.upsi.realm.name";
 
 	private static final String KEY_OAUTH2_ADMIN_USERNAME = "aerogear.config.oauth2.admin.username";
 	private static final String KEY_OAUTH2_ADMIN_PASSWORD = "aerogear.config.oauth2.admin.password";
@@ -51,10 +54,6 @@ public class OAuth2Configuration implements IOAuth2Configuration {
 
 	public String getUpsRealm() {
 		return getProperty(KEY_OAUTH2_UPS_REALM, DEFAULT_OAUTH2_UPS_REALM);
-	}
-
-	public String getUpsiRealm() {
-		return getProperty(KEY_OAUTH2_UPSI_REALM, DEFAULT_OAUTH2_UPSI_REALM);
 	}
 
 	public String getAdminClient() {
@@ -119,10 +118,6 @@ public class OAuth2Configuration implements IOAuth2Configuration {
 
 	public static String getStaticUpsRealm() {
 		return getProperty(KEY_OAUTH2_UPS_REALM, DEFAULT_OAUTH2_UPS_REALM);
-	}
-
-	public static String getStaticUpsiRealm() {
-		return getProperty(KEY_OAUTH2_UPSI_REALM, DEFAULT_OAUTH2_UPSI_REALM);
 	}
 
 	public ConfigurationEnvironment getConfiguration() {

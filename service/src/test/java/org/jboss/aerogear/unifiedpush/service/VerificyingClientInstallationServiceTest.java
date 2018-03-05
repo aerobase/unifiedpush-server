@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class VerificyingClientInstallationServiceTest extends AbstractCassandraServiceTest {
+	private static final LoggedInUser account = new LoggedInUser(DEFAULT_USER);
 
 	@Inject
 	private VerificationService verificationService;
@@ -36,7 +37,7 @@ public class VerificyingClientInstallationServiceTest extends AbstractCassandraS
 		androidVariant.setGoogleKey("Key");
 		androidVariant.setName("Android");
 		androidVariant.setDeveloper("me");
-		variantService.addVariant(androidVariant, new LoggedInUser(DEFAULT_USER));
+		variantService.addVariant(androidVariant, account);
 	}
 
 	@Test
@@ -56,7 +57,7 @@ public class VerificyingClientInstallationServiceTest extends AbstractCassandraS
 		verificationService.clearCache();
 		sleepSilently(100); // Wait for cassandra write.
 
-		VerificationResult result = verificationService.verifyDevice(device, androidVariant,
+		VerificationResult result = verificationService.verifyDevice(account, device, androidVariant,
 				new InstallationVerificationAttempt(verificationCode, device.getDeviceToken()));
 		assertEquals(VerificationResult.SUCCESS, result);
 	}
@@ -81,7 +82,7 @@ public class VerificyingClientInstallationServiceTest extends AbstractCassandraS
 		fakeDevice.setVariant(androidVariant);
 		fakeDevice.setEnabled(false);
 
-		VerificationResult result = verificationService.verifyDevice(fakeDevice, androidVariant,
+		VerificationResult result = verificationService.verifyDevice(account, fakeDevice, androidVariant,
 				new InstallationVerificationAttempt(verificationCode, device.getDeviceToken()));
 		assertEquals(VerificationResult.FAIL, result);
 	}
@@ -99,12 +100,12 @@ public class VerificyingClientInstallationServiceTest extends AbstractCassandraS
 		String verificationCode = verificationService.initiateDeviceVerification(device, androidVariant);
 		assertNotNull(verificationCode);
 
-		VerificationResult result = verificationService.verifyDevice(device, androidVariant,
+		VerificationResult result = verificationService.verifyDevice(account, device, androidVariant,
 				new InstallationVerificationAttempt(verificationCode + "1", device.getDeviceToken()));
 		assertEquals(VerificationResult.FAIL, result);
 
 		// now retry with the correct code.
-		result = verificationService.verifyDevice(device, androidVariant,
+		result = verificationService.verifyDevice(account, device, androidVariant,
 				new InstallationVerificationAttempt(verificationCode, device.getDeviceToken()));
 		assertEquals(VerificationResult.SUCCESS, result);
 	}
@@ -127,11 +128,11 @@ public class VerificyingClientInstallationServiceTest extends AbstractCassandraS
 		assertNotNull(newVerificationCode);
 
 		// the first code should have been invalidated
-		VerificationResult result = verificationService.verifyDevice(device, androidVariant,
+		VerificationResult result = verificationService.verifyDevice(account, device, androidVariant,
 				new InstallationVerificationAttempt(verificationCode, device.getDeviceToken()));
 		assertEquals(VerificationResult.SUCCESS, result);
 
-		result = verificationService.verifyDevice(device, androidVariant,
+		result = verificationService.verifyDevice(account, device, androidVariant,
 				new InstallationVerificationAttempt(newVerificationCode, device.getDeviceToken()));
 		// Device is already enabled so always return success.
 		assertEquals(VerificationResult.SUCCESS, result);

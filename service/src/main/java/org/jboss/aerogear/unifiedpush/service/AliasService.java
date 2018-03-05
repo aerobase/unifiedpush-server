@@ -21,6 +21,7 @@ import java.util.UUID;
 
 import org.jboss.aerogear.unifiedpush.api.Alias;
 import org.jboss.aerogear.unifiedpush.api.PushApplication;
+import org.jboss.aerogear.unifiedpush.service.annotations.LoggedInUser;
 
 public interface AliasService {
 	/**
@@ -29,7 +30,9 @@ public interface AliasService {
 	 * aliases, mirroring the data received in {@code aliases}, and associates
 	 * them to the given application. Note that this application's existing
 	 * aliases will be overwritten by the newly created aliases.
-
+	 *
+	 * @param loggedInUser
+	 *            current logged-in account
 	 * @param pushApplication
 	 *            push application to associate the aliases to.
 	 * @param aliases
@@ -38,11 +41,13 @@ public interface AliasService {
 	 *            synchronize state to identity provider
 	 * @return new {@link org.jboss.aerogear.unifiedpush.api.Alias} list
 	 */
-	List<Alias> addAll(PushApplication pushApplication, List<Alias> aliases, boolean oauth2);
+	List<Alias> addAll(LoggedInUser loggedInUser, PushApplication pushApplication, List<Alias> aliases, boolean oauth2);
 
 	/**
 	 * updates specific user password
 	 *
+	 * @param loggedInUser
+	 *            current logged-in account
 	 * @param aliasId
 	 *            - current logged in user id
 	 * @param currentPassword
@@ -50,9 +55,9 @@ public interface AliasService {
 	 * @param newPassword
 	 *            - user old password
 	 */
-	void updateAliasePassword(String aliasId, String currentPassword, String newPassword);
+	void updateAliasePassword(LoggedInUser loggedInUser, String aliasId, String currentPassword, String newPassword);
 
-	boolean registered(String alias);
+	boolean registered(LoggedInUser loggedInUser, String alias);
 
 	boolean associated(String fqdn, String alias);
 
@@ -60,11 +65,13 @@ public interface AliasService {
 
 	Alias find(UUID pushApplicationId, UUID userId);
 
-	void remove(UUID pushApplicationId, String alias);
+	void remove(LoggedInUser loggedInUser, UUID pushApplicationId, String alias);
 
 	/**
 	 * Remove alias and user in KC.
 	 *
+	 * @param loggedInUser
+	 *            current logged-in account
 	 * @param pushApplicationId
 	 *            related push application id
 	 * @param userId
@@ -72,14 +79,14 @@ public interface AliasService {
 	 * @param destructive
 	 *            flag to also remove user in KC.
 	 */
-	void remove(UUID pushApplicationId, UUID userId, boolean destructive);
+	void remove(LoggedInUser loggedInUser, UUID pushApplicationId, UUID userId, boolean destructive);
 
-	void remove(UUID pushApplicationId, UUID userId);
+	void remove(LoggedInUser loggedInUser, UUID pushApplicationId, UUID userId);
 
-	void removeAll(PushApplication pushApplication, boolean destructive, PostDelete action);
+	void removeAll(LoggedInUser loggedInUser, PushApplication pushApplication, boolean destructive, PostDelete action);
 
-	void create(Alias alias);
+	void create(LoggedInUser loggedInUser, Alias alias);
 
-	void createAsynchronous(Alias alias);
+	void createAsynchronous(LoggedInUser loggedInUser, Alias alias);
 
 }

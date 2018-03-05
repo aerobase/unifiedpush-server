@@ -77,11 +77,11 @@ public class GenericVariantServiceImpl implements GenericVariantService {
 	}
 
 	@Override
-	public Variant findVariantByKeycloakClientID(String clientId) {
+	public Variant findVariantByKeycloakClientID(LoggedInUser account, String clientId) {
 		Variant variant = null;
 
 		// Cacheable service
-		Iterable<String> clientVariants = keycloakService.getVariantIdsFromClient(clientId);
+		Iterable<String> clientVariants = keycloakService.getVariantIdsFromClient(account, clientId);
 
 		if (clientVariants != null) {
 			for (String clientVariantId : clientVariants) {

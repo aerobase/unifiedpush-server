@@ -37,7 +37,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @ContextConfiguration(classes = { ServiceConfig.class })
 public abstract class AbstractBaseServiceTest {
 
-	protected static final String DEFAULT_USER = "admin";
+	public static final String DEFAULT_USER = "admin";
 	@Mock
 	protected KeycloakSecurityContext context = Mockito.mock(KeycloakSecurityContext.class);
 

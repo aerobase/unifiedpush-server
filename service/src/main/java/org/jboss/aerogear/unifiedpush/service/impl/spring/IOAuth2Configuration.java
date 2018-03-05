@@ -10,8 +10,6 @@ interface IOAuth2Configuration {
 
 	String getUpsRealm();
 
-	String getUpsiRealm();
-
 	String getAdminClient();
 
 	String getAdminUserName();

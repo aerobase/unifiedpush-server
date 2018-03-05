@@ -84,14 +84,14 @@ public class PushApplicationServiceImpl implements PushApplicationService {
 	}
 
 	@Override
-	public void removePushApplication(PushApplication pushApp) {
+	public void removePushApplication(LoggedInUser account, PushApplication pushApp) {
 		// Evict All caches
 		pushApp.getVariants().stream().forEach(var -> evictByVariantId(var.getVariantID()));
 		evictById(pushApp.getPushApplicationID());
 		evictByName(pushApp.getName());
 
 		// @Async delete aliases
-		aliasService.removeAll(pushApp, true, new PostDelete() {
+		aliasService.removeAll(account, pushApp, true, new PostDelete() {
 
 			@Override
 			public void after() {
