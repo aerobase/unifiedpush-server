@@ -46,6 +46,22 @@ public class AbstractEndpoint {
                 request);
     }
 
+
+    /**
+     * Helper function to create a 400 Bad Request response, containing a JSON giving details about the response.
+     *
+     * @param message response error message
+     * @return 400 Bad Request response, containing details on the violations
+     */
+	protected Response create400Response(String message, final HttpServletRequest request) {
+        return appendAllowOriginHeader(
+                Response.status(Status.UNAUTHORIZED)
+                        .header("WWW-Authenticate", "Basic realm=\"AeroBase UnifiedPush Server\"")
+                        .entity(quote(message)),
+                request);
+	}
+
+
     // Append double quotes to strings, used to overcome jax-rs issue with simple stings.
     // http://stackoverflow.com/questions/7705081/jax-rs-resteasy-service-return-json-string-without-double-quote
     protected static String quote(String value) {

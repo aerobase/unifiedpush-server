@@ -150,8 +150,7 @@ public class AliasServiceImpl implements AliasService {
 		}
 
 		// TODO - Disallow query when fqdn is missing.
-		// This can be done only when: 1) 1.6.0 is out of market 2) CAPTCHA was
-		// added to login template.
+		// This can be done only when: CAPTCHA was added to login template.
 		Alias aliasObj = find(pushApplication == null ? null : pushApplication.getPushApplicationID(), alias);
 
 		return aliasObj != null;

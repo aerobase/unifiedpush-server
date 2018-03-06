@@ -15,7 +15,7 @@
     "emailTheme": "base",
     "updateProfileOnInitialSocialLogin": false,
     "requiredCredentials": [ "password" ],
-    "defaultRoles": [ "developer" ],
+    "defaultRoles": [ "installation" ],
     "users" : [
         {
             "username" : "admin",

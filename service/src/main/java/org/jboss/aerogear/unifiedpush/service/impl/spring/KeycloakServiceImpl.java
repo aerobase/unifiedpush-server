@@ -92,7 +92,7 @@ public class KeycloakServiceImpl implements IKeycloakService {
 
 		this.kc = KeycloakBuilder.builder() //
 				.serverUrl(keycloakPath) //
-				.realm("master") // Always use master realm for admin operations
+				.realm(OAuth2Configuration.DEFAULT_OAUTH2_UPS_REALM) // Always use master realm for admin operations
 				.username(userName) //
 				.password(userPassword) //
 				.clientId(cliClientId) //
@@ -113,7 +113,7 @@ public class KeycloakServiceImpl implements IKeycloakService {
 	}
 
 	private RealmResource getRealm(LoggedInUser accountName, boolean flashCache) {
-		String realmName = toRealm(accountName);
+		String realmName = toRealmName(accountName);
 
 		if (flashCache && realmCache.containsKey(realmName)) {
 			realmCache.remove(realmName);
@@ -136,13 +136,13 @@ public class KeycloakServiceImpl implements IKeycloakService {
 		}
 	}
 
-	private String toRealm(LoggedInUser account) {
+	public String toRealmName(LoggedInUser account) {
 		return toRealm(conf.getAdminUserName(), account);
 	}
 
 	public static String toRealm(String adminAccountName, LoggedInUser account) {
 		if (account.getUser().equals(adminAccountName)) {
-			return "master";
+			return OAuth2Configuration.DEFAULT_OAUTH2_UPS_REALM;
 		}
 
 		return AccountNameMatcher.matches(account.getUser());
@@ -170,7 +170,7 @@ public class KeycloakServiceImpl implements IKeycloakService {
 					RealmRepresentation.class);
 
 			// Replace strings if exists
-			rep.setRealm(toRealm(accountName));
+			rep.setRealm(toRealmName(accountName));
 
 			// Create realm
 			kc.realms().create(rep);
@@ -190,7 +190,7 @@ public class KeycloakServiceImpl implements IKeycloakService {
 						.listAvailable();
 				userResource.roles().clientLevel(client.getId()).add(availableRoles);
 			} else {
-				logger.error("Unable to find client Representation for newly created realm - " + toRealm(accountName));
+				logger.error("Unable to find client Representation for newly created realm - " + toRealmName(accountName));
 			}
 		}
 	}

@@ -38,8 +38,10 @@ import org.jboss.aerogear.unifiedpush.rest.authentication.AuthenticationHelper;
 import org.jboss.aerogear.unifiedpush.rest.util.ClientAuthHelper;
 import org.jboss.aerogear.unifiedpush.service.AliasService;
 import org.jboss.aerogear.unifiedpush.service.DocumentService;
+import org.jboss.aerogear.unifiedpush.system.ConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import com.qmino.miredot.annotations.ReturnType;
@@ -60,6 +62,8 @@ public class DatabaseEndpoint extends AbstractEndpoint {
 	private AliasService aliasService;
 	@Inject
 	private AuthenticationHelper authenticationHelper;
+	@Autowired
+	private ConfigurationEnvironment environment;
 
 	/**
 	 * Cross Origin for application scope database.
@@ -250,6 +254,13 @@ public class DatabaseEndpoint extends AbstractEndpoint {
 			@PathParam("database") String database, //
 			@Context HttpServletRequest request) { //
 
+		// Validate all documents first
+		documents.forEach(document -> {
+			if (!isValidJson(document.getContent())) {
+				create400Response("Maximum JSON length exceeded (" + environment.getMaxJsonSize() + "KB).", request);
+			}
+		});
+
 		documents.forEach(document -> {
 			saveForApplication(document.getContent(), database, null, document.getDocumentId(), request);
 		});
@@ -311,6 +322,10 @@ public class DatabaseEndpoint extends AbstractEndpoint {
 
 		if (pushApplication == null) {
 			return create401Response(request);
+		}
+
+		if (!isValidJson(document)) {
+			create400Response("Maximum JSON length exceeded (" + environment.getMaxJsonSize() + "KB).", request);
 		}
 
 		UUID pushApplicationId = UUID.fromString(pushApplication.getPushApplicationID());
@@ -431,6 +446,12 @@ public class DatabaseEndpoint extends AbstractEndpoint {
 			@Context HttpServletRequest request) { //
 
 		documents.forEach(document -> {
+			if (!isValidJson(document.getContent())) {
+				create400Response("Maximum JSON length exceeded (" + environment.getMaxJsonSize() + "KB).", request);
+			}
+		});
+
+		documents.forEach(document -> {
 			saveForAlias(document.getContent(), database, alias, null, document.getDocumentId(), request);
 		});
 
@@ -496,6 +517,10 @@ public class DatabaseEndpoint extends AbstractEndpoint {
 			return create401Response(request);
 		}
 
+		if (!isValidJson(document)) {
+			create400Response("Maximum JSON length exceeded (" + environment.getMaxJsonSize() + "KB).", request);
+		}
+
 		// Find application by variant
 		UUID pushApplicationId = UUID.fromString(pushApplication.getPushApplicationID());
 
@@ -518,6 +543,17 @@ public class DatabaseEndpoint extends AbstractEndpoint {
 			logger.error(String.format("Cannot store document for database %s", database), e);
 			return appendAllowOriginHeader(Response.status(Status.INTERNAL_SERVER_ERROR), request);
 		}
+	}
+
+	private boolean isValidJson(String json) {
+		Integer size = environment.getMaxJsonSize();
+		// Validate json size in KB
+		if (json.getBytes().length > size * 1024) {
+			return false;
+		}
+
+		// TODO - Validate json structure
+		return true;
 	}
 
 	/**

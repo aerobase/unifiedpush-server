@@ -17,9 +17,9 @@ public class OAuth2Configuration implements IOAuth2Configuration {
 
 	private static final String KEY_OAUTH2_SERVER_URL = "aerogear.config.oauth2.keycloak.url";
 
-	// Default unifiedpush realm to host aerobase users.
+	// Default realm to host aerobase users.
 	// When running in portal (hosting) mode, 'master' realm is configured, else
-	// 'aerobase' realm is used.
+	// 'aerobase' realm should be used.
 	private static final String KEY_OAUTH2_UPS_REALM = "aerogear.config.oauth2.ups.realm.name";
 
 	private static final String KEY_OAUTH2_ADMIN_USERNAME = "aerogear.config.oauth2.admin.username";
@@ -32,13 +32,7 @@ public class OAuth2Configuration implements IOAuth2Configuration {
 
 	private static final String DEFAULT_OAUTH2_SERVER_URL = "/auth";
 
-	public static final String DEFAULT_OAUTH2_UPS_REALM = "aerobase";
-
-	/*
-	 * aerobase-installations is a predefined REALM used by aerobase
-	 * applications (Demos, Examples, Etc).
-	 */
-	public static final String DEFAULT_OAUTH2_UPSI_REALM = "aerobase-installations";
+	public static final String DEFAULT_OAUTH2_UPS_REALM = "master";
 
 	public static final String DEFAULT_SUBDOMAIN_SEPERATOR = "-";
 

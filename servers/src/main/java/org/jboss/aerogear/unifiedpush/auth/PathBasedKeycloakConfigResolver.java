@@ -23,7 +23,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jboss.aerogear.unifiedpush.api.PushApplication;
 import org.jboss.aerogear.unifiedpush.rest.util.BearerHelper;
+import org.jboss.aerogear.unifiedpush.service.PushApplicationService;
+import org.jboss.aerogear.unifiedpush.service.annotations.LoggedInUser;
+import org.jboss.aerogear.unifiedpush.service.impl.spring.IKeycloakService;
 import org.jboss.aerogear.unifiedpush.service.impl.spring.OAuth2Configuration;
 import org.keycloak.adapters.KeycloakConfigResolver;
 import org.keycloak.adapters.KeycloakDeployment;
@@ -43,6 +47,10 @@ public class PathBasedKeycloakConfigResolver implements KeycloakConfigResolver {
 
 	@Autowired
 	private ApplicationContext applicationContext;
+	@Autowired
+	private  IKeycloakService keycloakService;
+	@Autowired
+	private  PushApplicationService pushApplicationService;
 
 	@Override
 	public KeycloakDeployment resolve(Request request) {
@@ -144,20 +152,32 @@ public class PathBasedKeycloakConfigResolver implements KeycloakConfigResolver {
 		return StringUtils.isNoneEmpty(referer) && !request.getURI().startsWith(referer);
 	}
 
+	/*
+	 * Get realm name according to request proxy name
+	 */
 	private String getRealmName(boolean isProxy, String referer) {
 
+		// Get default
 		String defaultRealm = OAuth2Configuration.getStaticUpsRealm();
 		if (!isProxy) {
 			return defaultRealm;
 		}
 
 		// Extract subdomain primary account name.
-		int pos = StringUtils.indexOf(referer, ".");
+		String applicationName = keycloakService.strip(referer);
 
-		if (pos < 0) {
+		if (StringUtils.isEmpty(applicationName)) {
 			logger.warn("Unable to extract subdomain from proxy request, using defautl realm: " + defaultRealm);
 			return defaultRealm;
 		}
+
+		PushApplication pushApplication = pushApplicationService.findByName(applicationName);
+		if (pushApplication == null) {
+			logger.warn("Unable to find push application by name: " + applicationName);
+			return defaultRealm;
+		}
+
+		keycloakService.toRealmName(new LoggedInUser(pushApplication.getDeveloper()));
 
 		return StringUtils.left(referer, StringUtils.indexOf(referer, "."));
 	}

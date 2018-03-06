@@ -25,6 +25,7 @@ public class ConfigurationEnvironment {
 	public static final String PROP_ENABLE_VERIFICATION = "aerogear.config.verification.enable_verification";
 	public static final String PROP_MASTER_VERIFICATION = "aerogear.config.verification.master_code";
 	public static final String PROP_PORTAL_MODE= "aerobase.config.portal.mode";
+	public static final String PROP_JSON_LIMIT= "aerobase.config.database.documents_json_limit";
 
 	@Autowired
 	private Environment env;
@@ -41,6 +42,10 @@ public class ConfigurationEnvironment {
 
 	public String getMasterCode() {
 		return env.getProperty(PROP_MASTER_VERIFICATION, String.class, null);
+	}
+
+	public Integer getMaxJsonSize() {
+		return env.getProperty(PROP_JSON_LIMIT, Integer.class, 4);
 	}
 
 	/*
