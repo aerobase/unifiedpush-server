@@ -1,5 +1,7 @@
 package org.jboss.aerogear.unifiedpush.service.impl.spring;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,7 +28,9 @@ import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.RealmRepresentation;
+import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
+import org.keycloak.util.JsonSerialization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +43,7 @@ import org.springframework.stereotype.Service;
 public class KeycloakServiceImpl implements IKeycloakService {
 	private static final Logger logger = LoggerFactory.getLogger(KeycloakServiceImpl.class);
 
-	private static final String CLIENT_PREFIX = "ups-installation-";
+	private static final String CLIENT_SUFFIX = "-client";
 	private static final String KEYCLOAK_ROLE_USER = "installation";
 	private static final String UPDATE_PASSWORD_ACTION = "UPDATE_PASSWORD";
 
@@ -105,14 +109,29 @@ public class KeycloakServiceImpl implements IKeycloakService {
 	 * support-aerobase-com realm.
 	 */
 	private RealmResource getRealm(LoggedInUser accountName) {
+		return getRealm(accountName, false);
+	}
+
+	private RealmResource getRealm(LoggedInUser accountName, boolean flashCache) {
 		String realmName = toRealm(accountName);
+
+		if (flashCache && realmCache.containsKey(realmName)) {
+			realmCache.remove(realmName);
+		}
 
 		if (realmCache.containsKey(realmName)) {
 			return realmCache.get(realmName);
 		} else {
 			RealmResource realm = kc.realms().realm(realmName);
-			setRealmConfiguration(realm);
-			realmCache.put(realmName, realm);
+
+			// Realm exists in remote KC
+			try {
+				setRealmConfiguration(realm);
+				realmCache.put(realmName, realm);
+			} catch (Exception e) {
+				logger.debug("Messing realm " + realmName);
+				return null;
+			}
 			return realm;
 		}
 	}
@@ -136,13 +155,62 @@ public class KeycloakServiceImpl implements IKeycloakService {
 	}
 
 	@Override
+	public void createRealmIfAbsent(LoggedInUser accountName, PushApplication pushApplication) {
+		if (!isInitialized()) {
+			return;
+		}
+		// Evict realm from cache and fetch from KC
+		RealmResource realm = getRealm(accountName, true);
+
+		// Realm is missing in KC
+		if (realm == null) {
+
+			// Import realm first
+			RealmRepresentation rep = loadJson(getClass().getResourceAsStream("/realm.json"),
+					RealmRepresentation.class);
+
+			// Replace strings if exists
+			rep.setRealm(toRealm(accountName));
+
+			// Create realm
+			kc.realms().create(rep);
+
+			// Update account with relevant permissions
+			ClientRepresentation client = isClientExists(new LoggedInUser(conf.getAdminUserName()),
+					rep.getRealm() + "-realm");
+
+			if (client != null) {
+				// Get User by username
+				UserRepresentation user = getUser(new LoggedInUser(conf.getAdminUserName()), accountName.get());
+
+				UsersResource users = getRealm(new LoggedInUser(conf.getAdminUserName())).users();
+				UserResource userResource = users.get(user.getId());
+
+				List<RoleRepresentation> availableRoles = userResource.roles().clientLevel(client.getId())
+						.listAvailable();
+				userResource.roles().clientLevel(client.getId()).add(availableRoles);
+			} else {
+				logger.error("Unable to find client Representation for newly created realm - " + toRealm(accountName));
+			}
+		}
+	}
+
+	public static <T> T loadJson(InputStream is, Class<T> type) {
+		try {
+			return JsonSerialization.readValue(is, type);
+		} catch (IOException e) {
+			throw new RuntimeException("Failed to parse json", e);
+		}
+	}
+
+	@Override
 	public void createClientIfAbsent(LoggedInUser accountName, PushApplication pushApplication) {
 		if (!isInitialized()) {
 			return;
 		}
 
-		String applicationName = pushApplication.getName().toLowerCase();
-		String clientName = CLIENT_PREFIX + applicationName;
+		String applicationName = getAppName(pushApplication);
+		String clientName = getClientName(pushApplication);
 		ClientRepresentation clientRepresentation = isClientExists(accountName, pushApplication);
 
 		if (this.oauth2Enabled && clientRepresentation == null) {
@@ -339,15 +407,26 @@ public class KeycloakServiceImpl implements IKeycloakService {
 	}
 
 	private ClientRepresentation isClientExists(LoggedInUser accountName, PushApplication pushApp) {
-		return isClientExists(accountName, getClientd(pushApp));
+		return isClientExists(accountName, getClientName(pushApp));
 	}
 
-	private String getClientd(PushApplication pushApp) {
-		return CLIENT_PREFIX + pushApp.getName().toLowerCase();
+	private String getAppName(PushApplication pushApp) {
+		return pushApp.getName().toLowerCase();
+	}
+
+	private String getClientName(PushApplication pushApp) {
+		return pushApp.getName().toLowerCase() + CLIENT_SUFFIX;
 	}
 
 	private ClientRepresentation isClientExists(LoggedInUser accountName, String clientId) {
-		List<ClientRepresentation> clients = getRealm(accountName).clients().findByClientId(clientId);
+		RealmResource realmResource = getRealm(accountName);
+
+		// Realm was either removed or no permission to view this realm/
+		if (realmResource == null) {
+			return null;
+		}
+
+		List<ClientRepresentation> clients = realmResource.clients().findByClientId(clientId);
 
 		if (clients == null | clients.size() == 0) {
 			return null;

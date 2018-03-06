@@ -9,6 +9,8 @@ import org.springframework.cache.annotation.Cacheable;
 public interface IKeycloakService {
 	public static final String CACHE_NAME = "variant-ids-per-clientid";
 
+	void createRealmIfAbsent(LoggedInUser accountName, PushApplication pushApplication);
+
 	void createClientIfAbsent(LoggedInUser accountName, PushApplication pushApplication);
 
 	void removeClient(LoggedInUser accountName, PushApplication pushApplicaiton);

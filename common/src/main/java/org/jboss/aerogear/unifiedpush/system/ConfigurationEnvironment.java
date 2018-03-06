@@ -24,11 +24,16 @@ public class ConfigurationEnvironment {
 	public static final String PROPERTIES_DOCUMENTS_QUERY_DAYS = "aerogear.config.documents.query.period.days";
 	public static final String PROP_ENABLE_VERIFICATION = "aerogear.config.verification.enable_verification";
 	public static final String PROP_MASTER_VERIFICATION = "aerogear.config.verification.master_code";
+	public static final String PROP_PORTAL_MODE= "aerobase.config.portal.mode";
 
 	@Autowired
 	private Environment env;
 
 	private Properties properties;
+
+	public Boolean isPortalMode() {
+		return env.getProperty(PROP_PORTAL_MODE, Boolean.class, Boolean.TRUE);
+	}
 
 	public Boolean isVerificationEnabled() {
 		return env.getProperty(PROP_ENABLE_VERIFICATION, Boolean.class, Boolean.FALSE);

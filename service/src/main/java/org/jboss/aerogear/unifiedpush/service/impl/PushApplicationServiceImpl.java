@@ -28,6 +28,8 @@ import org.jboss.aerogear.unifiedpush.service.DocumentService;
 import org.jboss.aerogear.unifiedpush.service.PostDelete;
 import org.jboss.aerogear.unifiedpush.service.PushApplicationService;
 import org.jboss.aerogear.unifiedpush.service.annotations.LoggedInUser;
+import org.jboss.aerogear.unifiedpush.service.impl.spring.IKeycloakService;
+import org.jboss.aerogear.unifiedpush.system.ConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -39,11 +41,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class PushApplicationServiceImpl implements PushApplicationService {
 	@Inject
 	private PushApplicationDao pushApplicationDao;
-
+	@Autowired
+	private ConfigurationEnvironment configuration;
 	@Inject
 	private DocumentService documentService;
 	@Inject
 	private AliasService aliasService;
+	@Inject
+	private IKeycloakService keycloakService;
 	@Autowired
 	private CacheManager cacheManager;
 
@@ -51,15 +56,21 @@ public class PushApplicationServiceImpl implements PushApplicationService {
 	}
 
 	@Override
-	public void addPushApplication(PushApplication pushApp, LoggedInUser user) {
-		final String id = pushApp.getPushApplicationID();
+	public void addPushApplication(PushApplication pushApplication, LoggedInUser user) {
+		final String id = pushApplication.getPushApplicationID();
 
 		if (findByPushApplicationID(id) != null) {
 			throw new IllegalArgumentException("App ID already exists: " + id);
 		}
 
-		pushApp.setDeveloper(user.get());
-		pushApplicationDao.create(pushApp);
+		// If running in portal mode, create account realm and client.
+		if (configuration.isPortalMode()) {
+			keycloakService.createRealmIfAbsent(user, pushApplication);
+			keycloakService.createClientIfAbsent(user, pushApplication);
+		}
+
+		pushApplication.setDeveloper(user.get());
+		pushApplicationDao.create(pushApplication);
 	}
 
 	@Override
