@@ -265,7 +265,7 @@ public class KeycloakServiceImpl implements IKeycloakService {
 		ClientRepresentation client = isClientExists(account, pushApplicaiton);
 
 		if (client != null) {
-			getRealm(account).clients().get(client.getClientId()).remove();
+			getRealm(account).clients().get(client.getId()).remove();
 		}
 	}
 
