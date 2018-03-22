@@ -27,21 +27,24 @@ import org.jboss.aerogear.unifiedpush.api.Variant;
 import org.jboss.aerogear.unifiedpush.api.VariantType;
 import org.jboss.aerogear.unifiedpush.dao.PageResult;
 import org.jboss.aerogear.unifiedpush.dao.PushApplicationDao;
+import org.jboss.aerogear.unifiedpush.dao.VariantDao;
 import org.jboss.aerogear.unifiedpush.dto.Count;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 @Repository
 public class JPAPushApplicationDao extends JPABaseDao<PushApplication, String> implements PushApplicationDao {
+	@Autowired
+	private VariantDao variantDao;
 
     @Override
     public void delete(PushApplication pushApplication) {
         PushApplication entity = entityManager.find(PushApplication.class, pushApplication.getId());
         final List<Variant> variants = entity.getVariants();
-        if (!variants.isEmpty()) {
-            entityManager.createQuery("delete from Installation i where i.variant in :variants")
-                    .setParameter("variants", variants).executeUpdate();
-        }
+        variants.forEach(var -> {
+        	variantDao.delete(var);
+        });
 
         super.delete(entity);
     }

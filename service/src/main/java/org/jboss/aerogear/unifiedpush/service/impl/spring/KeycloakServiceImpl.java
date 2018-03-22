@@ -232,7 +232,6 @@ public class KeycloakServiceImpl implements IKeycloakService {
 		if (this.oauth2Enabled && clientRepresentation == null) {
 			clientRepresentation = new ClientRepresentation();
 
-			clientRepresentation.setId(clientName);
 			clientRepresentation.setClientId(clientName);
 			clientRepresentation.setEnabled(true);
 
@@ -462,6 +461,10 @@ public class KeycloakServiceImpl implements IKeycloakService {
 	}
 
 	private Map<String, String> getClientAttributes(PushApplication pushApp) {
+		if (pushApp==null){
+			return Collections.emptyMap();
+		}
+
 		List<Variant> variants = pushApp.getVariants();
 		Map<String, String> attributes = new HashMap<>(variants.size());
 		for (Variant variant : variants) {
