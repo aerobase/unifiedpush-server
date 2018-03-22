@@ -123,28 +123,23 @@ public class OAuth2Configuration implements IOAuth2Configuration {
 		OAuth2Configuration.configuration = configuration;
 	}
 
-	public enum DomainMatcher {
+	public enum DomainMatcher implements IDomainMatcher {
 		// Valid subdomain, match as few characters as possible (First
 		// occurrence).
 		DOT(".", "(.*?)[.].*") {
+
 			@Override
-			public String rootUrl(String protocol, String domain, String application) {
-				return protocol + "://" + application + seperator() + domain;
+			public String rootUrl(String protocol, String domain, String account, String application) {
+				return rootUrl(protocol, domain, account, application, seperator());
 			}
 		},
 		// Logical subdomain, match as many characters as possible (Last
 		// occurrence).
 		DASH("-", "(.*)[-].*") {
-			@Override
-			public String rootUrl(String protocol, String domain, String application) {
-				return protocol + "://" + application + seperator() + domain;
-			}
-		},
 
-		NONE("*", "(.*)") {
 			@Override
-			public String rootUrl(String protocol, String domain, String application) {
-				return protocol + "://" + application;
+			public String rootUrl(String protocol, String domain, String account, String application) {
+				return rootUrl(protocol, domain, account, application, seperator());
 			}
 		};
 
@@ -156,8 +151,8 @@ public class OAuth2Configuration implements IOAuth2Configuration {
 			this.pattern = Pattern.compile(pattern);
 		}
 
-		public String matches(String toMatch) {
-			Matcher matcher = pattern.matcher(toMatch);
+		public String matches(String rootDomain, String domainToMatch) {
+			Matcher matcher = pattern.matcher(domainToMatch);
 
 			if (matcher.matches()) {
 				return matcher.group(1);
@@ -177,10 +172,27 @@ public class OAuth2Configuration implements IOAuth2Configuration {
 				return DomainMatcher.DASH;
 			}
 
-			return DomainMatcher.NONE;
+			return DomainMatcher.DOT;
 		}
 
-		public abstract String rootUrl(String protocol, String domain, String application);
+		public abstract String rootUrl(String protocol, String domain, String account, String application);
+	}
+
+	public interface IDomainMatcher {
+		default String rootUrl(String protocol, String domain, String account, String application, String seperator) {
+			if (StringUtils.isEmpty(application))
+				return protocol + "://" + account + seperator + domain;
+			else
+				return protocol + "://" + application + seperator + account + seperator + domain;
+		}
+	}
+
+	@Override
+	public Boolean isPortalMode() {
+		if (configuration == null) {
+			return true;
+		}
+		return configuration.isPortalMode();
 	}
 
 }

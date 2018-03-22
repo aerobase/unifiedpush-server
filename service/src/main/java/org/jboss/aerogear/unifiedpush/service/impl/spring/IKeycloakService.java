@@ -28,7 +28,13 @@ public interface IKeycloakService {
 
 	boolean isInitialized();
 
-	String strip(String fqdn);
+	String stripApplicationName(String fqdn);
+
+	String stripAccountName(String fqdn);
 
 	String toRealmName(LoggedInUser account);
+
+	String getClientName(LoggedInUser account, String applicationName);
+
+	Boolean setPortalMode(Boolean mode);
 }

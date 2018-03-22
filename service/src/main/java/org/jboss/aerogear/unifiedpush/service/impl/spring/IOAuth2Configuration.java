@@ -21,4 +21,6 @@ interface IOAuth2Configuration {
 	String getRooturlProtocol();
 
 	DomainMatcher getRooturlMatcher();
+
+	Boolean isPortalMode();
 }

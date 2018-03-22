@@ -145,7 +145,7 @@ public class AliasServiceImpl implements AliasService {
 
 		// Return application name from fqdn.
 		if (StringUtils.isNotEmpty(fqdn)) {
-			String applicationName = keycloakService.strip(fqdn);
+			String applicationName = keycloakService.stripApplicationName(fqdn);
 			pushApplication = pushApplicationService.findByName(applicationName);
 		}
 

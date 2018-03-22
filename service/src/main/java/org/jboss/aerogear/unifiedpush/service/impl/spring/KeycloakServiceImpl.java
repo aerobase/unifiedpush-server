@@ -39,11 +39,14 @@ import org.springframework.cache.CacheManager;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import com.google.common.net.InternetDomainName;
+
 @Service
 public class KeycloakServiceImpl implements IKeycloakService {
 	private static final Logger logger = LoggerFactory.getLogger(KeycloakServiceImpl.class);
 
-	private static final String CLIENT_SUFFIX = "-client";
+	private static final String CLIENT_SUFFIX = "client";
+	private static final String CLIENT_SEPARATOR = "-";
 	private static final String KEYCLOAK_ROLE_USER = "installation";
 	private static final String UPDATE_PASSWORD_ACTION = "UPDATE_PASSWORD";
 
@@ -51,6 +54,7 @@ public class KeycloakServiceImpl implements IKeycloakService {
 	private static final String ATTRIBUTE_SECRET_SUFFIX = "_secret";
 
 	private volatile Boolean oauth2Enabled;
+	private volatile Boolean portalMode;
 	private Keycloak kc;
 
 	// TODO - Convert to infinispan cache
@@ -62,6 +66,7 @@ public class KeycloakServiceImpl implements IKeycloakService {
 	@Autowired
 	private IOAuth2Configuration conf;
 
+	// We don't Initialized with @PostConstruct to avoid startup failures.
 	public boolean isInitialized() {
 		if (!conf.isOAuth2Enabled()) {
 			return false;
@@ -70,12 +75,12 @@ public class KeycloakServiceImpl implements IKeycloakService {
 		if (oauth2Enabled == null) {
 			synchronized (this) {
 				if (oauth2Enabled == null) {
-
-					if (conf.isOAuth2Enabled()) {
-						this.initialize();
-					}
-
 					oauth2Enabled = conf.isOAuth2Enabled();
+					portalMode = conf.isPortalMode();
+
+					if (oauth2Enabled) {
+						this.initialize(portalMode);
+					}
 				}
 			}
 		}
@@ -83,16 +88,17 @@ public class KeycloakServiceImpl implements IKeycloakService {
 		return oauth2Enabled.booleanValue();
 	}
 
-	private void initialize() {
+	private void initialize(boolean portalMode) {
 		String keycloakPath = conf.getOAuth2Url();
 
 		String cliClientId = conf.getAdminClient();
 		String userName = conf.getAdminUserName();
 		String userPassword = conf.getAdminPassword();
 
+		// Always use master realm for portal mode.
 		this.kc = KeycloakBuilder.builder() //
 				.serverUrl(keycloakPath) //
-				.realm(OAuth2Configuration.DEFAULT_OAUTH2_UPS_REALM) // Always use master realm for admin operations
+				.realm(portalMode ? OAuth2Configuration.DEFAULT_OAUTH2_UPS_REALM : conf.getUpsRealm()) //
 				.username(userName) //
 				.password(userPassword) //
 				.clientId(cliClientId) //
@@ -137,12 +143,16 @@ public class KeycloakServiceImpl implements IKeycloakService {
 	}
 
 	public String toRealmName(LoggedInUser account) {
-		return toRealm(conf.getAdminUserName(), account);
+		return toRealm(conf.getAdminUserName(), account, conf);
 	}
 
-	public static String toRealm(String adminAccountName, LoggedInUser account) {
+	public static String toRealm(String adminAccountName, LoggedInUser account, IOAuth2Configuration conf) {
 		if (account.getUser().equals(adminAccountName)) {
-			return OAuth2Configuration.DEFAULT_OAUTH2_UPS_REALM;
+			if (conf == null || conf.isPortalMode()) // Always return master
+				return OAuth2Configuration.DEFAULT_OAUTH2_UPS_REALM;
+			else {
+				return conf.getUpsRealm();
+			}
 		}
 
 		return AccountNameMatcher.matches(account.getUser());
@@ -175,10 +185,12 @@ public class KeycloakServiceImpl implements IKeycloakService {
 			// Create realm
 			kc.realms().create(rep);
 
-			// Update account with relevant permissions
+			// Get client from master realm, XXX-realm client is auto generate
+			// for each realm.
 			ClientRepresentation client = isClientExists(new LoggedInUser(conf.getAdminUserName()),
 					rep.getRealm() + "-realm");
 
+			// Update Aerobase account with relevant permissions
 			if (client != null) {
 				// Get User by username
 				UserRepresentation user = getUser(new LoggedInUser(conf.getAdminUserName()), accountName.get());
@@ -190,8 +202,12 @@ public class KeycloakServiceImpl implements IKeycloakService {
 						.listAvailable();
 				userResource.roles().clientLevel(client.getId()).add(availableRoles);
 			} else {
-				logger.error("Unable to find client Representation for newly created realm - " + toRealmName(accountName));
+				logger.error(
+						"Unable to find client Representation for newly created realm - " + toRealmName(accountName));
 			}
+
+			// Create default client
+			createClientIfAbsent(accountName, null);
 		}
 	}
 
@@ -204,14 +220,14 @@ public class KeycloakServiceImpl implements IKeycloakService {
 	}
 
 	@Override
-	public void createClientIfAbsent(LoggedInUser accountName, PushApplication pushApplication) {
+	public void createClientIfAbsent(LoggedInUser account, PushApplication pushApplication) {
 		if (!isInitialized()) {
 			return;
 		}
 
 		String applicationName = getAppName(pushApplication);
-		String clientName = getClientName(pushApplication);
-		ClientRepresentation clientRepresentation = isClientExists(accountName, pushApplication);
+		String clientName = getClientName(account, getAppName(pushApplication));
+		ClientRepresentation clientRepresentation = isClientExists(account, pushApplication);
 
 		if (this.oauth2Enabled && clientRepresentation == null) {
 			clientRepresentation = new ClientRepresentation();
@@ -222,7 +238,8 @@ public class KeycloakServiceImpl implements IKeycloakService {
 
 			String domain = conf.getRooturlDomain();
 			String protocol = conf.getRooturlProtocol();
-			clientRepresentation.setRootUrl(conf.getRooturlMatcher().rootUrl(protocol, domain, applicationName));
+			clientRepresentation.setRootUrl(
+					conf.getRooturlMatcher().rootUrl(protocol, domain, toRealmName(account), applicationName));
 			clientRepresentation.setRedirectUris(Arrays.asList("/*"));
 			clientRepresentation.setBaseUrl("/");
 
@@ -231,9 +248,9 @@ public class KeycloakServiceImpl implements IKeycloakService {
 			clientRepresentation.setWebOrigins(Arrays.asList("*"));
 
 			clientRepresentation.setAttributes(getClientAttributes(pushApplication));
-			getRealm(accountName).clients().create(clientRepresentation);
+			getRealm(account).clients().create(clientRepresentation);
 		} else {
-			ClientResource clientResource = getRealm(accountName).clients().get(clientRepresentation.getId());
+			ClientResource clientResource = getRealm(account).clients().get(clientRepresentation.getId());
 			clientRepresentation.setAttributes(getClientAttributes(pushApplication));
 			clientResource.update(clientRepresentation);
 			// Evict from cache
@@ -241,16 +258,15 @@ public class KeycloakServiceImpl implements IKeycloakService {
 		}
 	}
 
-	public void removeClient(LoggedInUser accountName, PushApplication pushApplicaiton) {
-
+	public void removeClient(LoggedInUser account, PushApplication pushApplicaiton) {
 		if (!isInitialized()) {
 			return;
 		}
 
-		ClientRepresentation client = isClientExists(accountName, pushApplicaiton);
+		ClientRepresentation client = isClientExists(account, pushApplicaiton);
 
 		if (client != null) {
-			getRealm(accountName).clients().get(client.getClientId()).remove();
+			getRealm(account).clients().get(client.getClientId()).remove();
 		}
 	}
 
@@ -406,16 +422,25 @@ public class KeycloakServiceImpl implements IKeycloakService {
 		return null;
 	}
 
-	private ClientRepresentation isClientExists(LoggedInUser accountName, PushApplication pushApp) {
-		return isClientExists(accountName, getClientName(pushApp));
+	private ClientRepresentation isClientExists(LoggedInUser account, PushApplication pushApplication) {
+		return isClientExists(account, getClientName(account, getAppName(pushApplication)));
 	}
 
-	private String getAppName(PushApplication pushApp) {
-		return pushApp.getName().toLowerCase();
+	private String getAppName(PushApplication pushApplicatoin) {
+		if (pushApplicatoin == null) {
+			return null;
+		}
+		// Use account matcher to remove special characters.
+		return AccountNameMatcher.matches(pushApplicatoin.getName()).toLowerCase();
 	}
 
-	private String getClientName(PushApplication pushApp) {
-		return pushApp.getName().toLowerCase() + CLIENT_SUFFIX;
+	public String getClientName(LoggedInUser account, String applicationName) {
+		String accountName = AccountNameMatcher.matches(account.getUser());
+		if (applicationName == null) {
+			return accountName + CLIENT_SEPARATOR + CLIENT_SUFFIX;
+		} else {
+			return applicationName + CLIENT_SEPARATOR + accountName + CLIENT_SEPARATOR + CLIENT_SUFFIX;
+		}
 	}
 
 	private ClientRepresentation isClientExists(LoggedInUser accountName, String clientId) {
@@ -453,17 +478,49 @@ public class KeycloakServiceImpl implements IKeycloakService {
 		cache.evict(clientId);
 	}
 
+	public String stripApplicationName(String fqdn) {
+		// TODO - If fqdn does not have top private domain as
+		// conf.getRooturlDomain()
+		// Extract account according to application alternate name (Hosting
+		// Support).
+
+		// for both portal/regular mode application name is the first part.
+		// Support regex strip for backward compatibility with _ separator.
+		return strip(fqdn);
+	}
+
+	public String stripAccountName(String fqdn) {
+		// none portal mode, always use environment attribute as account name.
+		if (!portalMode) {
+			return conf.getUpsRealm();
+		} else {
+			// TODO - If fqdn does not have top private domain as
+			// conf.getRooturlDomain()
+			// Extract account according to application alternate name (Hosting
+			// Support).
+
+			InternetDomainName domain = InternetDomainName.from(fqdn);
+			// if only one sub domain exists strip it
+			if (domain.parent().isTopPrivateDomain())
+				return domain.parts().get(0);
+			else {
+				// strip parent (second sub domain)
+				return domain.parent().parts().get(0);
+			}
+		}
+	}
+
 	/*
-	 * Strip and return subdomain/domain according to matcher and separator.
+	 * Strip and return first subdomain according to matcher and separator.
 	 * separator character can be either '-' or '.' or '*'; TODO - Make sure
-	 * application name is unique and valid domain.
+	 * application name is unique.
 	 */
-	public String strip(String fqdn) {
+	private String strip(String fqdn) {
 		String domain = conf.getRooturlDomain();
 		DomainMatcher matcher = conf.getRooturlMatcher();
 
 		if (StringUtils.isNotEmpty(fqdn)) {
-			return matcher.matches(domain);
+			return matcher.matches(domain, fqdn);
 		}
 
 		return StringUtils.EMPTY;
@@ -475,7 +532,15 @@ public class KeycloakServiceImpl implements IKeycloakService {
 		public static String matches(String toMatch) {
 			Matcher matcher = pattern.matcher(toMatch);
 
-			return matcher.replaceAll("-");
+			return matcher.replaceAll("-").toLowerCase();
 		}
 	}
+
+	// protected for testing mode
+	public Boolean setPortalMode(Boolean portalMode) {
+		this.portalMode = portalMode;
+		return portalMode;
+	}
+
+
 }

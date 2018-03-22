@@ -28,7 +28,7 @@ public class CustomKeycloakDeploymentBuilder extends KeycloakDeploymentBuilder {
 	 * @param proxyRealmName
 	 *            proxy subdomain
 	 */
-	public static CustomKeycloakDeployment build(InputStream inputStream, boolean isProxy, String proxyRealmName) {
+	public static CustomKeycloakDeployment build(InputStream inputStream, boolean isProxy, String proxyRealmName, String clientName) {
 		AdapterConfig adapterConfig = loadAdapterConfig(inputStream);
 
 		// Override realm attributes from system properties if exists.
@@ -39,7 +39,7 @@ public class CustomKeycloakDeploymentBuilder extends KeycloakDeploymentBuilder {
 		if (!isProxy) {
 			adapterConfig.setRealm(upsRealmName);
 		} else {
-
+			adapterConfig.setResource(clientName);
 			adapterConfig.setRealm(proxyRealmName);
 		}
 

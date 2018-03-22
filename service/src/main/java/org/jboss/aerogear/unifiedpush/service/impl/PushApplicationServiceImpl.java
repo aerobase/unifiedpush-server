@@ -66,8 +66,9 @@ public class PushApplicationServiceImpl implements PushApplicationService {
 		// If running in portal mode, create account realm and client.
 		if (configuration.isPortalMode()) {
 			keycloakService.createRealmIfAbsent(user, pushApplication);
-			keycloakService.createClientIfAbsent(user, pushApplication);
 		}
+
+		keycloakService.createClientIfAbsent(user, pushApplication);
 
 		pushApplication.setDeveloper(user.get());
 		pushApplicationDao.create(pushApplication);
