@@ -11,9 +11,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.jboss.aerogear.unifiedpush.rest.AbstractEndpoint;
+import org.jboss.aerogear.unifiedpush.rest.authentication.AuthenticationHelper;
 import org.jboss.aerogear.unifiedpush.service.impl.spring.IConfigurationService;
 import org.keycloak.representations.adapters.config.AdapterConfig;
 import org.keycloak.util.SystemPropertiesJsonParserFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -25,6 +28,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Controller
 @Path("/keycloak/config")
 public class KeycloakConfigurationEndpoint extends AbstractEndpoint {
+	private static final Logger logger = LoggerFactory.getLogger(AuthenticationHelper.class);
 
 	@Inject
 	private IConfigurationService configurationService;
@@ -46,6 +50,7 @@ public class KeycloakConfigurationEndpoint extends AbstractEndpoint {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response configurationFile(@Context HttpHeaders headers) {
+		Long timestamp = System.currentTimeMillis();
 
 		ObjectMapper mapper = new ObjectMapper(new SystemPropertiesJsonParserFactory());
 		mapper.setSerializationInclusion(JsonInclude.Include.NON_DEFAULT);
@@ -58,6 +63,7 @@ public class KeycloakConfigurationEndpoint extends AbstractEndpoint {
 		adapterConfig.setPublicClient(true);
 		adapterConfig.setResource("aerobase-app");
 
+		logger.debug("Preparing adapterConfig took (" + (System.currentTimeMillis()  - timestamp) + ") millis.");
 		try {
 			return appendAllowOriginHeader(headers, Response.ok(mapper.writeValueAsString(adapterConfig))).build();
 		} catch (JsonProcessingException e) {
