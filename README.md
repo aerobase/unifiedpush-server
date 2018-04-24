@@ -13,7 +13,7 @@ Aerobase is a mobile/web platform that helps you quickly develop high-quality mo
 * SSL Support and easy configuration.
 * Cloud Messaging - Push Notifications (Payload & Silent).
 * Centralized configuration/management using Chef Omnibus.
-* By default, every Aerobase package comes with an embedded NGINX, Wildfly 11.0, KeyCloak 4.2, Cassandra 3.11.1.
+* By default, every Aerobase package comes with an embedded NGINX, Wildfly, KeyCloak 3.4.x, Cassandra 3.11.x.
 * [Full-stack](https://bintray.com/aerobase) rpm/deb installers across a variety of platforms (RHEL, Debian, Fedora, Ubuntu).
 
 #### Push Notification cloud providers
