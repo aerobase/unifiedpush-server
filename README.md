@@ -34,8 +34,9 @@ Aerobase is a mobile/web platform that helps you quickly develop high-quality mo
 | --------------- | ------------- |
 | License:        | Apache License, Version 2.0  |
 | Build:          | Maven  |
-| Documentation:  | [Aerobase Server Documentation](https://github.com/aerobase/omnibus-unifiedpush-server/tree/master/doc) |
-|                 | [Aerobase API Documentaion](http://docs.arobase.org0/rest/) |
+| Documentation:  | [Aerobase Server Documentation](https://aerobase.atlassian.net/wiki/spaces/ARB/pages) |
+|                 | [Aerobase API Documentaion](http://docs.aerobase.org/apis/rest/) |
+|                 | [Aerobase.io](https://aerobase.io) | 
 | Issue tracker:  | [JIRA](https://aerobase.atlassian.net/projects/ARB/issues/) |
 
 ## Getting started
@@ -43,7 +44,7 @@ Aerobase is a mobile/web platform that helps you quickly develop high-quality mo
 Or for the on-premise version, execute the following steps to get going!
 
 * Download and install the [latest package (rpm/deb) files](https://bintray.com/aerobase/)
-* Follow the steps on the [Installation guide](https://github.com/aerobase/unifiedpush-server/wiki/Aerobase-Installation)
+* Follow the steps on the [Installation guide](https://aerobase.atlassian.net/wiki/spaces/ARB/pages)
 * Run ``sudo unifiedpush-ctl reconfigure``
 * Start the server ``sudo unifiedpush-ctl start``
 
