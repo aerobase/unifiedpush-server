@@ -9,7 +9,7 @@ Aerobase is a mobile/web platform that helps you quickly develop high-quality mo
 * Realtime DB - NoSQL Document Database, store & access your documents from both the server and the client.
 * Scalable & Fault Tolerant, Based on apache cassandra database.
 * Authentication - Add authentication to applications and secure services with minimum fuss.
-* OTP Registraion - Pluggable SMS/Email Verification process.
+* OTP Registraion - Pluggable Email Verification process.
 * SSL Support and easy configuration.
 * Cloud Messaging - Push Notifications (Payload & Silent).
 * Centralized configuration/management using Chef Omnibus.

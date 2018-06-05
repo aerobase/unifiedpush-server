@@ -22,8 +22,6 @@ public class ConfigurationEnvironment {
 	private final Logger logger = LoggerFactory.getLogger(ConfigurationEnvironment.class);
 
 	public static final String PROPERTIES_DOCUMENTS_QUERY_DAYS = "aerogear.config.documents.query.period.days";
-	public static final String PROP_ENABLE_VERIFICATION = "aerogear.config.verification.enable_verification";
-	public static final String PROP_MASTER_VERIFICATION = "aerogear.config.verification.master_code";
 	public static final String PROP_PORTAL_MODE= "aerobase.config.portal.mode";
 	public static final String PROP_JSON_LIMIT= "aerobase.config.database.documents_json_limit";
 
@@ -34,14 +32,6 @@ public class ConfigurationEnvironment {
 
 	public Boolean isPortalMode() {
 		return env.getProperty(PROP_PORTAL_MODE, Boolean.class, Boolean.TRUE);
-	}
-
-	public Boolean isVerificationEnabled() {
-		return env.getProperty(PROP_ENABLE_VERIFICATION, Boolean.class, Boolean.FALSE);
-	}
-
-	public String getMasterCode() {
-		return env.getProperty(PROP_MASTER_VERIFICATION, String.class, null);
 	}
 
 	public Integer getMaxJsonSize() {

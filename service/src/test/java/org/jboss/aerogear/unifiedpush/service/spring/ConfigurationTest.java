@@ -20,13 +20,13 @@ public class ConfigurationTest {
 
 	@Test
 	public void testDefaultConfigurationLoader() {
-		Assert.assertFalse(configuration.isVerificationEnabled());
+		Assert.assertTrue(configuration.isPortalMode());
 	}
 
 	@Test
 	public void testSystemPropertiesOverride() {
-		System.setProperty(ConfigurationEnvironment.PROP_ENABLE_VERIFICATION, Boolean.TRUE.toString());
+		System.setProperty(ConfigurationEnvironment.PROP_PORTAL_MODE, Boolean.FALSE.toString());
 
-		Assert.assertTrue(configuration.isVerificationEnabled());
+		Assert.assertFalse(configuration.isPortalMode());
 	}
 }

@@ -30,7 +30,6 @@ import org.jboss.aerogear.unifiedpush.api.VariantType;
 import org.jboss.aerogear.unifiedpush.message.holder.MessageHolderWithVariants;
 import org.jboss.aerogear.unifiedpush.message.token.TokenLoader;
 import org.jboss.aerogear.unifiedpush.service.GenericVariantService;
-import org.jboss.aerogear.unifiedpush.service.VerificationService;
 import org.jboss.aerogear.unifiedpush.service.metrics.IPushMessageMetricsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -146,7 +145,7 @@ public class NotificationRouter {
 			}
 
 			// Prevent dev/null messages from being sent.
-        	if (VerificationService.isDevNullVariant(variant.getName())){
+        	if (GenericVariantService.isDevNullVariant(variant.getName())){
         		logger.warn("Push message requst to {} variant has been aborted!", variant.getName());
         		return;
         	}

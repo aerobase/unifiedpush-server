@@ -41,7 +41,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.jboss.aerogear.unifiedpush.api.Installation;
-import org.jboss.aerogear.unifiedpush.api.InstallationVerificationAttempt;
 import org.jboss.aerogear.unifiedpush.api.Variant;
 import org.jboss.aerogear.unifiedpush.api.validation.DeviceTokenValidator;
 import org.jboss.aerogear.unifiedpush.rest.AbstractBaseEndpoint;
@@ -52,9 +51,6 @@ import org.jboss.aerogear.unifiedpush.rest.util.HttpBasicHelper;
 import org.jboss.aerogear.unifiedpush.service.ClientInstallationAsyncService;
 import org.jboss.aerogear.unifiedpush.service.ClientInstallationService;
 import org.jboss.aerogear.unifiedpush.service.GenericVariantService;
-import org.jboss.aerogear.unifiedpush.service.VerificationService;
-import org.jboss.aerogear.unifiedpush.service.VerificationService.VerificationResult;
-import org.jboss.aerogear.unifiedpush.service.impl.spring.IConfigurationService;
 import org.jboss.aerogear.unifiedpush.service.metrics.IPushMessageMetricsService;
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 import org.slf4j.Logger;
@@ -82,10 +78,6 @@ public class InstallationRegistrationEndpoint extends AbstractBaseEndpoint {
 	private GenericVariantService genericVariantService;
 	@Inject
 	private IPushMessageMetricsService metricsService;
-	@Inject
-	private VerificationService verificationService;
-	@Inject
-	private IConfigurationService configuration;
 	@Inject
 	private AuthenticationHelper authenticationHelper;
 
@@ -196,8 +188,6 @@ public class InstallationRegistrationEndpoint extends AbstractBaseEndpoint {
 			Installation entity, @DefaultValue("false") @QueryParam("synchronously") boolean synchronously,
 			@Context HttpServletRequest request) {
 
-		boolean shouldVerifiy = configuration.isVerificationEnabled();
-
 		// find the matching variation:
 		final Variant variant = ClientAuthHelper.loadVariantWhenAuthorized(genericVariantService, request);
 		if (variant == null) {
@@ -223,9 +213,9 @@ public class InstallationRegistrationEndpoint extends AbstractBaseEndpoint {
 			clientInstallationAsyncService.removeInstallationForVariantByDeviceToken(variant.getVariantID(), oldToken);
 		}
 
-		// In some cases (automation & verification a.k.a OTP), we need to
+		// In some cases (automation ), we need to
 		// make sure device is synchronously registered.
-		if (synchronously || shouldVerifiy)
+		if (synchronously)
 			clientInstallationService.addInstallation(variant, entity);
 		else
 			clientInstallationAsyncService.addInstallation(variant, entity);
@@ -460,127 +450,6 @@ public class InstallationRegistrationEndpoint extends AbstractBaseEndpoint {
 
 		// return directly, the above is async and may take a bit :-)
 		return Response.ok(EmptyJSON.STRING).build();
-	}
-
-	/**
-	 * RESTful API for enabling a device (verifying it). The Endpoint is
-	 * protected using <code>HTTP Basic</code> (credentials
-	 * <code>VariantID:secret</code>).
-	 *
-	 * <pre>
-	 * curl -u "variantID:secret"
-	 *   -v -H "Accept: application/json" -H "Content-type: application/json"
-	 *   -X POST
-	 *   -d '{
-	 *     "deviceToken" : "someTokenString",
-	 *     "deviceType" : "iPad",
-	 *     "operatingSystem" : "iOS",
-	 *     "osVersion" : "6.1.2",
-	 *     "alias" : "someUsername or email adress...",
-	 *     "categories" : ["football", "sport"]
-	 *   }'
-	 *   https://SERVER:PORT/context/rest/registry/enable
-	 * </pre>
-	 *
-	 *
-	 * @HTTP 200 (OK) for any verification result
-	 * @HTTP 401 (Unauthorized) The request requires authentication.
-	 *
-	 * @param entity
-	 *            {@link Installation} the device verifying
-	 * @param verificationCode
-	 *            the verification code
-	 * @return verification outcome {@link VerificationResult}
-	 *
-	 * @responseheader Access-Control-Allow-Origin With host in your "Origin"
-	 *                 header
-	 * @responseheader Access-Control-Allow-Credentials true
-	 * @responseheader WWW-Authenticate Basic realm="AeroBase UnifiedPush
-	 *                 Server" (only for 401 response)
-	 *
-	 * @statuscode 200 Successful storage of the device metadata
-	 * @statuscode 400 The format of the client request was incorrect (e.g.
-	 *             missing required values)
-	 * @statuscode 401 The request requires authentication
-	 */
-	@POST
-	@Path("/enable")
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	@ReturnType("org.jboss.aerogear.unifiedpush.service.VerificationService.VerificationResult")
-	public Response enable(InstallationVerificationAttempt verificationAttempt, @Context HttpServletRequest request) {
-
-		// find the matching variation:
-		final Variant variant = ClientAuthHelper.loadVariantWhenAuthorized(genericVariantService, request);
-		if (variant == null) {
-			return create401Response(request);
-		}
-
-		Installation installation = clientInstallationService
-				.findInstallationForVariantByDeviceToken(variant.getVariantID(), verificationAttempt.getDeviceToken());
-
-		if (installation == null) {
-			return appendAllowOriginHeader(Response.status(Status.BAD_REQUEST)
-					.entity(quote("installation not found for: " + verificationAttempt.getDeviceToken())), request);
-		}
-
-		VerificationResult result = verificationService.verifyDevice(extractUsername(), installation, variant, verificationAttempt);
-
-		return appendAllowOriginHeader(Response.ok(result), request);
-	}
-
-	/**
-	 * RESTful API for resending a verification code. The Endpoint is protected
-	 * using <code>HTTP Basic</code> (credentials
-	 * <code>VariantID:secret</code>).
-	 *
-	 * <pre>
-	 * curl -u "variantID:secret" -H "deviceToken:<client device token>"
-	 *   -v -H "Accept: application/json" -H "Content-type: application/json" -H
-	 *   -X GET
-	 *   https://SERVER:PORT/context/rest/registry/resendVerificationCode
-	 * </pre>
-	 *
-	 *
-	 * @HTTP 200 (OK) if resend went through.
-	 * @HTTP 400 (Bad Request) deviceToken header not sent.
-	 * @HTTP 401 (Unauthorized) The request requires authentication.
-	 *
-	 * @responseheader Access-Control-Allow-Origin With host in your "Origin"
-	 *                 header
-	 * @responseheader Access-Control-Allow-Credentials true
-	 * @responseheader WWW-Authenticate Basic realm="AeroBase UnifiedPush
-	 *                 Server" (only for 401 response)
-	 *
-	 * @statuscode 200 resend went through
-	 * @statuscode 400 deviceToken header required.
-	 * @statuscode 401 The request requires authentication
-	 */
-	@GET
-	@Path("/resendVerificationCode")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response resendVerificationCode(@Context HttpServletRequest request) {
-
-		final Variant variant = ClientAuthHelper.loadVariantWhenAuthorized(genericVariantService, request);
-		if (variant == null) {
-			return create401Response(request);
-		}
-
-		String deviceToken = ClientAuthHelper.getDeviceToken(request);
-		if (deviceToken == null) {
-			return appendAllowOriginHeader(
-					Response.status(Status.BAD_REQUEST).entity(quote("deviceToken header required")), request);
-		}
-
-		// TODO - Support optional application id as query parameter.
-		String code = verificationService.retryDeviceVerification(deviceToken, variant);
-		if (code == null) {
-			return appendAllowOriginHeader(
-					Response.status(Status.BAD_REQUEST).entity(quote("Unable to find installation for device-token")),
-					request);
-		}
-
-		return appendAllowOriginHeader(Response.ok(EmptyJSON.STRING), request);
 	}
 
 	@GET

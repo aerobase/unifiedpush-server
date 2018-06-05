@@ -20,7 +20,6 @@ import static org.mockito.Mockito.mock;
 
 import org.jboss.aerogear.unifiedpush.cassandra.dao.AliasDao;
 import org.jboss.aerogear.unifiedpush.cassandra.dao.DocumentDao;
-import org.jboss.aerogear.unifiedpush.cassandra.dao.OtpCodeDao;
 import org.jboss.aerogear.unifiedpush.cassandra.dao.impl.DocumentKey;
 import org.jboss.aerogear.unifiedpush.cassandra.dao.model.DocumentContent;
 import org.jboss.aerogear.unifiedpush.service.AbstractNoCassandraServiceTest.ServiceTestConfig;
@@ -57,7 +56,6 @@ public abstract class AbstractNoCassandraServiceTest extends AbstractBaseService
 		private AliasDao mockAliasDao = mock(AliasDao.class);
 		@SuppressWarnings("unchecked")
 		private DocumentDao<DocumentContent, DocumentKey> mockDocumentDao = mock(DocumentDao.class);
-		private OtpCodeDao mockOtpCodeDao = mock(OtpCodeDao.class);
 
 		@Bean
 		public AliasDao aliasDaoMock() {
@@ -67,11 +65,6 @@ public abstract class AbstractNoCassandraServiceTest extends AbstractBaseService
 		@Bean
 		public DocumentDao<DocumentContent, DocumentKey> documentDaoMock() {
 			return mockDocumentDao;
-		}
-
-		@Bean
-		public OtpCodeDao aliasOtpCodeDao() {
-			return mockOtpCodeDao;
 		}
 	}
 

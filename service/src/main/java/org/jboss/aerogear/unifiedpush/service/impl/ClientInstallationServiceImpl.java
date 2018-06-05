@@ -36,8 +36,6 @@ import org.jboss.aerogear.unifiedpush.dao.PushApplicationDao;
 import org.jboss.aerogear.unifiedpush.dao.ResultsStream;
 import org.jboss.aerogear.unifiedpush.service.AliasService;
 import org.jboss.aerogear.unifiedpush.service.ClientInstallationService;
-import org.jboss.aerogear.unifiedpush.service.VerificationService;
-import org.jboss.aerogear.unifiedpush.service.impl.spring.IConfigurationService;
 import org.jboss.aerogear.unifiedpush.service.util.FCMTopicManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,12 +62,6 @@ public class ClientInstallationServiceImpl implements ClientInstallationService 
 
 	@Inject
 	private PushApplicationDao pushApplicationDao;
-
-	@Inject
-	private VerificationService verificationService;
-
-	@Inject
-	private IConfigurationService configuration;
 
 	@Override
 	public Variant associateInstallation(Installation installation, Variant currentVariant) {
@@ -114,8 +106,6 @@ public class ClientInstallationServiceImpl implements ClientInstallationService 
 
 	@Override
 	public void addInstallation(Variant variant, Installation entity) {
-    	boolean shouldVerifiy = configuration.isVerificationEnabled();
-
 		// does it already exist ?
 		Installation installation = this.findInstallationForVariantByDeviceToken(variant.getVariantID(),
 				entity.getDeviceToken());
@@ -126,10 +116,6 @@ public class ClientInstallationServiceImpl implements ClientInstallationService 
 		// new device/client ?
 		if (installation == null) {
 			logger.trace("Performing new device/client registration");
-
-			// Verification process required, disable device.
-			if (shouldVerifiy)
-				entity.setEnabled(false);
 
 			// store the installation:
 			storeInstallationAndSetReferences(variant, entity);
@@ -145,11 +131,6 @@ public class ClientInstallationServiceImpl implements ClientInstallationService 
 				this.updateInstallation(installation, entity);
 			}
 		}
-
-		// A better implementation would initiate a new REST call when
-		// registration is done.
-		if (shouldVerifiy)
-			verificationService.initiateDeviceVerification(entity, variant);
 	}
 
 	@Override

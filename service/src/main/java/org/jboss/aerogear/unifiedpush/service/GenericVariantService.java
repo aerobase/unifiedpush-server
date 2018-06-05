@@ -26,7 +26,12 @@ import org.springframework.cache.annotation.Cacheable;
  */
 public interface GenericVariantService {
 	public static final String CACHE_NAME = "variant-by-id";
+	public static final String DEVNULL_NOTIFICATIONS_VARIANT = "NULL-NOTIFICATIONS-VARIANT";
 
+	public static boolean isDevNullVariant(String variantName) {
+		return GenericVariantService.DEVNULL_NOTIFICATIONS_VARIANT.equals(variantName);
+	}
+	
 	/**
 	 * Store a new Variant object on the database.
 	 *

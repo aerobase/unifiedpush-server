@@ -12,7 +12,6 @@ import javax.inject.Inject;
 
 import org.jboss.aerogear.unifiedpush.api.Alias;
 import org.jboss.aerogear.unifiedpush.api.Installation;
-import org.jboss.aerogear.unifiedpush.api.InstallationVerificationAttempt;
 import org.jboss.aerogear.unifiedpush.api.PushApplication;
 import org.jboss.aerogear.unifiedpush.api.Variant;
 import org.jboss.aerogear.unifiedpush.api.document.DocumentMetadata;
@@ -22,12 +21,9 @@ import org.jboss.aerogear.unifiedpush.cassandra.dao.impl.DocumentKey;
 import org.jboss.aerogear.unifiedpush.cassandra.dao.model.DocumentContent;
 import org.jboss.aerogear.unifiedpush.message.Criteria;
 import org.jboss.aerogear.unifiedpush.message.UnifiedPushMessage;
-import org.jboss.aerogear.unifiedpush.service.VerificationService.VerificationResult;
 import org.jboss.aerogear.unifiedpush.service.annotations.LoggedInUser;
 import org.jboss.aerogear.unifiedpush.service.impl.spring.IConfigurationService;
-import org.jboss.aerogear.unifiedpush.system.ConfigurationEnvironment;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,16 +47,9 @@ public class DocumentServiceTest extends AbstractCassandraServiceTest {
 	@Inject
 	private PushApplicationService applicationService;
 	@Inject
-	private VerificationService verificationService;
-	@Inject
 	private AliasService aliasService;
 	@Inject
 	private IConfigurationService configuration;
-
-	@Before
-	public void cleanup() {
-		System.clearProperty(ConfigurationEnvironment.PROP_ENABLE_VERIFICATION);
-	}
 
 	@Override
 	protected void specificSetup() {
@@ -70,8 +59,6 @@ public class DocumentServiceTest extends AbstractCassandraServiceTest {
 	@Test
 	@Transactional
 	public void saveDocumentTest() {
-		System.setProperty(ConfigurationEnvironment.PROP_ENABLE_VERIFICATION, "true");
-
 		// Prepare installation
 		Installation iosInstallation = new Installation();
 		iosInstallation.setDeviceType("iPhone7,2");
@@ -87,7 +74,7 @@ public class DocumentServiceTest extends AbstractCassandraServiceTest {
 			installationService.addInstallation(variant, iosInstallation);
 
 			Installation inst = installationService.findById(iosInstallation.getId());
-			Assert.assertTrue(inst != null && inst.isEnabled() == false);
+			Assert.assertTrue(inst != null && inst.isEnabled() == true);
 
 			// Register alias
 			PushApplication pushApplication = applicationService.findByVariantID(DEFAULT_VARIENT_ID);
@@ -96,12 +83,6 @@ public class DocumentServiceTest extends AbstractCassandraServiceTest {
 			// Save once
 			documentService.save(metadata, "{TEST JSON}", null);
 			DocumentContent document = documentService.findLatest(metadata, null);
-
-			// Enable device
-			String code = verificationService.initiateDeviceVerification(inst, variant);
-			VerificationResult results = verificationService.verifyDevice(account, inst, variant,
-					new InstallationVerificationAttempt(code, inst.getDeviceToken()));
-			Assert.assertTrue(results != null && results.equals(VerificationResult.SUCCESS));
 
 			// Re-save device
 			documentService.save(metadata, "{TEST JSON}", null);
@@ -156,7 +137,7 @@ public class DocumentServiceTest extends AbstractCassandraServiceTest {
 
 	@Test
 	@Transactional
-	public void saveDocumentWithoutVerificationModeTest() {
+	public void saveDocumentTest2() {
 		// Prepare installation
 		Installation iosInstallation = new Installation();
 		iosInstallation.setDeviceType("iPhone7,2");
