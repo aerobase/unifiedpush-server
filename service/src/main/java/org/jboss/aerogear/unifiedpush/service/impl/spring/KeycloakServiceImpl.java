@@ -47,8 +47,6 @@ public class KeycloakServiceImpl implements IKeycloakService {
 
 	private static final String CLIENT_SUFFIX = "client";
 	private static final String CLIENT_SEPARATOR = "-";
-	private static final String KEYCLOAK_ROLE_USER = "installation";
-	private static final String UPDATE_PASSWORD_ACTION = "UPDATE_PASSWORD";
 
 	private static final String ATTRIBUTE_VARIANT_SUFFIX = "_variantid";
 	private static final String ATTRIBUTE_SECRET_SUFFIX = "_secret";
@@ -190,12 +188,15 @@ public class KeycloakServiceImpl implements IKeycloakService {
 			ClientRepresentation client = isClientExists(new LoggedInUser(conf.getAdminUserName()),
 					rep.getRealm() + "-realm");
 
-			// Update Aerobase account with relevant permissions
+			// Update current user, assign all available client roles.
+			// This will grant current user full realm management permissions
 			if (client != null) {
-				// Get User by username
-				UserRepresentation user = getUser(new LoggedInUser(conf.getAdminUserName()), accountName.get());
+				LoggedInUser admin = new LoggedInUser(conf.getAdminUserName());
+						
+				// Get User by username  
+				UserRepresentation user = getUser(admin, accountName.get());
 
-				UsersResource users = getRealm(new LoggedInUser(conf.getAdminUserName())).users();
+				UsersResource users = getRealm(admin).users();
 				UserResource userResource = users.get(user.getId());
 
 				List<RoleRepresentation> availableRoles = userResource.roles().clientLevel(client.getId())
@@ -267,59 +268,6 @@ public class KeycloakServiceImpl implements IKeycloakService {
 		if (client != null) {
 			getRealm(account).clients().get(client.getId()).remove();
 		}
-	}
-
-	/**
-	 * Create verified user by username (If Absent).
-	 *
-	 * Create user must be done synchronously and prevent clients from
-	 * authenticating before KC operation is complete.
-	 *
-	 * @param userName
-	 *            unique userName
-	 * @param password
-	 *            password
-	 */
-	public void createVerifiedUserIfAbsent(LoggedInUser accountName, String userName, String password) {
-		if (!isInitialized()) {
-			return;
-		}
-
-		UserRepresentation user = getUser(accountName, userName);
-
-		if (user == null) {
-			user = create(userName, password, true);
-
-			getRealm(accountName).users().create(user);
-
-			// TODO - Improve implementation, check why we need to update the
-			// user right upon creation. without calling updateUserPassword
-			// password is invalid.
-			if (StringUtils.isNotEmpty(password)) {
-				updateUserPassword(accountName, userName, password, password);
-			}
-		} else {
-			logger.debug("KC Username {}, already exist", userName);
-		}
-	}
-
-	private UserRepresentation create(String userName, String password, boolean enabled) {
-		UserRepresentation user = new UserRepresentation();
-		user.setUsername(userName);
-
-		user.setRequiredActions(Arrays.asList(UPDATE_PASSWORD_ACTION));
-		user.setRealmRoles(Collections.singletonList(KEYCLOAK_ROLE_USER));
-
-		user.setEnabled(enabled);
-
-		if (StringUtils.isNotEmpty(password)) {
-			user.setEmailVerified(true);
-			user.setEmail(userName);
-
-			user.setCredentials(Arrays.asList(getUserCredentials(password)));
-		}
-
-		return user;
 	}
 
 	public boolean exists(LoggedInUser accountName, String userName) {
