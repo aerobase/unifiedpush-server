@@ -22,19 +22,14 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.StringUtils;
-import org.jboss.aerogear.unifiedpush.api.Alias;
 import org.jboss.aerogear.unifiedpush.api.AndroidVariant;
 import org.jboss.aerogear.unifiedpush.api.Category;
 import org.jboss.aerogear.unifiedpush.api.Installation;
-import org.jboss.aerogear.unifiedpush.api.PushApplication;
 import org.jboss.aerogear.unifiedpush.api.Variant;
 import org.jboss.aerogear.unifiedpush.api.VariantType;
 import org.jboss.aerogear.unifiedpush.dao.CategoryDao;
 import org.jboss.aerogear.unifiedpush.dao.InstallationDao;
-import org.jboss.aerogear.unifiedpush.dao.PushApplicationDao;
 import org.jboss.aerogear.unifiedpush.dao.ResultsStream;
-import org.jboss.aerogear.unifiedpush.service.AliasService;
 import org.jboss.aerogear.unifiedpush.service.ClientInstallationService;
 import org.jboss.aerogear.unifiedpush.service.util.FCMTopicManager;
 import org.slf4j.Logger;
@@ -56,53 +51,6 @@ public class ClientInstallationServiceImpl implements ClientInstallationService 
 
 	@Inject
 	private CategoryDao categoryDao;
-
-	@Inject
-	private AliasService aliasService;
-
-	@Inject
-	private PushApplicationDao pushApplicationDao;
-
-	@Override
-	public Variant associateInstallation(Installation installation, Variant currentVariant) {
-		if (installation.getAlias() == null) {
-			logger.warn("Unable to associate, installation alias is missing!");
-			return null;
-		}
-
-		Alias alias = aliasService.find(null, installation.getAlias());
-
-		if (alias == null) {
-			return null;
-		}
-
-		PushApplication application = pushApplicationDao
-				.findByPushApplicationID(alias.getPushApplicationId().toString());
-		if (application == null) {
-			logger.warn(String.format(
-					"Unable to find application for alias %s, this behaviour "
-							+ "might occur when application is deleted and orphans aliases exists. "
-							+ "Use DELETE /rest/alias/THE-ALIAS in order to remove orphans.",
-					StringUtils.isEmpty(alias.getEmail()) ? alias.getOther() : alias.getEmail()));
-			return null;
-		}
-
-		List<Variant> variants = application.getVariants();
-
-		for (Variant variant : variants) {
-			// Match variant type according to previous variant.
-			if (variant.getType().equals(currentVariant.getType())) {
-				installation.setVariant(variant);
-				updateInstallation(installation);
-				return variant;
-			}
-		}
-
-		// TODO - Make sure user is associated to a KC client.
-		// If not, associate to appropriate rules.
-
-		return null;
-	}
 
 	@Override
 	public void addInstallation(Variant variant, Installation entity) {
@@ -180,8 +128,8 @@ public class ClientInstallationServiceImpl implements ClientInstallationService 
 
 	@Override
 	public void removeInstallations(List<Installation> installations) {
-        // uh..., fancy method reference :)
-        installations.forEach(this::removeInstallation);
+		// uh..., fancy method reference :)
+		installations.forEach(this::removeInstallation);
 	}
 
 	@Override
@@ -282,14 +230,14 @@ public class ClientInstallationServiceImpl implements ClientInstallationService 
 	/**
 	 * A simple validation util that checks if a token is present
 	 */
-    private boolean hasTokenValue(Installation installation) {
+	private boolean hasTokenValue(Installation installation) {
 		return installation.getDeviceToken() != null && !installation.getDeviceToken().isEmpty();
 	}
 
 	/**
-	 * When an installation is created or updated, the categories are passed
-	 * without IDs. This method solve this issue by checking for existing
-	 * categories and updating them (otherwise it would persist a new object).
+	 * When an installation is created or updated, the categories are passed without
+	 * IDs. This method solve this issue by checking for existing categories and
+	 * updating them (otherwise it would persist a new object).
 	 *
 	 * @param entity
 	 *            to merge the categories for
@@ -313,9 +261,9 @@ public class ClientInstallationServiceImpl implements ClientInstallationService 
 		}
 	}
 
-    private static List<String> convertToNames(Set<Category> categories) {
-        return categories.stream().map(Category::getName).collect(Collectors.toList());
-    }
+	private static List<String> convertToNames(Set<Category> categories) {
+		return categories.stream().map(Category::getName).collect(Collectors.toList());
+	}
 
 	/*
 	 * Helper to set references and perform the actual storage
@@ -342,11 +290,11 @@ public class ClientInstallationServiceImpl implements ClientInstallationService 
 		}
 	}
 
-	public List<Installation> findByAlias(String alias){
+	public List<Installation> findByAlias(String alias) {
 		return installationDao.findInstallationsByAlias(alias);
 	}
 
-	public long getNumberOfDevicesForVariantID(String variantId){
+	public long getNumberOfDevicesForVariantID(String variantId) {
 		return installationDao.getNumberOfDevicesForVariantID(variantId);
 	}
 }

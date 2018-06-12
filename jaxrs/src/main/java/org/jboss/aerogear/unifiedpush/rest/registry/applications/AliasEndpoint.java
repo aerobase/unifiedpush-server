@@ -53,12 +53,14 @@ import org.keycloak.representations.AccessToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Controller;
 
 import com.qmino.miredot.annotations.ReturnType;
 
 @Controller
 @Path("/alias")
+@Profile(value = "realtimedb")
 public class AliasEndpoint extends AbstractBaseEndpoint {
 	private final Logger logger = LoggerFactory.getLogger(AliasEndpoint.class);
 

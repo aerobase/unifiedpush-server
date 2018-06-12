@@ -1,6 +1,8 @@
 package org.jboss.aerogear.unifiedpush.rest;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.ServerSocket;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -33,6 +35,15 @@ import io.undertow.UndertowOptions;
 @Configuration
 @Import({ WebConfig.class })
 public class WebConfigTest {
+
+	private Integer findRandomOpenPortOnAllLocalInterfaces() {
+		try (ServerSocket socket = new ServerSocket(0);) {
+			return socket.getLocalPort();
+		} catch (IOException e) {
+			return 8080;
+		}
+	}
+
 	@Bean
 	public EmbeddedServletContainerFactory embeddedServletContainerFactory() {
 		UndertowEmbeddedServletContainerFactory factory = new UndertowEmbeddedServletContainerFactory();
@@ -45,6 +56,7 @@ public class WebConfigTest {
 		factory.setDirectBuffers(true);
 		factory.setIoThreads(10);
 		factory.setWorkerThreads(100);
+		factory.setPort(findRandomOpenPortOnAllLocalInterfaces());
 
 		factory.addBuilderCustomizers(builder -> builder.setServerOption(UndertowOptions.ENABLE_HTTP2, true),
 				builder -> builder.setServerOption(UndertowOptions.ENABLE_STATISTICS, true),
@@ -59,16 +71,15 @@ public class WebConfigTest {
 
 			@Override
 			public void onStartup(ServletContext servletContext) throws ServletException {
-
 				servletContext.setInitParameter("resteasy.servlet.mapping.prefix", "/rest");
 			}
 		};
 	}
 
-    @Bean(destroyMethod = "cleanup")
-    public static RestEasySpringInitializer restEasySpringInitializer() {
-        return new RestEasySpringInitializer();
-    }
+	@Bean(destroyMethod = "cleanup")
+	public static RestEasySpringInitializer restEasySpringInitializer() {
+		return new RestEasySpringInitializer();
+	}
 
 	@Bean
 	public ServletListenerRegistrationBean<RequestContextListener> requestContextListener() {
@@ -84,8 +95,9 @@ public class WebConfigTest {
 	}
 
 	/*
-	 * Alternative method to @bean ServletListenerRegistrationBean<ResteasyBootstrap>
-	 * This autoconfiguration will integrate spring and resteasy properly.
+	 * Alternative method to @bean
+	 * ServletListenerRegistrationBean<ResteasyBootstrap> This autoconfiguration
+	 * will integrate spring and resteasy properly.
 	 */
 	public static class RestEasySpringInitializer
 			implements ServletContextInitializer, ApplicationContextAware, BeanFactoryPostProcessor {

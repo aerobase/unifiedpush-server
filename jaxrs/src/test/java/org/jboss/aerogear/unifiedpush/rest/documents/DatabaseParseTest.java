@@ -9,19 +9,19 @@ import org.jboss.aerogear.unifiedpush.api.Installation;
 import org.jboss.aerogear.unifiedpush.cassandra.dao.impl.DocumentKey;
 import org.jboss.aerogear.unifiedpush.cassandra.dao.model.DocumentContent;
 import org.jboss.aerogear.unifiedpush.cassandra.dao.model.parser.JsonDocumentContent;
-import org.jboss.aerogear.unifiedpush.rest.RestEndpointTest;
+import org.jboss.aerogear.unifiedpush.rest.IRestEndpointTest;
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class DatabaseParseTest  {
+public class DatabaseParseTest implements IRestEndpointTest {
 
 	@Test
 	public void testDocumentContent() {
 		ObjectMapper mapper = new ObjectMapper();
-		Installation exampleObject = RestEndpointTest.getIosDefaultInstallation();
+		Installation exampleObject = getIosDefaultInstallation();
 
 		DocumentContent content = null;
 

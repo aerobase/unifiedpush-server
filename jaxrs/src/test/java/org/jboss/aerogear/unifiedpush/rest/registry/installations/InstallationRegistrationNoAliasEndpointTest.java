@@ -3,28 +3,18 @@ package org.jboss.aerogear.unifiedpush.rest.registry.installations;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
 import javax.inject.Inject;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.jboss.aerogear.unifiedpush.api.Alias;
 import org.jboss.aerogear.unifiedpush.api.Installation;
-import org.jboss.aerogear.unifiedpush.api.PushApplication;
 import org.jboss.aerogear.unifiedpush.api.Variant;
-import org.jboss.aerogear.unifiedpush.rest.RestEndpointTest;
+import org.jboss.aerogear.unifiedpush.rest.RestNoRealtimedbTest;
 import org.jboss.aerogear.unifiedpush.rest.WebConfigTest;
 import org.jboss.aerogear.unifiedpush.rest.util.Authenticator;
-import org.jboss.aerogear.unifiedpush.service.AbstractBaseServiceTest;
-import org.jboss.aerogear.unifiedpush.service.AliasService;
 import org.jboss.aerogear.unifiedpush.service.ClientInstallationService;
 import org.jboss.aerogear.unifiedpush.service.GenericVariantService;
-import org.jboss.aerogear.unifiedpush.service.PushApplicationService;
-import org.jboss.aerogear.unifiedpush.service.annotations.LoggedInUser;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
@@ -34,20 +24,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.datastax.driver.core.utils.UUIDs;
-
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = { WebConfigTest.class })
-public class InstallationRegistrationEndpointTest extends RestEndpointTest {
-	private static final LoggedInUser account = new LoggedInUser(AbstractBaseServiceTest.DEFAULT_USER);
+public class InstallationRegistrationNoAliasEndpointTest extends RestNoRealtimedbTest {
 
 	@Inject
 	private GenericVariantService genericVariantService;
 	@Inject
 	private ClientInstallationService installationService;
-	@Inject
-	private PushApplicationService applicationService;
-	@Inject
-	private AliasService aliasService;
 
 	@Test
 	public void unAuthorizedDeviceTest() {
@@ -98,16 +81,6 @@ public class InstallationRegistrationEndpointTest extends RestEndpointTest {
 			Installation inst = installationService.findById(iosInstallation.getId());
 			assertTrue("Installation is null", inst != null);
 			assertEquals(inst.isEnabled(), true);
-
-			// Register alias
-			PushApplication app = applicationService.findByVariantID(variant.getVariantID());
-
-			List<Alias> aliases = new ArrayList<>();
-			aliases.add(new Alias(UUID.fromString(DEFAULT_APP_ID), UUIDs.timeBased(), "Support@Test.com"));
-			aliasService.addAll(account, app, aliases, false);
-
-			Variant var = aliasService.associate(inst, variant);
-			assertTrue("Variant is null", var != null);
 		} catch (Throwable e) {
 			Assert.fail(e.getMessage());
 		}

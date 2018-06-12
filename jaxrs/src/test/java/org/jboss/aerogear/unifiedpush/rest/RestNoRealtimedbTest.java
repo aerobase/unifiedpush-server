@@ -1,12 +1,11 @@
 package org.jboss.aerogear.unifiedpush.rest;
 
-import org.jboss.aerogear.unifiedpush.service.AbstractCassandraServiceTest;
+import org.jboss.aerogear.unifiedpush.service.AbstractNoCassandraServiceTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 
-public abstract class RestEndpointTest extends AbstractCassandraServiceTest implements IRestEndpointTest {
-
+public abstract class RestNoRealtimedbTest extends AbstractNoCassandraServiceTest implements IRestEndpointTest {
 	@Autowired
 	protected TestRestTemplate testTemplate;
 	@LocalServerPort

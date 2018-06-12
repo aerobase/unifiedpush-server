@@ -156,7 +156,5 @@ public interface ClientInstallationService {
      */
     ResultsStream.QueryBuilder<String> findAllOldGoogleCloudMessagingDeviceTokenForVariantIDByCriteria(String variantID, List<String> categories, List<String> aliases, List<String> deviceTypes, int maxResults, String lastTokenFromPreviousBatch);
 
-    Variant associateInstallation(Installation installation, Variant currentVariant);
-
     long getNumberOfDevicesForVariantID(String variantId);
 }

@@ -25,10 +25,13 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.aerogear.unifiedpush.api.Alias;
+import org.jboss.aerogear.unifiedpush.api.Installation;
 import org.jboss.aerogear.unifiedpush.api.PushApplication;
+import org.jboss.aerogear.unifiedpush.api.Variant;
 import org.jboss.aerogear.unifiedpush.cassandra.dao.AliasDao;
 import org.jboss.aerogear.unifiedpush.cassandra.dao.NullAlias;
 import org.jboss.aerogear.unifiedpush.service.AliasService;
+import org.jboss.aerogear.unifiedpush.service.ClientInstallationService;
 import org.jboss.aerogear.unifiedpush.service.DocumentService;
 import org.jboss.aerogear.unifiedpush.service.PostDelete;
 import org.jboss.aerogear.unifiedpush.service.PushApplicationService;
@@ -36,12 +39,14 @@ import org.jboss.aerogear.unifiedpush.service.annotations.LoggedInUser;
 import org.jboss.aerogear.unifiedpush.service.impl.spring.IKeycloakService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.datastax.driver.core.utils.UUIDs;
 
 @Service
+@Profile(value = "realtimedb")
 public class AliasServiceImpl implements AliasService {
 	private final Logger logger = LoggerFactory.getLogger(AliasServiceImpl.class);
 
@@ -53,7 +58,9 @@ public class AliasServiceImpl implements AliasService {
 	private PushApplicationService pushApplicationService;
 	@Inject
 	private DocumentService documentService;
-
+	@Inject 
+	private ClientInstallationService installationService;
+	
 	@Override
 	public List<Alias> addAll(LoggedInUser account, PushApplication pushApplication, List<Alias> aliases,
 			boolean oauth2) {
@@ -132,6 +139,46 @@ public class AliasServiceImpl implements AliasService {
 		return keycloakService.exists(account, alias);
 	}
 
+	@Override
+	public Variant associate(Installation installation, Variant currentVariant) {
+		if (installation.getAlias() == null) {
+			logger.warn("Unable to associate, installation alias is missing!");
+			return null;
+		}
+
+		Alias alias = find(null, installation.getAlias());
+
+		if (alias == null) {
+			return null;
+		}
+
+		PushApplication application = pushApplicationService
+				.findByPushApplicationID(alias.getPushApplicationId().toString());
+		if (application == null) {
+			logger.warn(String.format(
+					"Unable to find application for alias %s, this behaviour "
+							+ "might occur when application is deleted and orphans aliases exists. "
+							+ "Use DELETE /rest/alias/THE-ALIAS in order to remove orphans.",
+					StringUtils.isEmpty(alias.getEmail()) ? alias.getOther() : alias.getEmail()));
+			return null;
+		}
+
+		List<Variant> variants = application.getVariants();
+
+		for (Variant variant : variants) {
+			// Match variant type according to previous variant.
+			if (variant.getType().equals(currentVariant.getType())) {
+				installation.setVariant(variant);
+				installationService.updateInstallation(installation);
+				return variant;
+			}
+		}
+
+		// TODO - Make sure user is associated to a KC client.
+		// If not, associate to appropriate rules.
+
+		return null;
+	}
 	/**
 	 * Validate rather an alias is associated to a team/application.
 	 *
@@ -181,8 +228,8 @@ public class AliasServiceImpl implements AliasService {
 	}
 
 	/*
-	 * Remove all aliases by application id and invalidates alias cache.
-	 * destructive - when true also remove KC entities and related documents
+	 * Remove all aliases by application id and invalidates alias cache. destructive
+	 * - when true also remove KC entities and related documents
 	 */
 	@Override
 	@Async

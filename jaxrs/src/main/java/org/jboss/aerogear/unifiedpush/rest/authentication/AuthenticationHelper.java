@@ -23,6 +23,7 @@ import org.keycloak.KeycloakSecurityContext;
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 
@@ -36,7 +37,7 @@ public class AuthenticationHelper {
 	private GenericVariantService genericVariantService;
 	@Inject
 	private PushApplicationService pushApplicationService;
-	@Inject
+	@Autowired(required = false)
 	private AliasService aliasService;
 
 	public PushApplication loadApplicationWhenAuthorized(HttpServletRequest request) {
@@ -44,8 +45,8 @@ public class AuthenticationHelper {
 	}
 
 	/**
-	 * Returns the {@link PushApplication}. First try variant based
-	 * authentication, then try application based authentication.
+	 * Returns the {@link PushApplication}. First try variant based authentication,
+	 * then try application based authentication.
 	 *
 	 * @param request
 	 *            {@link HttpServletRequest}
@@ -81,7 +82,7 @@ public class AuthenticationHelper {
 		}
 
 		// Application authentication can only access associated aliases !
-		if (StringUtils.isNoneEmpty(alias)
+		if (aliasService != null && StringUtils.isNoneEmpty(alias)
 				&& aliasService.find(pushApplication.getPushApplicationID(), alias) == null) {
 			logger.warn(
 					"UnAuthorized application authentication, application ({}) is not authorized for alias ({}) scope data !",
@@ -115,8 +116,8 @@ public class AuthenticationHelper {
 	}
 
 	/**
-	 * Returns the {@link Variant} if device token is present and device is
-	 * enabled (forceExistingInstallation). first fetch credentials from basic
+	 * Returns the {@link Variant} if device token is present and device is enabled
+	 * (forceExistingInstallation). first fetch credentials from basic
 	 * authentication, if missing try bearer credentials.
 	 *
 	 * @param deviceToken
@@ -194,8 +195,9 @@ public class AuthenticationHelper {
 	 *
 	 * @return current logged in user
 	 */
-    public static LoggedInUser extractUsername() {
-        KeycloakAuthenticationToken token = ((KeycloakAuthenticationToken) SecurityContextHolder.getContext().getAuthentication());
+	public static LoggedInUser extractUsername() {
+		KeycloakAuthenticationToken token = ((KeycloakAuthenticationToken) SecurityContextHolder.getContext()
+				.getAuthentication());
 
 		// Null check for automation scenarios.
 		if (token != null && token.getPrincipal() != null) {
@@ -205,7 +207,6 @@ public class AuthenticationHelper {
 			return new LoggedInUser(kcSecurityContext.getToken().getPreferredUsername());
 		}
 
-
 		return new LoggedInUser("NULL");
-    }
+	}
 }

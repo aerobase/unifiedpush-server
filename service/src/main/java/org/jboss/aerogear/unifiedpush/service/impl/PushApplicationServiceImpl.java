@@ -43,9 +43,9 @@ public class PushApplicationServiceImpl implements PushApplicationService {
 	private PushApplicationDao pushApplicationDao;
 	@Autowired
 	private ConfigurationEnvironment configuration;
-	@Inject
+	@Autowired(required = false)
 	private DocumentService documentService;
-	@Inject
+	@Autowired(required = false)
 	private AliasService aliasService;
 	@Inject
 	private IKeycloakService keycloakService;
@@ -103,16 +103,18 @@ public class PushApplicationServiceImpl implements PushApplicationService {
 		evictByName(pushApp.getName());
 
 		// @Async delete aliases
-		aliasService.removeAll(account, pushApp, true, new PostDelete() {
+		if (aliasService != null) {
+			aliasService.removeAll(account, pushApp, true, new PostDelete() {
 
-			@Override
-			public void after() {
-				// @Async delete any application documents.
-				// Alias documents already removed by aliasService
-				// This must be called after alias documents were removed.
-				documentService.delete(pushApp.getPushApplicationID());
-			}
-		});
+				@Override
+				public void after() {
+					// @Async delete any application documents.
+					// Alias documents already removed by aliasService
+					// This must be called after alias documents were removed.
+					documentService.delete(pushApp.getPushApplicationID());
+				}
+			});
+		}
 
 		// Delete push application
 		pushApplicationDao.delete(pushApp);

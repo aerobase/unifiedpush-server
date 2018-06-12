@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.cassandra.config.AbstractCassandraConfiguration;
 import org.springframework.data.cassandra.config.CassandraClusterFactoryBean;
 import org.springframework.data.cassandra.config.CassandraEntityClassScanner;
@@ -19,6 +20,7 @@ import org.springframework.data.cassandra.repository.config.EnableCassandraRepos
 @Import({ ConfigurationEnvironment.class, CacheConfig.class })
 @ComponentScan(basePackageClasses = { CassandraBaseDao.class })
 @EnableCassandraRepositories(basePackageClasses = { CassandraBaseDao.class })
+@Profile(value = "realtimedb")
 public class CassandraConfig extends AbstractCassandraConfiguration {
 
 	public static final String PROP_KEYSPACE_DEFV = "unifiedpush_server";
@@ -52,8 +54,8 @@ public class CassandraConfig extends AbstractCassandraConfiguration {
 	}
 
 	/**
-	 * Manually assemble entity mapping. this is required because xml mapping is
-	 * not fully supported.
+	 * Manually assemble entity mapping. this is required because xml mapping is not
+	 * fully supported.
 	 */
 	@Bean
 	@Override
@@ -67,8 +69,7 @@ public class CassandraConfig extends AbstractCassandraConfiguration {
 	}
 
 	/**
-	 * Override CassandraSessionFactoryBean to control and retry failed
-	 * connections.
+	 * Override CassandraSessionFactoryBean to control and retry failed connections.
 	 *
 	 * TODO - Check that super.session() impl is not changed over time.
 	 */

@@ -20,7 +20,9 @@ import java.util.List;
 import java.util.UUID;
 
 import org.jboss.aerogear.unifiedpush.api.Alias;
+import org.jboss.aerogear.unifiedpush.api.Installation;
 import org.jboss.aerogear.unifiedpush.api.PushApplication;
+import org.jboss.aerogear.unifiedpush.api.Variant;
 import org.jboss.aerogear.unifiedpush.service.annotations.LoggedInUser;
 
 public interface AliasService {
@@ -59,6 +61,8 @@ public interface AliasService {
 
 	boolean registered(LoggedInUser loggedInUser, String alias);
 
+	Variant associate(Installation installation, Variant currentVariant);
+	
 	boolean associated(String fqdn, String alias);
 
 	Alias find(String pushApplicationId, String alias);

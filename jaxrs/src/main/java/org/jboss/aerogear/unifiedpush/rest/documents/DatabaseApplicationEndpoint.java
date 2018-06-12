@@ -31,12 +31,14 @@ import org.jboss.aerogear.unifiedpush.service.DocumentService;
 import org.jboss.aerogear.unifiedpush.service.PushApplicationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Controller;
 
 import com.qmino.miredot.annotations.ReturnType;
 
 @Controller
 @Path("/database")
+@Profile(value = "realtimedb")
 public class DatabaseApplicationEndpoint extends AbstractEndpoint {
 	private final Logger logger = LoggerFactory.getLogger(DatabaseApplicationEndpoint.class);
 
@@ -48,8 +50,8 @@ public class DatabaseApplicationEndpoint extends AbstractEndpoint {
 	private AliasService aliasService;
 
 	/**
-	 * RESTful API for querying aliases documents. The Endpoint is protected
-	 * using <code>HTTP Basic</code> (credentials
+	 * RESTful API for querying aliases documents. The Endpoint is protected using
+	 * <code>HTTP Basic</code> (credentials
 	 * <code>ApplicationID:Master Secret</code>).
 	 *
 	 * <pre>
@@ -67,11 +69,10 @@ public class DatabaseApplicationEndpoint extends AbstractEndpoint {
 	 *
 	 * @return {@link java.lang.Void}
 	 *
-	 * @responseheader Access-Control-Allow-Origin With host in your "Origin"
-	 *                 header
+	 * @responseheader Access-Control-Allow-Origin With host in your "Origin" header
 	 * @responseheader Access-Control-Allow-Credentials true
-	 * @responseheader WWW-Authenticate Basic realm="AeroBase Server" (only for
-	 *                 401 response)
+	 * @responseheader WWW-Authenticate Basic realm="AeroBase Server" (only for 401
+	 *                 response)
 	 *
 	 * @statuscode 200 Successful query of documents.
 	 * @statuscode 204 Successful but no available content.
@@ -118,7 +119,7 @@ public class DatabaseApplicationEndpoint extends AbstractEndpoint {
 
 		if (docs.getDocuments().size() > 0)
 			return appendAllowOriginHeader(
-				DatabaseEndpoint.appendCountHeader(Response.ok(docs), docs.getDocuments().size()), request);
+					DatabaseEndpoint.appendCountHeader(Response.ok(docs), docs.getDocuments().size()), request);
 		else
 			return appendAllowOriginHeader(Response.noContent(), request);
 	}
@@ -129,8 +130,9 @@ public class DatabaseApplicationEndpoint extends AbstractEndpoint {
 			String database, //
 			String userId) { //
 
-		if (StringUtils.isEmpty(userId)){
-			logger.warn("UserId (UUID) is null or empty for ApplicationId {}, and database {} ", pushApplicationId, database);
+		if (StringUtils.isEmpty(userId)) {
+			logger.warn("UserId (UUID) is null or empty for ApplicationId {}, and database {} ", pushApplicationId,
+					database);
 			return;
 		}
 

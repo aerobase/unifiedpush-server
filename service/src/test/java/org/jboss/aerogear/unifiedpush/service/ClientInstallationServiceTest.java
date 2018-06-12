@@ -599,7 +599,7 @@ public class ClientInstallationServiceTest extends AbstractCassandraServiceTest 
 		clientInstallationService.addInstallation(androidVariant, device);
 		aliasService.addAll(account, application, aliases, false);
 
-		Variant var = clientInstallationService.associateInstallation(device, variant);
+		Variant var = aliasService.associate(device, variant);
 		assertTrue("Unable to assosiate variant!", var != null);
 		assertTrue(var.getVariantID().equals(variant.getVariantID()));
 	}

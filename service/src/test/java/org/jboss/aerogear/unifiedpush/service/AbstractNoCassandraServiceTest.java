@@ -16,56 +16,17 @@
  */
 package org.jboss.aerogear.unifiedpush.service;
 
-import static org.mockito.Mockito.mock;
-
-import org.jboss.aerogear.unifiedpush.cassandra.dao.AliasDao;
-import org.jboss.aerogear.unifiedpush.cassandra.dao.DocumentDao;
-import org.jboss.aerogear.unifiedpush.cassandra.dao.impl.DocumentKey;
-import org.jboss.aerogear.unifiedpush.cassandra.dao.model.DocumentContent;
-import org.jboss.aerogear.unifiedpush.service.AbstractNoCassandraServiceTest.ServiceTestConfig;
-import org.jboss.aerogear.unifiedpush.spring.ServiceConfig;
-import org.junit.Before;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { ServiceTestConfig.class, ServiceConfig.class })
+@ActiveProfiles(profiles = { "default" })
 public abstract class AbstractNoCassandraServiceTest extends AbstractBaseServiceTest {
-	@InjectMocks
-	@Autowired
-	protected AliasService aliasCrudService;
-
-	@Before
-	public void setup() {
-		MockitoAnnotations.initMocks(this);
-	}
 
 	@Override
 	protected void specificSetup() {
 		// TODO Auto-generated method stub
-	}
-
-	@Configuration
-	static class ServiceTestConfig {
-		private AliasDao mockAliasDao = mock(AliasDao.class);
-		@SuppressWarnings("unchecked")
-		private DocumentDao<DocumentContent, DocumentKey> mockDocumentDao = mock(DocumentDao.class);
-
-		@Bean
-		public AliasDao aliasDaoMock() {
-			return mockAliasDao;
-		}
-
-		@Bean
-		public DocumentDao<DocumentContent, DocumentKey> documentDaoMock() {
-			return mockDocumentDao;
-		}
 	}
 
 }

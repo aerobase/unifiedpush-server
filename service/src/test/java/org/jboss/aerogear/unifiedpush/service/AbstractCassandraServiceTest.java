@@ -22,8 +22,8 @@ import org.cassandraunit.spring.CassandraDataSet;
 import org.cassandraunit.spring.EmbeddedCassandra;
 import org.jboss.aerogear.unifiedpush.api.PushApplication;
 import org.jboss.aerogear.unifiedpush.api.document.DocumentMetadata;
-import org.jboss.aerogear.unifiedpush.cassandra.CassandraConfig;
 import org.jboss.aerogear.unifiedpush.spring.ServiceCacheConfig;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.TestExecutionListeners.MergeMode;
@@ -31,12 +31,13 @@ import org.springframework.test.context.TestExecutionListeners.MergeMode;
 @TestExecutionListeners(listeners = CassandraUnitTestClassExecutionListener.class, mergeMode = MergeMode.MERGE_WITH_DEFAULTS)
 @CassandraDataSet(keyspace = "unifiedpush_server", value = "cassandra-test-cql-dataload.cql")
 @EmbeddedCassandra
-@ContextConfiguration(classes = { CassandraConfig.class, ServiceCacheConfig.class })
+@ContextConfiguration(classes = { ServiceCacheConfig.class })
+@ActiveProfiles(profiles = { "default", "realtimedb" })
 public abstract class AbstractCassandraServiceTest extends AbstractBaseServiceTest {
 	@Inject
 	private AliasService aliasService;
 
-	protected DocumentMetadata getMetadata(PushApplication pushApplication, String alias, String database){
+	protected DocumentMetadata getMetadata(PushApplication pushApplication, String alias, String database) {
 		return new DocumentMetadata(pushApplication.getPushApplicationID(), database,
 				aliasService.find(pushApplication.getPushApplicationID(), alias));
 	}
