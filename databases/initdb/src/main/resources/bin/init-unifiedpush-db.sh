@@ -27,14 +27,14 @@ while [ -n "$1" ]; do
         --help|*)
                 cat <<__EOF__
 Usage: $0
-        --config-path=path  - Path for -Daerobase.config.dir param - Default /tmp/db.properties
+        --config-path=path  - Path for -Daerobase.config.dir param - Default /tmp/
 __EOF__
         exit 1
     esac
     shift
 done
 
-[ -z "${CONFIG}" ] && export CONFIG=/tmp/db.properties
+[ -z "${CONFIG}" ] && export CONFIG=/tmp/
 
 ${JAVA_HOME}/bin/java ${DEBUG_OPTS} \
         -Daerobase.config.dir=${CONFIG} \

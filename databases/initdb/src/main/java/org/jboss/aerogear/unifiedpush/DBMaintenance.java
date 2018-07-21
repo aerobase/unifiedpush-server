@@ -8,6 +8,8 @@ public class DBMaintenance {
 		// Initialize spring context to create DB schema
 		AnnotationConfigApplicationContext applicationContext = null;
 
+		System.out.println("Using config path from " + System.getProperty("aerobase.config.dir"));
+		
 		applicationContext = createApplicationContext();
 
 		if (null != applicationContext) {
