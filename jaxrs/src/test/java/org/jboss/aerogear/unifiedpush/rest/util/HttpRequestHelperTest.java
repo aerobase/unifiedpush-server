@@ -22,6 +22,7 @@ import org.mockito.Mockito;
 import javax.servlet.http.HttpServletRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class HttpRequestHelperTest {
 
@@ -163,5 +164,23 @@ public class HttpRequestHelperTest {
         assertThat(client).isNotNull();
         assertThat(client).isEqualTo("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2)");
     }
+    
+	@Test
+	public void testRemoveLast() {
+		String test1 = "https://xxx/x/xx/x/x";
+		String test2 = "https://xxx/x/xx/x/x/";
+		
+		assertTrue(HttpRequestUtil.removeLastSlash(test1).equals(test1));
+		assertTrue(HttpRequestUtil.removeLastSlash(test2).equals(test1));
+	}
+	
+	@Test
+	public void testLastPart() {
+		String test1 = "https://xxx.com/yyyyy/";
+		String test2 = "https://xxx.com/yyyyy?xxx=1&yyy=2";
+		
+		assertTrue(HttpRequestUtil.getLastPart(test1).equals("yyyyy"));
+		assertTrue(HttpRequestUtil.getLastPart(test2).equals("yyyyy"));
+	}
 
 }

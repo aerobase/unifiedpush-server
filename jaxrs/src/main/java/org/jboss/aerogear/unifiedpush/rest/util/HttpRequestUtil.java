@@ -16,14 +16,21 @@
  */
 package org.jboss.aerogear.unifiedpush.rest.util;
 
-import javax.servlet.http.HttpServletRequest;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.regex.Pattern;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Helper for various tasks for working with {@link javax.servlet.http.HttpServletRequest} objects.
  */
 public final class HttpRequestUtil {
-
+	private static final Logger logger = LoggerFactory.getLogger(HttpRequestUtil.class);
+	
     private HttpRequestUtil() {
         // no-op
     }
@@ -92,4 +99,23 @@ public final class HttpRequestUtil {
     private static boolean hasValue(final String value) {
         return value != null && !value.isEmpty();
     }
+    
+	public static String removeLastSlash(String url) {
+		if (url.lastIndexOf("/") == url.length() - 1) {
+			url = url.substring(0, url.length() - 1);
+		}
+		return url;
+	}
+
+	public static String getLastPart(String url) {
+		URI uri;
+		try {
+			uri = new URI(url);
+		} catch (URISyntaxException e) {
+			logger.error("unable to create URI from url: " + url, e);
+			return null;
+		}
+		String path = removeLastSlash(uri.getPath());
+		return path.substring(path.lastIndexOf('/') + 1);
+	}
 }

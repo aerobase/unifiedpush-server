@@ -22,10 +22,7 @@ import java.net.URI;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.lang3.StringUtils;
 import org.jboss.aerogear.unifiedpush.rest.util.BearerHelper;
-import org.jboss.aerogear.unifiedpush.service.annotations.LoggedInUser;
-import org.jboss.aerogear.unifiedpush.service.impl.spring.IKeycloakService;
 import org.jboss.aerogear.unifiedpush.service.impl.spring.OAuth2Configuration;
 import org.keycloak.adapters.KeycloakConfigResolver;
 import org.keycloak.adapters.KeycloakDeployment;
@@ -45,54 +42,41 @@ public class PathBasedKeycloakConfigResolver implements KeycloakConfigResolver {
 
 	@Autowired
 	private ApplicationContext applicationContext;
-	@Autowired
-	private IKeycloakService keycloakService;
 
 	@Override
 	public KeycloakDeployment resolve(Request request) {
-		String realmConfig = "keycloak";
-
-		String origin = BearerHelper.getRefererHeader(request);
-		boolean isProxy = isProxyRequest(origin, request);
-
-		String accountName = getRealmName(isProxy, origin);
-
-		// TODO - Use proxy subdomain as realm name.
-		if (isProxy) {
-			if (logger.isTraceEnabled())
-				logger.trace("Identified origin request, using keycloak-proxy realm config! URI: {}, referer: {}",
-						request.getURI(), origin);
-			realmConfig = "keycloak-proxy";
-		} else {
-			if (logger.isTraceEnabled())
-				logger.trace("Identified non-proxy request, using keycloak realm config! URI: {}, referer: {}",
-						request.getURI(), origin);
+		String realmFile = "keycloak";
+		
+		String realmName = BearerHelper.getRealmName(request);	
+		if (!OAuth2Configuration.getStaticUpsRealm().equalsIgnoreCase(realmName)) {
+			realmFile = "keycloak-proxy";
 		}
 
-		CustomKeycloakDeployment deployment = cache.get(accountName);
+		if (logger.isTraceEnabled())
+			logger.trace("Identified Bearer request, using keycloak realm! URI: {}, realm: {}", request.getURI(),
+					realmFile);
+
+		CustomKeycloakDeployment deployment = cache.get(realmFile);
 		if (null == deployment) {
 			InputStream is = null;
 
 			try {
-				is = applicationContext.getResource("/WEB-INF/" + realmConfig + ".json").getInputStream();
+				is = applicationContext.getResource("/WEB-INF/" + realmFile + ".json").getInputStream();
 			} catch (IOException e) {
-				throw new IllegalStateException("Not able to find the file /" + realmConfig + ".json");
+				throw new IllegalStateException("Not able to find the file /" + realmFile + ".json");
 			}
 
 			if (is == null) {
-				throw new IllegalStateException("Not able to find the file /" + realmConfig + ".json");
+				throw new IllegalStateException("Not able to find the file /" + realmFile + ".json");
 			}
 
-			String applicationName = keycloakService.stripApplicationName(origin);
-
-			deployment = CustomKeycloakDeploymentBuilder.build(is, isProxy, accountName,
-					keycloakService.getClientName(new LoggedInUser(accountName), applicationName));
+			deployment = CustomKeycloakDeploymentBuilder.build(is, realmName, BearerHelper.getClientName(request));
 
 			String baseUrl = getBaseBuilder(deployment, request, deployment.getAuthServerBaseUrl()).build().toString();
 			KeycloakUriBuilder serverBuilder = KeycloakUriBuilder.fromUri(baseUrl);
 			resolveUrls(deployment, serverBuilder);
 
-			cache.put(accountName, deployment);
+			cache.put(realmName, deployment);
 		}
 
 		return deployment;
@@ -145,32 +129,5 @@ public class PathBasedKeycloakConfigResolver implements KeycloakConfigResolver {
 		deployment.setUnregisterNodeUrl(
 				authUrlBuilder.clone().path(ServiceUrlConstants.CLIENTS_MANAGEMENT_UNREGISTER_NODE_PATH)
 						.build(deployment.getRealm()).toString());
-	}
-
-	private Boolean isProxyRequest(String referer, Request request) {
-		return StringUtils.isNoneEmpty(referer) && !request.getURI().startsWith(referer);
-	}
-
-	/*
-	 * Get realm name according to request proxy name
-	 */
-	private String getRealmName(boolean isProxy, String origin) {
-
-		// Get default
-		String defaultRealm = OAuth2Configuration.getStaticUpsRealm();
-		if (!isProxy) {
-			return defaultRealm;
-		}
-
-		// Extract subdomain primary application name.
-		String accountName = keycloakService.stripAccountName(origin);
-
-		if (StringUtils.isEmpty(accountName)) {
-			logger.warn("Unable to extract accountName (subdomain) from proxy request, using default realm: "
-					+ defaultRealm);
-			return defaultRealm;
-		}
-
-		return keycloakService.toRealmName(new LoggedInUser(accountName));
 	}
 }

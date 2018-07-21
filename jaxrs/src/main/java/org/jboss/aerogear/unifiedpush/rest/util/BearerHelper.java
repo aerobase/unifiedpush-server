@@ -17,6 +17,7 @@
 package org.jboss.aerogear.unifiedpush.rest.util;
 
 import java.util.Enumeration;
+import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -44,8 +45,8 @@ public final class BearerHelper {
 	private BearerHelper() {
 	}
 
-	public static Variant extractVariantFromBearerHeader(LoggedInUser account, GenericVariantService genericVariantService,
-			HttpServletRequest request) {
+	public static Variant extractVariantFromBearerHeader(LoggedInUser account,
+			GenericVariantService genericVariantService, HttpServletRequest request) {
 		String clientId = extractClientId(request);
 		if (StringUtils.isNotBlank(clientId)) {
 			return genericVariantService.findVariantByKeycloakClientID(account, clientId);
@@ -65,10 +66,15 @@ public final class BearerHelper {
 		return clientId;
 	}
 
+	public static Optional<AccessToken> getTokenDataFromBearer(org.keycloak.adapters.spi.HttpFacade.Request request) {
+		return getTokenDataFromBearer(getBarearToken(request).orNull());
+	}
+
 	public static Optional<AccessToken> getTokenDataFromBearer(HttpServletRequest request) {
+		return getTokenDataFromBearer(getBarearToken(request).orNull());
+	}
 
-		String tokenString = getBarearToken(request).orNull();
-
+	private static Optional<AccessToken> getTokenDataFromBearer(String tokenString) {
 		if (tokenString != null) {
 			try {
 				JWSInput input = new JWSInput(tokenString);
@@ -82,8 +88,17 @@ public final class BearerHelper {
 	}
 
 	// Barear authentication allowed only using keycloack context
+	public static Optional<String> getBarearToken(org.keycloak.adapters.spi.HttpFacade.Request request) {
+		return getBarearToken(new Vector<String>(request.getHeaders("Authorization")).elements());
+	}
+
+	// Barear authentication allowed only using keycloack context
 	public static Optional<String> getBarearToken(HttpServletRequest request) {
-		Enumeration<String> authHeaders = request.getHeaders("Authorization");
+		return getBarearToken(request.getHeaders("Authorization"));
+	}
+
+	// Barear authentication allowed only using keycloack context
+	private static Optional<String> getBarearToken(Enumeration<String> authHeaders) {
 		if (authHeaders == null || !authHeaders.hasMoreElements()) {
 			return Optional.absent();
 		}
@@ -102,6 +117,29 @@ public final class BearerHelper {
 			return Optional.absent();
 		}
 		return Optional.of(tokenString);
+	}
+
+	public static String getRealmName(org.keycloak.adapters.spi.HttpFacade.Request request) {
+		AccessToken accessToken = BearerHelper.getTokenDataFromBearer(request).orNull();
+		if (accessToken != null) {
+			String issuer = accessToken.getIssuer();
+
+			if (StringUtils.isNoneEmpty(issuer)) {
+				issuer = HttpRequestUtil.removeLastSlash(issuer);
+				return HttpRequestUtil.getLastPart(issuer);
+			}
+		}
+
+		return null;
+	}
+
+	public static String getClientName(org.keycloak.adapters.spi.HttpFacade.Request request) {
+		AccessToken accessToken = BearerHelper.getTokenDataFromBearer(request).orNull();
+		if (accessToken != null && accessToken.getAudience() != null && accessToken.getAudience().length > 0) {
+			return accessToken.getAudience()[0];
+		}
+
+		return null;
 	}
 
 	// Barear authentication request
