@@ -29,6 +29,7 @@
 				<include>org.hibernate.javax.persistence:hibernate-jpa-2.1-api</include>
 				<include>com.mchange:c3p0</include>
 				<include>org.postgresql:postgresql</include>
+				<include>com.microsoft.sqlserver:mssql-jdbc</include>
 				<include>mysql:mysql-connector-java</include>
 
 			</includes>

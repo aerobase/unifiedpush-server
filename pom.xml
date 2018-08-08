@@ -420,6 +420,12 @@
 				<artifactId>postgresql</artifactId>
 				<version>${postgresql.version}</version>
 			</dependency>
+			
+			<dependency>
+				<groupId>com.microsoft.sqlserver</groupId>
+				<artifactId>mssql-jdbc</artifactId>
+				<version>6.4.0.jre8</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 

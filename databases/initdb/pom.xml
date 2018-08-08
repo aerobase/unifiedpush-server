@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- JBoss, Home of Professional Open Source Copyright Red Hat, Inc., and
-	individual contributors Licensed under the Apache License, Version 2.0 (the
-	"License"); you may not use this file except in compliance with the License.
-	You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
-	Unless required by applicable law or agreed to in writing, software distributed
-	under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
-	OR CONDITIONS OF ANY KIND, either express or implied. See the License for
+<!-- JBoss, Home of Professional Open Source Copyright Red Hat, Inc., and 
+	individual contributors Licensed under the Apache License, Version 2.0 (the 
+	"License"); you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
+	Unless required by applicable law or agreed to in writing, software distributed 
+	under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES 
+	OR CONDITIONS OF ANY KIND, either express or implied. See the License for 
 	the specific language governing permissions and limitations under the License. -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-	    <groupId>org.jboss.aerogear.unifiedpush</groupId>
-	    <artifactId>unifiedpush-parent</artifactId>
-	    <version>1.2.0-SNAPSHOT</version>
-	    <relativePath>../../pom.xml</relativePath>
+		<groupId>org.jboss.aerogear.unifiedpush</groupId>
+		<artifactId>unifiedpush-parent</artifactId>
+		<version>1.2.0-SNAPSHOT</version>
+		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
 	<artifactId>unifiedpush-initdb</artifactId>
@@ -44,10 +45,10 @@
 			<version>${springframework.version}</version>
 		</dependency>
 
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-core</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>org.hibernate</groupId>
@@ -70,11 +71,16 @@
 			<artifactId>postgresql</artifactId>
 		</dependency>
 
-        <!-- Required by hibernate -->
 		<dependency>
-		    <groupId>org.jboss.logging</groupId>
-		    <artifactId>jboss-logging</artifactId>
-		    <scope>compile</scope>
+			<groupId>com.microsoft.sqlserver</groupId>
+			<artifactId>mssql-jdbc</artifactId>
+		</dependency>
+
+		<!-- Required by hibernate -->
+		<dependency>
+			<groupId>org.jboss.logging</groupId>
+			<artifactId>jboss-logging</artifactId>
+			<scope>compile</scope>
 		</dependency>
 
 	</dependencies>
@@ -110,8 +116,8 @@
 				<filtering>true</filtering>
 			</resource>
 			<resource>
-                <directory>${basedir}/src/main/resources</directory>
-            </resource>
+				<directory>${basedir}/src/main/resources</directory>
+			</resource>
 		</resources>
 	</build>
 </project>
