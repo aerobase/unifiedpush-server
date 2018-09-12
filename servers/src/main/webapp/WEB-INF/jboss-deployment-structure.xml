@@ -4,6 +4,7 @@
 			<module name="org.infinispan" services="export"/>
 			<module name="org.infinispan.commons" services="export"/>
 			<module name="org.infinispan.cachestore.remote" services="export"/>
+			<module name="com.microsoft" />
 		</dependencies>
 
         <!-- Remove unused modules, weld is disabled because we are using both @Inject @Autowire  -->
