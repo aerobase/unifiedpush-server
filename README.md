@@ -61,7 +61,7 @@ For your convenience, we do have an easy way of launch with our [Docker compose 
 
 ## Documentation
 
-For more details about the current release, please consult [our documentation](https://github.com/aerobase/omnibus-unifiedpush-server/tree/master/doc) or visit [AeroGear documentation](https://aerogear.org/getstarted/guides/#push).
+For more details about the current release, please consult [our documentation](https://github.com/aerobase/omnibus-aerobase-server/tree/master/doc) or visit [AeroGear documentation](https://aerogear.org/getstarted/guides/#push).
 
 #### Generate REST Documentation
 
