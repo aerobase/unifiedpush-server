@@ -22,6 +22,7 @@ import java.net.URI;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.aerogear.unifiedpush.rest.util.BearerHelper;
 import org.jboss.aerogear.unifiedpush.service.impl.spring.OAuth2Configuration;
 import org.keycloak.adapters.KeycloakConfigResolver;
@@ -56,7 +57,9 @@ public class PathBasedKeycloakConfigResolver implements KeycloakConfigResolver {
 			logger.trace("Identified Bearer request, using keycloak realm! URI: {}, realm: {}", request.getURI(),
 					realmFile);
 
-		CustomKeycloakDeployment deployment = cache.get(realmFile);
+		String host = getHost(request); 
+		CustomKeycloakDeployment deployment = cache.get(getCacheKey(realmName, host));
+		
 		if (null == deployment) {
 			InputStream is = null;
 
@@ -76,7 +79,7 @@ public class PathBasedKeycloakConfigResolver implements KeycloakConfigResolver {
 			KeycloakUriBuilder serverBuilder = KeycloakUriBuilder.fromUri(baseUrl);
 			resolveUrls(deployment, serverBuilder);
 
-			cache.put(realmName, deployment);
+			cache.put(getCacheKey(realmName, host), deployment);
 		}
 
 		return deployment;
@@ -129,5 +132,18 @@ public class PathBasedKeycloakConfigResolver implements KeycloakConfigResolver {
 		deployment.setUnregisterNodeUrl(
 				authUrlBuilder.clone().path(ServiceUrlConstants.CLIENTS_MANAGEMENT_UNREGISTER_NODE_PATH)
 						.build(deployment.getRealm()).toString());
+	}
+	
+	private String getHost(Request request) {
+		String host = request.getHeader("Host");
+		if (StringUtils.isEmpty(host)) {
+			host = request.getHeader("host");
+		}
+		
+		return StringUtils.isEmpty(host)? StringUtils.EMPTY : host;
+	}
+	
+	private String getCacheKey(String realm, String host) {
+		return new StringBuffer(realm).append("-").append(host).toString();
 	}
 }
