@@ -406,15 +406,26 @@
 			<dependency>
 				<groupId>io.netty</groupId>
 				<artifactId>netty-all</artifactId>
-				<version>4.1.14.Final</version>
+				<version>${io.netty}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>io.netty</groupId>
 				<artifactId>netty-handler</artifactId>
-				<version>4.1.14.Final</version>
+				<version>${io.netty}</version>
 			</dependency>
 
+			<dependency>
+                                <groupId>io.netty</groupId>
+                                <artifactId>netty-handler-proxy</artifactId>
+                                <version>${io.netty}</version>
+                        </dependency>
+                        <dependency>
+                                <groupId>io.netty</groupId>
+                                <artifactId>netty-codec-http2</artifactId>
+                                <version>${io.netty}</version>
+				</dependency>
+				
 			<dependency>
 				<groupId>org.postgresql</groupId>
 				<artifactId>postgresql</artifactId>
@@ -509,7 +520,7 @@
 		<java.version>1.8</java.version>
 
 		<!-- Override Areogear BOM -->
-		<resteasy.version>3.0.24.Final</resteasy.version>
+		<resteasy.version>3.5.1.Final</resteasy.version>
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -526,9 +537,9 @@
 		<!-- Override versions of AeroGear BOMs -->
 		<junit.version>4.12</junit.version>
 		<keycloak.version>4.5.0.Final</keycloak.version>
-		<hibernate.version>5.2.12.Final</hibernate.version>
-		<hibernate-validator.version>6.0.5.Final</hibernate-validator.version>
-		<version.javax.validation>2.0.0.Final</version.javax.validation>
+		<hibernate.version>5.3.1.Final</hibernate.version>
+		<hibernate-validator.version>6.0.10.Final</hibernate-validator.version>
+		<version.javax.validation>2.0.1.Final</version.javax.validation>
 
 		<gcm-server.version>1.0.0</gcm-server.version>
 		<slfj4.version>1.7.21</slfj4.version>
@@ -541,8 +552,8 @@
 		<aerogear.crypto.version>0.1.5</aerogear.crypto.version>
 
 		<postgresql.version>42.1.4</postgresql.version>
-		<fasterxml.version>2.9.0</fasterxml.version>
-		<wildfly.version>11.0.0.Final</wildfly.version>
+		<fasterxml.version>2.9.5</fasterxml.version>
+		<wildfly.version>13.0.0.Final</wildfly.version>
 		<springframework.version>5.0.2.RELEASE</springframework.version>
 		<springsecurity.version>5.0.0.RELEASE</springsecurity.version>
 		<reactor-core.version>3.1.0.RELEASE</reactor-core.version>
@@ -553,6 +564,7 @@
 		<cassandra-driver-core.version>3.3.2</cassandra-driver-core.version>
 		<cassandra-data.version>2.0.2.RELEASE</cassandra-data.version>
 		<spring-data.version>2.0.2.RELEASE</spring-data.version>
+		<io.netty>4.1.22.Final</io.netty>
 
 		<ups.ddl_value>validate</ups.ddl_value>
 	</properties>
@@ -628,7 +640,7 @@
 					<dependency>
 						<groupId>org.cassandraunit</groupId>
 						<artifactId>cassandra-unit-spring</artifactId>
-						<version>3.3.0.2</version>
+						<version>3.5.0.1</version>
 						<scope>test</scope>
 					</dependency>
 

@@ -477,7 +477,7 @@ public class KeycloakServiceImpl implements IKeycloakService {
 		return StringUtils.EMPTY;
 	}
 
-	static final class AccountNameMatcher {
+	public static final class AccountNameMatcher {
 		private static final Pattern pattern = Pattern.compile("[^a-zA-Z0-9]");
 
 		public static String matches(String toMatch) {
