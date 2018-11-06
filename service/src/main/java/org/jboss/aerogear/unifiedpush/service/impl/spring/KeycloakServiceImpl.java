@@ -192,8 +192,8 @@ public class KeycloakServiceImpl implements IKeycloakService {
 			// This will grant current user full realm management permissions
 			if (client != null) {
 				LoggedInUser admin = new LoggedInUser(conf.getAdminUserName());
-						
-				// Get User by username  
+
+				// Get User by username
 				UserRepresentation user = getUser(admin, accountName.get());
 
 				UsersResource users = getRealm(admin).users();
@@ -206,10 +206,10 @@ public class KeycloakServiceImpl implements IKeycloakService {
 				logger.error(
 						"Unable to find client Representation for newly created realm - " + toRealmName(accountName));
 			}
-
-			// Create default client
-			createClientIfAbsent(accountName, null);
 		}
+
+		// Create default client
+		createClientIfAbsent(accountName, null);
 	}
 
 	public static <T> T loadJson(InputStream is, Class<T> type) {
@@ -409,7 +409,7 @@ public class KeycloakServiceImpl implements IKeycloakService {
 	}
 
 	private Map<String, String> getClientAttributes(PushApplication pushApp) {
-		if (pushApp==null){
+		if (pushApp == null) {
 			return Collections.emptyMap();
 		}
 
@@ -492,6 +492,5 @@ public class KeycloakServiceImpl implements IKeycloakService {
 		this.portalMode = portalMode;
 		return portalMode;
 	}
-
 
 }
