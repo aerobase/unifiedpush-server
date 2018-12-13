@@ -35,7 +35,7 @@ Aerobase is a mobile/web platform that helps you quickly develop high-quality mo
 | License:        | Apache License, Version 2.0  |
 | Build:          | Maven  |
 | Documentation:  | [Aerobase Server Documentation](https://aerobase.atlassian.net/wiki/spaces/ARB/pages) |
-|                 | [Aerobase API Documentaion](http://docs.aerobase.org/apis/rest/) |
+|                 | [Aerobase API Documentaion](https://docs.aerobase.io/apis/rest/) |
 |                 | [Aerobase.io](https://aerobase.io) | 
 | Issue tracker:  | [JIRA](https://aerobase.atlassian.net/projects/ARB/issues/) |
 
@@ -65,7 +65,7 @@ For more details about the current release, please consult [our documentation](h
 
 #### Generate REST Documentation
 
-Up to date generated REST endpoint documentation can be found in `http://docs.aerobase.org/rest/`. It is generated with every `jaxrs` module build.
+Up to date generated REST endpoint documentation can be found in `https://docs.aerobase.io/apis/rest/`. It is generated with every `jaxrs` module build.
 
 ## Who is using it?
 
