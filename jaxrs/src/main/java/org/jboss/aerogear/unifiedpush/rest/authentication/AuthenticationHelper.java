@@ -18,6 +18,7 @@ import org.jboss.aerogear.unifiedpush.service.ClientInstallationService;
 import org.jboss.aerogear.unifiedpush.service.GenericVariantService;
 import org.jboss.aerogear.unifiedpush.service.PushApplicationService;
 import org.jboss.aerogear.unifiedpush.service.annotations.LoggedInUser;
+import org.jboss.aerogear.unifiedpush.service.impl.spring.IKeycloakService;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.KeycloakSecurityContext;
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
@@ -37,6 +38,9 @@ public class AuthenticationHelper {
 	private GenericVariantService genericVariantService;
 	@Inject
 	private PushApplicationService pushApplicationService;
+	@Inject
+	private IKeycloakService keycloakService;
+
 	@Autowired(required = false)
 	private AliasService aliasService;
 
@@ -184,10 +188,10 @@ public class AuthenticationHelper {
 	 * @param request
 	 *            {@link HttpServletRequest}
 	 */
-	private static Variant loadVariantFromBearerWhenAuthorized(GenericVariantService genericVariantService,
+	private Variant loadVariantFromBearerWhenAuthorized(GenericVariantService genericVariantService,
 			HttpServletRequest request) {
 		// extract the Variant from the Authorization header:
-		return BearerHelper.extractVariantFromBearerHeader(extractUsername(), genericVariantService, request);
+		return BearerHelper.extractVariantFromBearerHeader(extractUsername(), pushApplicationService, keycloakService, request);
 	}
 
 	/**

@@ -22,9 +22,12 @@ import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jboss.aerogear.unifiedpush.api.PushApplication;
 import org.jboss.aerogear.unifiedpush.api.Variant;
-import org.jboss.aerogear.unifiedpush.service.GenericVariantService;
+import org.jboss.aerogear.unifiedpush.api.VariantType;
+import org.jboss.aerogear.unifiedpush.service.PushApplicationService;
 import org.jboss.aerogear.unifiedpush.service.annotations.LoggedInUser;
+import org.jboss.aerogear.unifiedpush.service.impl.spring.IKeycloakService;
 import org.jboss.aerogear.unifiedpush.service.impl.spring.KeycloakServiceImpl;
 import org.keycloak.jose.jws.JWSInput;
 import org.keycloak.jose.jws.JWSInputException;
@@ -38,14 +41,22 @@ public final class BearerHelper {
 	private static final Logger logger = LoggerFactory.getLogger(KeycloakServiceImpl.class);
 
 	private static final String BEARER_SCHEME = "Bearer";
+
 	private BearerHelper() {
 	}
 
 	public static Variant extractVariantFromBearerHeader(LoggedInUser account,
-			GenericVariantService genericVariantService, HttpServletRequest request) {
+			PushApplicationService pushApplicationService, IKeycloakService keycloakService,
+			HttpServletRequest request) {
+
 		String clientId = extractClientId(request);
+
 		if (StringUtils.isNotBlank(clientId)) {
-			return genericVariantService.findVariantByKeycloakClientID(account, clientId);
+			String applicationName = keycloakService.stripApplicationName(clientId);
+			PushApplication pushApp = pushApplicationService.findByName(applicationName);
+
+			return pushApp.getVariants().stream().filter(var -> var.getType() == VariantType.SIMPLE_PUSH).findFirst()
+					.orElse(null);
 		}
 
 		return null;

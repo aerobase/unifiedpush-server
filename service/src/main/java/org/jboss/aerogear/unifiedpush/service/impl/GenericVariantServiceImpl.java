@@ -19,16 +19,11 @@ package org.jboss.aerogear.unifiedpush.service.impl;
 import javax.inject.Inject;
 
 import org.jboss.aerogear.unifiedpush.api.Variant;
-import org.jboss.aerogear.unifiedpush.api.VariantType;
 import org.jboss.aerogear.unifiedpush.dao.VariantDao;
 import org.jboss.aerogear.unifiedpush.service.GenericVariantService;
 import org.jboss.aerogear.unifiedpush.service.annotations.LoggedInUser;
-import org.jboss.aerogear.unifiedpush.service.impl.spring.IKeycloakService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
-import org.springframework.cache.Cache.ValueWrapper;
 import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,9 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class GenericVariantServiceImpl implements GenericVariantService {
-	private static final Logger logger = LoggerFactory.getLogger(GenericVariantServiceImpl.class);
-	@Inject
-	private IKeycloakService keycloakService;
 
 	@Inject
 	private VariantDao variantDao;
@@ -55,51 +47,6 @@ public class GenericVariantServiceImpl implements GenericVariantService {
 	@Override
 	public Variant findByVariantID(String variantID) {
 		return variantDao.findByVariantID(variantID);
-	}
-
-	/*
-	 * Cacheable service
-	 */
-	private Variant find(String variantID) {
-		Cache cache = cacheManager.getCache(GenericVariantService.CACHE_NAME);
-
-		// Try to hit cache
-		ValueWrapper cacheVar = cache.get(variantID);
-		if (cacheVar != null)
-			return (Variant) cacheVar.get();
-
-		Variant var = findByVariantID(variantID);
-
-		if (var != null)
-			cache.put(variantID, var);
-
-		return var;
-	}
-
-	@Override
-	public Variant findVariantByKeycloakClientID(LoggedInUser account, String clientId) {
-		Variant variant = null;
-
-		// Cacheable service
-		Iterable<String> clientVariants = keycloakService.getVariantIdsFromClient(account, clientId);
-
-		if (clientVariants != null) {
-			for (String clientVariantId : clientVariants) {
-				Variant clientVariant = find(clientVariantId);
-				if (clientVariant != null && (clientVariant.getType() == VariantType.SIMPLE_PUSH)) {
-					// TODO - Support case of several Variants.
-					variant = clientVariant;
-					break;
-				}
-
-			}
-		}
-
-		if (variant == null) {
-			logger.info("unable to resolve variant for clientID={}", clientId);
-		}
-
-		return variant;
 	}
 
 	@Override
