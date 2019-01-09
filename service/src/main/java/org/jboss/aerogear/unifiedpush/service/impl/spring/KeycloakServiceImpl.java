@@ -225,8 +225,7 @@ public class KeycloakServiceImpl implements IKeycloakService {
 		if (!isInitialized()) {
 			return;
 		}
-
-		String applicationName = getAppName(pushApplication);
+		
 		String clientName = getClientName(account, getAppName(pushApplication));
 		ClientRepresentation clientRepresentation = isClientExists(account, pushApplication);
 
@@ -239,8 +238,8 @@ public class KeycloakServiceImpl implements IKeycloakService {
 			String domain = conf.getRooturlDomain();
 			String protocol = conf.getRooturlProtocol();
 			clientRepresentation.setRootUrl(
-					conf.getRooturlMatcher().rootUrl(protocol, domain, toRealmName(account), applicationName));
-			clientRepresentation.setRedirectUris(Arrays.asList("/*"));
+					conf.getRooturlMatcher().rootUrl(protocol, domain, toRealmName(account)));
+			clientRepresentation.setRedirectUris(Arrays.asList("/*", "http://localhost"));
 			clientRepresentation.setBaseUrl("/");
 
 			clientRepresentation.setStandardFlowEnabled(true);

@@ -129,8 +129,8 @@ public class OAuth2Configuration implements IOAuth2Configuration {
 		DOT(".", "(.*?)[.].*") {
 
 			@Override
-			public String rootUrl(String protocol, String domain, String account, String application) {
-				return rootUrl(protocol, domain, account, application, seperator());
+			public String rootUrl(String protocol, String domain, String account) {
+				return rootUrl(protocol, domain, account, seperator());
 			}
 		},
 		// Logical subdomain, match as many characters as possible (Last
@@ -138,8 +138,8 @@ public class OAuth2Configuration implements IOAuth2Configuration {
 		DASH("-", "(.*)[-].*") {
 
 			@Override
-			public String rootUrl(String protocol, String domain, String account, String application) {
-				return rootUrl(protocol, domain, account, application, seperator());
+			public String rootUrl(String protocol, String domain, String account) {
+				return rootUrl(protocol, domain, account, seperator());
 			}
 		};
 
@@ -175,15 +175,12 @@ public class OAuth2Configuration implements IOAuth2Configuration {
 			return DomainMatcher.DOT;
 		}
 
-		public abstract String rootUrl(String protocol, String domain, String account, String application);
+		public abstract String rootUrl(String protocol, String domain, String account);
 	}
 
 	public interface IDomainMatcher {
-		default String rootUrl(String protocol, String domain, String account, String application, String seperator) {
-			if (StringUtils.isEmpty(application))
-				return protocol + "://" + account + seperator + domain;
-			else
-				return protocol + "://" + application + seperator + account + seperator + domain;
+		default String rootUrl(String protocol, String domain, String account, String seperator) {
+			return protocol + "://" + account + seperator + domain;
 		}
 	}
 
