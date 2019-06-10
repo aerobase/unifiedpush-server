@@ -13,7 +13,7 @@ Aerobase is a mobile/web platform that helps you quickly develop high-quality mo
 * SSL Support and easy configuration.
 * Cloud Messaging - Push Notifications (Payload & Silent).
 * Centralized configuration/management using Chef Omnibus.
-* By default, every Aerobase package comes with an embedded NGINX, Wildfly, KeyCloak 3.4.x, Cassandra 3.11.x.
+* By default, every Aerobase package comes with an embedded NGINX, Wildfly, KeyCloak 4.8.x, Cassandra 3.11.x.
 * [Full-stack](https://bintray.com/aerobase) rpm/deb installers across a variety of platforms (RHEL, Debian, Fedora, Ubuntu).
 
 #### Push Notification cloud providers
@@ -34,7 +34,7 @@ Aerobase is a mobile/web platform that helps you quickly develop high-quality mo
 | --------------- | ------------- |
 | License:        | Apache License, Version 2.0  |
 | Build:          | Maven  |
-| Documentation:  | [Aerobase Server Documentation](https://aerobase.atlassian.net/wiki/spaces/ARB/pages) |
+| Documentation:  | [Aerobase Server Documentation](https://aerobase.io/docs/gsg/index.html) |
 |                 | [Aerobase API Documentaion](https://docs.aerobase.io/apis/rest/) |
 |                 | [Aerobase.io](https://aerobase.io) | 
 | Issue tracker:  | [JIRA](https://aerobase.atlassian.net/projects/ARB/issues/) |
@@ -44,7 +44,7 @@ Aerobase is a mobile/web platform that helps you quickly develop high-quality mo
 Or for the on-premise version, execute the following steps to get going!
 
 * Download and install the [latest package (rpm/deb) files](https://bintray.com/aerobase/)
-* Follow the steps on the [Installation guide](https://aerobase.atlassian.net/wiki/spaces/ARB/pages)
+* Follow the steps on the [Installation guide](https://aerobase.io/docs/gsg/index.html)
 * Run ``sudo unifiedpush-ctl reconfigure``
 * Start the server ``sudo unifiedpush-ctl start``
 
@@ -61,7 +61,7 @@ For your convenience, we do have an easy way of launch with our [Docker compose 
 
 ## Documentation
 
-For more details about the current release, please consult [our documentation](https://github.com/aerobase/omnibus-aerobase-server/tree/master/doc) or visit [AeroGear documentation](https://aerogear.org/getstarted/guides/#push).
+For more details about the current release, please consult [our documentation](https://aerobase.io/docs/gsg/index.html) or visit [AeroGear documentation](https://aerogear.org/getstarted/guides/#push).
 
 #### Generate REST Documentation
 
