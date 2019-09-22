@@ -103,6 +103,12 @@
 			<groupId>com.microsoft.sqlserver</groupId>
 			<artifactId>mssql-jdbc</artifactId>
 		</dependency>
+
+                <dependency>
+                        <groupId>mysql</groupId>
+                        <artifactId>mysql-connector-java</artifactId>
+                        <scope>compile</scope>
+                </dependency>
 		
 		<dependency>
 			<groupId>org.slf4j</groupId>
